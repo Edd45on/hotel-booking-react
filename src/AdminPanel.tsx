@@ -261,19 +261,17 @@ export default function AdminPanel() {
               </div>
             </div>
 
-            {/* Booking Request Details */}
-            <div className="space-y-3 mb-4 bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0]">
-              <div className="grid grid-cols-2 gap-2 text-sm">
-                <div><span className="text-[#64748B]">Destination:</span> <span className="font-semibold text-[#0F172A]">{detailsInquiry.destination}</span></div>
-                <div><span className="text-[#64748B]">Guests:</span> <span className="font-semibold text-[#0F172A]">{detailsInquiry.adults} Adults, {detailsInquiry.children} Children</span></div>
-                <div><span className="text-[#64748B]">Check-in:</span> <span className="font-semibold text-[#0F172A]">{detailsInquiry.check_in}</span></div>
-                <div><span className="text-[#64748B]">Check-out:</span> <span className="font-semibold text-[#0F172A]">{detailsInquiry.check_out}</span></div>
-                <div className="col-span-2"><span className="text-[#64748B]">Budget:</span> <span className="font-semibold text-[#0F172A]">{detailsInquiry.budget}</span></div>
-                {detailsInquiry.special_request && (
-                  <div className="col-span-2"><span className="text-[#64748B]">Special Request:</span> <span className="font-semibold text-[#0F172A]">{detailsInquiry.special_request}</span></div>
-                )}
-              </div>
-            </div>
+<div className="grid grid-cols-2 gap-2 text-sm">
+  <div><span className="text-[#64748B]">Destination:</span> <span className="font-semibold text-[#0F172A]">{detailsInquiry.destination}</span></div>
+  <div><span className="text-[#64748B]">Guests:</span> <span className="font-semibold text-[#0F172A]">{detailsInquiry.adults} Adults, {detailsInquiry.children} Children</span></div>
+  <div><span className="text-[#64748B]">Check-in:</span> <span className="font-semibold text-[#0F172A]">{detailsInquiry.check_in}</span></div>
+  <div><span className="text-[#64748B]">Check-out:</span> <span className="font-semibold text-[#0F172A]">{detailsInquiry.check_out}</span></div>
+  <div><span className="text-[#64748B]">Rooms:</span> <span className="font-semibold text-[#0F172A]">{detailsInquiry.rooms}</span></div>
+  <div className="col-span-2"><span className="text-[#64748B]">Budget:</span> <span className="font-semibold text-[#0F172A]">{detailsInquiry.budget}</span></div>
+  {detailsInquiry.special_request && (
+    <div className="col-span-2"><span className="text-[#64748B]">Special Request:</span> <span className="font-semibold text-[#0F172A]">{detailsInquiry.special_request}</span></div>
+  )}
+</div>
 
             {/* Chosen Hotel Details */}
             {detailsInquiry.quotations?.find((q:any) => q.is_customer_chosen) && (
@@ -286,24 +284,25 @@ export default function AdminPanel() {
                   {detailsInquiry.quotations.find((q:any) => q.is_customer_chosen).hotels.address}
                 </p>
                 <button 
-                  onClick={() => {
-                    const chosen = detailsInquiry.quotations.find((q:any) => q.is_customer_chosen);
-                    navigator.clipboard.writeText(
-                      `Customer: ${detailsInquiry.first_name || 'N/A'} ${detailsInquiry.last_name || 'N/A'}\n` +
-                      `Email: ${detailsInquiry.email || 'N/A'}\n` +
-                      `Phone: ${detailsInquiry.phone || 'N/A'}\n` +
-                      `Destination: ${detailsInquiry.destination}\n` +
-                      `Hotel: ${chosen.hotels.name}\n` +
-                      `Address: ${chosen.hotels.address}\n` +
-                      `Dates: ${detailsInquiry.check_in} to ${detailsInquiry.check_out}\n` +
-                      `Guests: ${detailsInquiry.adults} Adults, ${detailsInquiry.children} Children`
-                    );
-                    alert('📋 Full booking details copied to clipboard!');
-                  }}
-                  className="w-full mt-2 bg-white border border-green-200 text-green-700 py-2 rounded-xl font-semibold hover:bg-green-50 transition"
-                >
-                  Copy to Clipboard for RedSeller
-                </button>
+  onClick={() => {
+    const chosen = detailsInquiry.quotations.find((q:any) => q.is_customer_chosen);
+    navigator.clipboard.writeText(
+      `Customer: ${detailsInquiry.first_name || 'N/A'} ${detailsInquiry.last_name || 'N/A'}\n` +
+      `Email: ${detailsInquiry.email || 'N/A'}\n` +
+      `Phone: ${detailsInquiry.phone || 'N/A'}\n` +
+      `Destination: ${detailsInquiry.destination}\n` +
+      `Rooms: ${detailsInquiry.rooms}\n` + // 🟢 ADDED THIS LINE
+      `Hotel: ${chosen.hotels.name}\n` +
+      `Address: ${chosen.hotels.address}\n` +
+      `Dates: ${detailsInquiry.check_in} to ${detailsInquiry.check_out}\n` +
+      `Guests: ${detailsInquiry.adults} Adults, ${detailsInquiry.children} Children`
+    );
+    alert('📋 Full booking details copied to clipboard!');
+  }}
+  className="w-full mt-2 bg-white border border-green-200 text-green-700 py-2 rounded-xl font-semibold hover:bg-green-50 transition"
+>
+  Copy to Clipboard for RedSeller
+</button>
               </div>
             )}
 
