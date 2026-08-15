@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from './utils/supabase';
-import { ChevronDown, ChevronUp, Star, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, Star } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function QuotationView() {
@@ -8,13 +8,6 @@ export default function QuotationView() {
   const [inquiry, setInquiry] = useState<any>(null);
   const [openFacilitiesId, setOpenFacilitiesId] = useState<string | null>(null);
   const [activeImages, setActiveImages] = useState<Record<string, string>>({});
-  
-  // 🟢 NEW STATES FOR THE MODAL
-  const [selectedQuotationId, setSelectedQuotationId] = useState<string | null>(null);
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
 
   // Helper: Format dates
   const formatDateRange = (checkIn: string, checkOut: string) => {
@@ -45,24 +38,26 @@ export default function QuotationView() {
 
     const { data: qData, error } = await supabase
       .from('quotations')
-                <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-[#475569]">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[#E11D48] text-xs font-bold">✓</span> 
-                    {q.custom_room_only || 'Room only'}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[#E11D48] text-xs font-bold">✓</span> 
-                    {q.custom_pay_at_hotel || 'Pay at hotel'}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[#E11D48] text-xs font-bold">✓</span> 
-                    {q.custom_non_refundable || 'Non-refundable'}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[#E11D48] text-xs font-bold">✓</span> 
-                    {q.custom_no_breakfast || 'No breakfast'}
-                  </div>
-                </div>
+      .select(`
+        id,
+        total_price,
+        is_customer_chosen,
+        inquiry_id,
+        created_at,
+        facilities,
+        custom_room_only,
+        custom_pay_at_hotel,
+        custom_non_refundable,
+        custom_no_breakfast,
+        hotels (
+          id,
+          name,
+          address,
+          images,
+          facilities,
+          room_type
+        )
+      `)
       .eq('inquiry_id', inquiryId);
     
     if (error) console.error('Supabase Error:', error);
@@ -82,63 +77,13 @@ export default function QuotationView() {
     setQuotations(uniqueData.slice(0, 3));
   };
 
-  // 🟢 OPEN MODAL & CONFIRM BOOKING FLOW
-  const openBookingModal = (quotationId: string) => {
-    setSelectedQuotationId(quotationId);
-  };
-
-  const closeBookingModal = () => {
-    setSelectedQuotationId(null);
-    setFirstName('');
-    setLastName('');
-    setEmail('');
-    setPhone('');
-  };
-
-  const confirmBooking = async () => {
-    if (!firstName || !lastName || !email || !phone) {
-      toast.error('Please fill in all fields to confirm your booking.');
-      return;
-    }
-
-    if (!inquiry || !selectedQuotationId) return;
-
-    try {
-      // 1. Update inquiry with customer details
-      const { error: updateError } = await supabase
-        .from('inquiries')
-        .update({
-          first_name: firstName,
-          last_name: lastName,
-          email: email,
-          phone: phone,
-        })
-        .eq('id', inquiry.id);
-
-      if (updateError) throw updateError;
-
-      // 2. Mark the quotation as chosen
-      const { error: quoteError } = await supabase
-        .from('quotations')
-        .update({ is_customer_chosen: true })
-        .eq('id', selectedQuotationId);
-
-      if (quoteError) throw quoteError;
-
-      // 3. Close modal and show success
-      closeBookingModal();
-      toast.success('Booking confirmed! We will process your reservation.', {
-        duration: 5000,
-        style: { background: '#10B981', color: '#ffffff', fontWeight: 'bold' },
-        icon: '✅',
-      });
-
-      // Refresh data
-      fetchQuotation(inquiry.id);
-
-    } catch (error: any) {
-      toast.error('Error: ' + error.message);
-    }
+  const chooseHotel = async (quotationId: string) => {
+    await supabase.from('quotations').update({ is_customer_chosen: true }).eq('id', quotationId);
+    toast.success('Booking confirmed! We will process your reservation.', {
+      duration: 4000,
+      style: { background: '#10B981', color: '#ffffff', fontWeight: 'bold' },
+      icon: '✅',
+    });
   };
 
   if (!inquiry) return <div className="text-center py-20">Loading your quotation...</div>;
@@ -224,19 +169,34 @@ export default function QuotationView() {
                   </div>
                 </div>
 
+                {/* 🟢 DYNAMIC CHECKMARKS */}
                 <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-[#475569]">
-                  <div className="flex items-center gap-2"><span className="text-[#E11D48] text-xs font-bold">✓</span> Room only</div>
-                  <div className="flex items-center gap-2"><span className="text-[#E11D48] text-xs font-bold">✓</span> Pay at hotel</div>
-                  <div className="flex items-center gap-2"><span className="text-[#E11D48] text-xs font-bold">✓</span> Non-refundable</div>
-                  <div className="flex items-center gap-2"><span className="text-[#E11D48] text-xs font-bold">✓</span> No breakfast</div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[#E11D48] text-xs font-bold">✓</span> 
+                    {q.custom_room_only || 'Room only'}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[#E11D48] text-xs font-bold">✓</span> 
+                    {q.custom_pay_at_hotel || 'Pay at hotel'}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[#E11D48] text-xs font-bold">✓</span> 
+                    {q.custom_non_refundable || 'Non-refundable'}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[#E11D48] text-xs font-bold">✓</span> 
+                    {q.custom_no_breakfast || 'No breakfast'}
+                  </div>
                 </div>
 
+                {/* WHY WE PICKED IT */}
                 <div className="bg-[#F8FAFC] rounded-xl p-4 border border-[#E2E8F0]">
                   <p className="text-xs font-bold uppercase tracking-wider text-[#64748B] mb-1">Why we picked it</p>
                   <p className="text-sm text-[#0F172A]">{badge.text}</p>
                   <p className="text-xs text-[#64748B] mt-1">Best for: {badge.bestFor}</p>
                 </div>
 
+                {/* VIEW FACILITIES TOGGLE */}
                 <div className="mb-1">
                   <button 
                     onClick={() => setOpenFacilitiesId(isOpen ? null : q.id)}
@@ -248,25 +208,16 @@ export default function QuotationView() {
                   {isOpen && (
                     <div className="mt-3 p-3 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0]">
                       <div className="flex flex-wrap gap-2">
-                        {(() => {
-  // Priority 1: Use the custom facilities saved in the quotation
-  const facilitiesSource = q.facilities || q.hotels?.facilities;
-  if (facilitiesSource) {
-    return facilitiesSource.split(',').map((fac: string, i: number) => (
-      <span key={i} className="px-3 py-1 bg-white border border-[#E2E8F0] rounded-full text-xs text-[#475569]">{fac.trim()}</span>
-    ));
-  } else {
-    return <p className="text-xs text-[#94a3b8]">No facilities listed</p>;
-  }
-})()}
+                        {q.hotels?.facilities ? q.hotels.facilities.split(',').map((fac: string, i: number) => (
+                          <span key={i} className="px-3 py-1 bg-white border border-[#E2E8F0] rounded-full text-xs text-[#475569]">{fac.trim()}</span>
+                        )) : (<p className="text-xs text-[#94a3b8]">No facilities listed</p>)}
                       </div>
                     </div>
                   )}
                 </div>
 
-                {/* 🟢 SELECT BUTTON TRIGGERS THE MODAL */}
                 <button 
-                  onClick={() => openBookingModal(q.id)}
+                  onClick={() => chooseHotel(q.id)}
                   className="w-full bg-[#E11D48] text-white py-3 rounded-xl font-bold hover:bg-[#BE123C] transition shadow-md hover:shadow-lg mt-1"
                 >
                   Select This Option
@@ -284,76 +235,6 @@ export default function QuotationView() {
           <p className="mt-4 text-[#E11D48] font-medium hover:underline cursor-pointer">Need help deciding? Chat with us</p>
         </div>
       </div>
-
-      {/* 🟢 CUSTOMER DETAILS MODAL */}
-      {selectedQuotationId && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-          <div className="bg-white max-w-md w-full rounded-2xl p-6 shadow-2xl relative">
-            
-            <button 
-              onClick={closeBookingModal}
-              className="absolute top-4 right-4 text-[#475569] hover:text-[#0F172A] transition"
-            >
-              <X size={24} />
-            </button>
-
-            <h2 className="text-2xl font-bold font-serif text-[#0F172A] mb-1">Confirm Your Booking</h2>
-            <p className="text-sm text-[#64748B] mb-4">Please enter your details to finalize your room selection.</p>
-
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-[#64748B] mb-1">First Name</label>
-                  <input 
-                    type="text" 
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    className="w-full p-3 border border-[#E2E8F0] rounded-xl focus:outline-none focus:border-[#E11D48] transition"
-                    placeholder="John"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-[#64748B] mb-1">Last Name</label>
-                  <input 
-                    type="text" 
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    className="w-full p-3 border border-[#E2E8F0] rounded-xl focus:outline-none focus:border-[#E11D48] transition"
-                    placeholder="Doe"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-[#64748B] mb-1">Email Address</label>
-                <input 
-                  type="email" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full p-3 border border-[#E2E8F0] rounded-xl focus:outline-none focus:border-[#E11D48] transition"
-                  placeholder="john.doe@email.com"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-[#64748B] mb-1">Phone Number</label>
-                <input 
-                  type="tel" 
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="w-full p-3 border border-[#E2E8F0] rounded-xl focus:outline-none focus:border-[#E11D48] transition"
-                  placeholder="+63 912 345 6789"
-                />
-              </div>
-
-              <button 
-                onClick={confirmBooking}
-                className="w-full bg-[#E11D48] text-white py-3 rounded-xl font-bold hover:bg-[#BE123C] transition mt-2 shadow-md"
-              >
-                Confirm Booking
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </main>
   );
 }
