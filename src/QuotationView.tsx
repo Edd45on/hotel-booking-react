@@ -57,11 +57,22 @@ export default function QuotationView() {
     
     if (error) console.error('Supabase Error:', error);
 
-    // Sort and take top 3
+    // 1. Sort by newest first
     const sortedData = qData ? qData.sort((a: any, b: any) => 
       new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     ) : [];
-    setQuotations(sortedData.slice(0, 3));
+
+    // 2. Remove duplicate hotels (keep the first occurrence of each unique hotel)
+    const seenNames = new Set();
+    const uniqueData = sortedData.filter((item: any) => {
+      const name = item.hotels?.name || '';
+      if (seenNames.has(name)) return false;
+      seenNames.add(name);
+      return true;
+    });
+
+    // 3. Take only the first 3 unique options
+    setQuotations(uniqueData.slice(0, 3));
   };
 
   const chooseHotel = async (quotationId: string) => {
@@ -97,7 +108,9 @@ export default function QuotationView() {
             {formatDateRange(inquiry.check_in, inquiry.check_out)} · {inquiry.adults} Adults · {inquiry.rooms} Room{inquiry.rooms > 1 && 's'}
           </p>
           <p className="text-sm text-[#64748B] mt-1">{quotations.length} suitable options found</p>
-          <p className="text-xs font-mono text-[#94a3b8] mt-4 tracking-widest">{referenceId}</p>
+          <p className="text-xs font-mono text-[#94a3b8] mt-4 tracking-widest">
+  {referenceId}
+</p>
         </div>
 
         {/* 🟢 QUOTATION CARDS */}
@@ -166,10 +179,9 @@ export default function QuotationView() {
                     </div>
 
                     {/* 🟢 WHY WE PICKED IT */}
-                    <div className="bg-[#F8FAFC] rounded-xl p-4 mb-4 border border-[#E2E8F0]">
-                      <p className="text-xs font-bold uppercase tracking-wider text-[#64748B] mb-1">Why we picked it</p>
-                      <p className="text-sm text-[#0F172A]">{badge.text}</p>
-                    </div>
+                    <div className={`absolute -top-3 left-6 ${badge.color} text-white text-xs font-bold uppercase tracking-wider px-4 py-1 rounded-full shadow-sm z-10 w-fit`}>
+					{badge.label}
+					</div>
 
                     {/* 🟢 FACILITIES */}
                     <div className="mb-4">
