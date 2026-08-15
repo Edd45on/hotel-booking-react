@@ -10,9 +10,10 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(false);
   const [detailsInquiry, setDetailsInquiry] = useState<any>(null);
   
-  // 🟢 NEW STATES FOR THE EDITOR
+  // 🟢 EDITOR STATES
   const [currentStep, setCurrentStep] = useState<'selection' | 'draft'>('selection');
   const [draftQuotes, setDraftQuotes] = useState<any[]>([]);
+  const [validUntil, setValidUntil] = useState<string>('');
 
   useEffect(() => {
     fetchInquiries();
@@ -60,7 +61,6 @@ export default function AdminPanel() {
       return;
     }
     
-    // Map the selected hotels into a draft structure
     const selectedHotels = selectedHotelIds.map(id => hotels.find(h => h.id === id));
     setDraftQuotes(selectedHotels.map((hotel, index) => ({
       hotel: hotel,
@@ -68,8 +68,14 @@ export default function AdminPanel() {
       customDescription: index === 1 ? 'Best balance of price and location.' : index === 0 ? 'The most affordable choice.' : 'Top-tier comfort and amenities.',
       customImage: hotel?.images ? hotel.images.split(',')[0].trim() : '',
       customBestFor: index === 1 ? 'Families / value travelers' : index === 0 ? 'Budget-conscious travelers' : 'Luxury & business travelers',
+      customFacilities: hotel?.facilities || 'No Free Toiletries, AC, No Smoking, Free Wifi, Car Parking',
     })));
     
+    // Set default valid until (7 days from now)
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + 7);
+    setValidUntil(futureDate.toISOString().split('T')[0]);
+
     setCurrentStep('draft');
   };
 
@@ -85,6 +91,7 @@ export default function AdminPanel() {
         room_type: 'Standard Room',
         total_price: draft.hotel.price_per_night || 1500,
         is_customer_chosen: false,
+        facilities: draft.customFacilities,
       }));
 
       const { error } = await supabase.from('quotations').insert(inserts);
@@ -201,7 +208,7 @@ export default function AdminPanel() {
         </div>
       </div>
 
-      {/* 🟢 DRAFT EDITOR MODAL (Replaces the selection modal) */}
+      {/* 🟢 DRAFT EDITOR MODAL */}
       {selectedInquiry && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-white max-w-4xl w-full rounded-3xl shadow-2xl p-6 relative">
@@ -218,7 +225,6 @@ export default function AdminPanel() {
               <X size={24} />
             </button>
 
-            {/* TOP HEADER */}
             <div className="flex items-center gap-3 mb-6 border-b border-[#E2E8F0] pb-4">
               {currentStep === 'draft' && (
                 <button 
@@ -258,6 +264,19 @@ export default function AdminPanel() {
             {/* STEP 2: DRAFT EDITOR */}
             {currentStep === 'draft' && (
               <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2">
+                
+                {/* 🟢 GLOBAL SETTINGS (Valid Until) */}
+                <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4">
+                  <label className="block text-xs font-semibold text-[#64748B] mb-1">Quotation Valid Until</label>
+                  <input 
+                    type="date" 
+                    value={validUntil}
+                    onChange={(e) => setValidUntil(e.target.value)}
+                    className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
+                  />
+                </div>
+
+                {/* PER-HOTEL EDITORS */}
                 {draftQuotes.map((draft, index) => (
                   <div key={index} className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4 space-y-3">
                     <div className="flex items-center justify-between">
@@ -269,7 +288,6 @@ export default function AdminPanel() {
                       </span>
                     </div>
                     
-                    {/* IMAGE URL EDITOR */}
                     <div>
                       <label className="block text-xs font-semibold text-[#64748B] mb-1">Main Image URL</label>
                       <input 
@@ -284,7 +302,6 @@ export default function AdminPanel() {
                       />
                     </div>
 
-                    {/* TITLE EDITOR */}
                     <div>
                       <label className="block text-xs font-semibold text-[#64748B] mb-1">Display Title</label>
                       <input 
@@ -299,7 +316,6 @@ export default function AdminPanel() {
                       />
                     </div>
 
-                    {/* DESCRIPTION EDITOR */}
                     <div>
                       <label className="block text-xs font-semibold text-[#64748B] mb-1">Why we picked it (Description)</label>
                       <input 
@@ -313,12 +329,41 @@ export default function AdminPanel() {
                         className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
                       />
                     </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-[#64748B] mb-1">Best For</label>
+                      <input 
+                        type="text" 
+                        value={draft.customBestFor}
+                        onChange={(e) => {
+                          const newDraft = [...draftQuotes];
+                          newDraft[index].customBestFor = e.target.value;
+                          setDraftQuotes(newDraft);
+                        }}
+                        className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
+                      />
+                    </div>
+
+                    {/* 🟢 FACILITIES EDITOR */}
+                    <div>
+                      <label className="block text-xs font-semibold text-[#64748B] mb-1">Facilities (Comma separated)</label>
+                      <textarea 
+                        rows={2}
+                        value={draft.customFacilities}
+                        onChange={(e) => {
+                          const newDraft = [...draftQuotes];
+                          newDraft[index].customFacilities = e.target.value;
+                          setDraftQuotes(newDraft);
+                        }}
+                        className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48] resize-none"
+                        placeholder="Free WiFi, AC, Parking, Pool"
+                      />
+                    </div>
                   </div>
                 ))}
               </div>
             )}
 
-            {/* FOOTER BUTTONS */}
             <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-[#E2E8F0]">
               <button
                 onClick={() => {
