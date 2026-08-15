@@ -51,6 +51,7 @@ export default function QuotationView() {
         is_customer_chosen,
         inquiry_id,
         created_at,
+        facilities,  -- 🟢 Added this!
         hotels (
           id,
           name,
@@ -245,9 +246,17 @@ export default function QuotationView() {
                   {isOpen && (
                     <div className="mt-3 p-3 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0]">
                       <div className="flex flex-wrap gap-2">
-                        {q.hotels?.facilities ? q.hotels.facilities.split(',').map((fac: string, i: number) => (
-                          <span key={i} className="px-3 py-1 bg-white border border-[#E2E8F0] rounded-full text-xs text-[#475569]">{fac.trim()}</span>
-                        )) : (<p className="text-xs text-[#94a3b8]">No facilities listed</p>)}
+                        {(() => {
+  // Priority 1: Use the custom facilities saved in the quotation
+  const facilitiesSource = q.facilities || q.hotels?.facilities;
+  if (facilitiesSource) {
+    return facilitiesSource.split(',').map((fac: string, i: number) => (
+      <span key={i} className="px-3 py-1 bg-white border border-[#E2E8F0] rounded-full text-xs text-[#475569]">{fac.trim()}</span>
+    ));
+  } else {
+    return <p className="text-xs text-[#94a3b8]">No facilities listed</p>;
+  }
+})()}
                       </div>
                     </div>
                   )}
