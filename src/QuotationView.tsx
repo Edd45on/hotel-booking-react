@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from './utils/supabase';
-import { ChevronDown, ChevronUp, Star } from 'lucide-react';
+import { ChevronDown, ChevronUp,} from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function QuotationView() {
