@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from './utils/supabase';
-import { X, ExternalLink, Copy, Pencil, Save, ChevronLeft } from 'lucide-react';
+import { X, ExternalLink, Copy, Save, ChevronLeft } from 'lucide-react';
 
 export default function AdminPanel() {
   const [inquiries, setInquiries] = useState<any[]>([]);
