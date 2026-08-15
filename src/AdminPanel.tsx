@@ -79,7 +79,7 @@ export default function AdminPanel() {
     setCurrentStep('draft');
   };
 
-   const generateQuotation = async () => {
+  const generateQuotation = async () => {
     if (!selectedInquiry) return;
 
     setLoading(true);
@@ -95,7 +95,6 @@ export default function AdminPanel() {
         custom_pay_at_hotel: draft.customPayAtHotel,
         custom_non_refundable: draft.customNonRefundable,
         custom_no_breakfast: draft.customNoBreakfast,
-        // 🟢 FIX: Added missing customDescription field
         custom_description: draft.customDescription,
       }));
 
@@ -137,7 +136,7 @@ export default function AdminPanel() {
           </button>
         </div>
 
-        {/* 1. INQUIRY LIST */}
+        {/* LIST OF INQUIRIES */}
         <div className="grid grid-cols-1 gap-4">
           {inquiries.map((inq) => {
             const chosenQuotation = inq.quotations?.find((q: any) => q.is_customer_chosen === true);
@@ -215,7 +214,7 @@ export default function AdminPanel() {
       </div>
 
       {/* ========================================== */}
-      {/* 2. DRAFT EDITOR MODAL */}
+      {/* 1. DRAFT EDITOR MODAL */}
       {/* ========================================== */}
       {selectedInquiry && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
@@ -448,7 +447,7 @@ export default function AdminPanel() {
       )}
 
       {/* ========================================== */}
-      {/* 3. CLIENT DETAILS MODAL */}
+      {/* 2. CLIENT DETAILS MODAL (FULLY RESTORED) */}
       {/* ========================================== */}
       {detailsInquiry && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
