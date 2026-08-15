@@ -45,13 +45,13 @@ export default function QuotationView() {
 
     const { data: qData, error } = await supabase
       .from('quotations')
-      .select(`
+     .select(`
         id,
         total_price,
         is_customer_chosen,
         inquiry_id,
         created_at,
-        facilities,  -- 🟢 Added this!
+        facilities,
         hotels (
           id,
           name,
