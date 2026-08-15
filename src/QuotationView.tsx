@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from './utils/supabase';
-import { ChevronDown, ChevronUp, Star } from 'lucide-react';
+import { ChevronDown, ChevronUp, Star, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function QuotationView() {
@@ -8,6 +8,13 @@ export default function QuotationView() {
   const [inquiry, setInquiry] = useState<any>(null);
   const [openFacilitiesId, setOpenFacilitiesId] = useState<string | null>(null);
   const [activeImages, setActiveImages] = useState<Record<string, string>>({});
+  
+  // 🟢 NEW STATES FOR THE MODAL
+  const [selectedQuotationId, setSelectedQuotationId] = useState<string | null>(null);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
 
   // Helper: Format dates
   const formatDateRange = (checkIn: string, checkOut: string) => {
@@ -72,13 +79,63 @@ export default function QuotationView() {
     setQuotations(uniqueData.slice(0, 3));
   };
 
-  const chooseHotel = async (quotationId: string) => {
-    await supabase.from('quotations').update({ is_customer_chosen: true }).eq('id', quotationId);
-    toast.success('Booking confirmed! We will process your reservation.', {
-      duration: 4000,
-      style: { background: '#10B981', color: '#ffffff', fontWeight: 'bold' },
-      icon: '✅',
-    });
+  // 🟢 OPEN MODAL & CONFIRM BOOKING FLOW
+  const openBookingModal = (quotationId: string) => {
+    setSelectedQuotationId(quotationId);
+  };
+
+  const closeBookingModal = () => {
+    setSelectedQuotationId(null);
+    setFirstName('');
+    setLastName('');
+    setEmail('');
+    setPhone('');
+  };
+
+  const confirmBooking = async () => {
+    if (!firstName || !lastName || !email || !phone) {
+      toast.error('Please fill in all fields to confirm your booking.');
+      return;
+    }
+
+    if (!inquiry || !selectedQuotationId) return;
+
+    try {
+      // 1. Update inquiry with customer details
+      const { error: updateError } = await supabase
+        .from('inquiries')
+        .update({
+          first_name: firstName,
+          last_name: lastName,
+          email: email,
+          phone: phone,
+        })
+        .eq('id', inquiry.id);
+
+      if (updateError) throw updateError;
+
+      // 2. Mark the quotation as chosen
+      const { error: quoteError } = await supabase
+        .from('quotations')
+        .update({ is_customer_chosen: true })
+        .eq('id', selectedQuotationId);
+
+      if (quoteError) throw quoteError;
+
+      // 3. Close modal and show success
+      closeBookingModal();
+      toast.success('Booking confirmed! We will process your reservation.', {
+        duration: 5000,
+        style: { background: '#10B981', color: '#ffffff', fontWeight: 'bold' },
+        icon: '✅',
+      });
+
+      // Refresh data
+      fetchQuotation(inquiry.id);
+
+    } catch (error: any) {
+      toast.error('Error: ' + error.message);
+    }
   };
 
   if (!inquiry) return <div className="text-center py-20">Loading your quotation...</div>;
@@ -86,7 +143,6 @@ export default function QuotationView() {
   const nights = getNights(inquiry.check_in, inquiry.check_out);
   const referenceId = `#STY-${String(inquiry.id).slice(-6).toUpperCase()}`;
 
-  // Math logic to figure out the badges
   const getBadge = (index: number, total: number) => {
     if (total === 3 && index === 1) {
       return { label: 'BEST VALUE', color: 'bg-yellow-400 text-[#0F172A]', text: 'Best balance of price and location.', bestFor: 'Families / value travelers' };
@@ -106,13 +162,13 @@ export default function QuotationView() {
           <h1 className="text-4xl font-bold font-serif text-[#0F172A] tracking-tight">YOUR HOTEL QUOTATION</h1>
           <p className="text-lg text-[#0F172A] font-medium mt-2">{inquiry.destination}</p>
           <p className="text-md text-[#64748B] mt-1">
-  {formatDateRange(inquiry.check_in, inquiry.check_out)} · {inquiry.adults} Adults
-</p>
+            {formatDateRange(inquiry.check_in, inquiry.check_out)} · {inquiry.adults} Adults
+          </p>
           <p className="text-sm text-[#64748B] mt-1">{quotations.length} suitable options found</p>
           <p className="text-xs font-mono text-[#94a3b8] mt-4 tracking-widest">{referenceId}</p>
         </div>
 
-        {/* QUOTATION CARDS - New Vertical Layout */}
+        {/* QUOTATION CARDS */}
         <div className="grid grid-cols-1 gap-8">
           {quotations.map((q: any, index: number) => {
             const badge = getBadge(index, quotations.length);
@@ -125,12 +181,10 @@ export default function QuotationView() {
             return (
               <div key={q.id} className="bg-white rounded-3xl shadow-lg border border-[#E2E8F0] overflow-hidden p-6 relative flex flex-col gap-5">
                 
-                {/* BADGE - Top Left */}
                 <div className={`absolute top-4 left-4 ${badge.color} text-xs font-bold uppercase tracking-wider px-3 py-0.5 rounded-full shadow-sm z-10 flex items-center gap-1`}>
                   <Star size={12} className="fill-current" /> {badge.label}
                 </div>
 
-                {/* MAIN PHOTO */}
                 <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-slate-100 w-full">
                   <img 
                     key={currentActiveImage}
@@ -140,7 +194,6 @@ export default function QuotationView() {
                   />
                 </div>
 
-                {/* THUMBNAILS (Stretching horizontally) */}
                 {imageArray.length > 1 && (
                   <div className="flex gap-2 overflow-x-auto pb-1 -mt-2">
                     {imageArray.slice(1, 6).map((url: string, i: number) => (
@@ -157,7 +210,6 @@ export default function QuotationView() {
                   </div>
                 )}
 
-                {/* HOTEL NAME & PRICE */}
                 <div className="flex justify-between items-start">
                   <div>
                     <h2 className="text-xl font-bold font-serif text-[#0F172A]">{q.hotels?.name}</h2>
@@ -169,7 +221,6 @@ export default function QuotationView() {
                   </div>
                 </div>
 
-                {/* CHECKMARKS GRID */}
                 <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-[#475569]">
                   <div className="flex items-center gap-2"><span className="text-[#E11D48] text-xs font-bold">✓</span> Room only</div>
                   <div className="flex items-center gap-2"><span className="text-[#E11D48] text-xs font-bold">✓</span> Pay at hotel</div>
@@ -177,14 +228,12 @@ export default function QuotationView() {
                   <div className="flex items-center gap-2"><span className="text-[#E11D48] text-xs font-bold">✓</span> No breakfast</div>
                 </div>
 
-                {/* WHY WE PICKED IT */}
                 <div className="bg-[#F8FAFC] rounded-xl p-4 border border-[#E2E8F0]">
                   <p className="text-xs font-bold uppercase tracking-wider text-[#64748B] mb-1">Why we picked it</p>
                   <p className="text-sm text-[#0F172A]">{badge.text}</p>
                   <p className="text-xs text-[#64748B] mt-1">Best for: {badge.bestFor}</p>
                 </div>
 
-                {/* VIEW FACILITIES TOGGLE */}
                 <div className="mb-1">
                   <button 
                     onClick={() => setOpenFacilitiesId(isOpen ? null : q.id)}
@@ -204,9 +253,9 @@ export default function QuotationView() {
                   )}
                 </div>
 
-                {/* SELECT BUTTON */}
+                {/* 🟢 SELECT BUTTON TRIGGERS THE MODAL */}
                 <button 
-                  onClick={() => chooseHotel(q.id)}
+                  onClick={() => openBookingModal(q.id)}
                   className="w-full bg-[#E11D48] text-white py-3 rounded-xl font-bold hover:bg-[#BE123C] transition shadow-md hover:shadow-lg mt-1"
                 >
                   Select This Option
@@ -224,6 +273,76 @@ export default function QuotationView() {
           <p className="mt-4 text-[#E11D48] font-medium hover:underline cursor-pointer">Need help deciding? Chat with us</p>
         </div>
       </div>
+
+      {/* 🟢 CUSTOMER DETAILS MODAL */}
+      {selectedQuotationId && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+          <div className="bg-white max-w-md w-full rounded-2xl p-6 shadow-2xl relative">
+            
+            <button 
+              onClick={closeBookingModal}
+              className="absolute top-4 right-4 text-[#475569] hover:text-[#0F172A] transition"
+            >
+              <X size={24} />
+            </button>
+
+            <h2 className="text-2xl font-bold font-serif text-[#0F172A] mb-1">Confirm Your Booking</h2>
+            <p className="text-sm text-[#64748B] mb-4">Please enter your details to finalize your room selection.</p>
+
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-[#64748B] mb-1">First Name</label>
+                  <input 
+                    type="text" 
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    className="w-full p-3 border border-[#E2E8F0] rounded-xl focus:outline-none focus:border-[#E11D48] transition"
+                    placeholder="John"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-[#64748B] mb-1">Last Name</label>
+                  <input 
+                    type="text" 
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    className="w-full p-3 border border-[#E2E8F0] rounded-xl focus:outline-none focus:border-[#E11D48] transition"
+                    placeholder="Doe"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-[#64748B] mb-1">Email Address</label>
+                <input 
+                  type="email" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full p-3 border border-[#E2E8F0] rounded-xl focus:outline-none focus:border-[#E11D48] transition"
+                  placeholder="john.doe@email.com"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-[#64748B] mb-1">Phone Number</label>
+                <input 
+                  type="tel" 
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="w-full p-3 border border-[#E2E8F0] rounded-xl focus:outline-none focus:border-[#E11D48] transition"
+                  placeholder="+63 912 345 6789"
+                />
+              </div>
+
+              <button 
+                onClick={confirmBooking}
+                className="w-full bg-[#E11D48] text-white py-3 rounded-xl font-bold hover:bg-[#BE123C] transition mt-2 shadow-md"
+              >
+                Confirm Booking
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
