@@ -38,7 +38,27 @@ export default function QuotationView() {
 
     const { data: qData, error } = await supabase
       .from('quotations')
-      .select(`
+            .select(`
+        id,
+        total_price,
+        is_customer_chosen,
+        inquiry_id,
+        created_at,
+        facilities,
+        custom_room_only,
+        custom_pay_at_hotel,
+        custom_non_refundable,
+        custom_no_breakfast,
+        custom_description,  -- 🟢 Added this line
+        hotels (
+          id,
+          name,
+          address,
+          images,
+          facilities,
+          room_type
+        )
+      `)
         id,
         total_price,
         is_customer_chosen,
@@ -192,7 +212,9 @@ export default function QuotationView() {
                 {/* WHY WE PICKED IT */}
                 <div className="bg-[#F8FAFC] rounded-xl p-4 border border-[#E2E8F0]">
                   <p className="text-xs font-bold uppercase tracking-wider text-[#64748B] mb-1">Why we picked it</p>
-                  <p className="text-sm text-[#0F172A]">{badge.text}</p>
+                  <p className="text-sm text-[#0F172A]">
+                    {q.custom_description && q.custom_description.trim() !== '' ? q.custom_description : badge.text}
+                  </p>
                   <p className="text-xs text-[#64748B] mt-1">Best for: {badge.bestFor}</p>
                 </div>
 

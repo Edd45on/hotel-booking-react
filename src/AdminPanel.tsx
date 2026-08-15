@@ -79,7 +79,7 @@ export default function AdminPanel() {
     setCurrentStep('draft');
   };
 
-  const generateQuotation = async () => {
+   const generateQuotation = async () => {
     if (!selectedInquiry) return;
 
     setLoading(true);
@@ -95,6 +95,8 @@ export default function AdminPanel() {
         custom_pay_at_hotel: draft.customPayAtHotel,
         custom_non_refundable: draft.customNonRefundable,
         custom_no_breakfast: draft.customNoBreakfast,
+        // 🟢 FIX: Added missing customDescription field
+        custom_description: draft.customDescription,
       }));
 
       const { error } = await supabase.from('quotations').insert(inserts);
