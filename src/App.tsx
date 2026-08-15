@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { supabase } from './utils/supabase';
 import {
   Search,
   CreditCard,
@@ -15,6 +16,8 @@ import {
 import HowItWorks from './HowItWorks';
 import TrustSection from './TrustSection';
 import FAQ from './FAQ';
+import DatePickerInput from './components/DatePickerInput'; // 🟢 Import the new component
+import { differenceInDays } from 'date-fns'; // 🟢 Import helper to calculate nights
 
 // ------------------ DATA CONFIGURATION ------------------
 const destinations = ["Batangas", "Cebu", "Clark", "Davao", "Metro Manila", "Tagaytay", "Other"];
@@ -43,6 +46,9 @@ export default function App() {
   const [showOtherInput, setShowOtherInput] = useState(false);
   const [selectedPurpose, setSelectedPurpose] = useState<string | null>(null);
   const [selectedPriority, setSelectedPriority] = useState<string | null>(null);
+  const [checkInDate, setCheckInDate] = useState<Date | null>(null);
+  const [checkOutDate, setCheckOutDate] = useState<Date | null>(null);
+  const [dateError, setDateError] = useState<string | null>(null);
   
   const formRef = useRef<HTMLFormElement>(null);
   const otherInputRef = useRef<HTMLInputElement>(null);
@@ -67,9 +73,20 @@ export default function App() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // 🟢 REPLACED ALERT WITH STATE UPDATE
+    if (!checkInDate || !checkOutDate) {
+      setDateError('Please select both a Check-in and Check-out date.');
+      return; // Stops the form from submitting
+    }
+
+    // Clear the error if dates are valid
+    setDateError(null);
     setLoading(true);
+    
+    // ... rest of your code ...
 
     const formData = new FormData(e.currentTarget);
     let finalDestination = formData.get('destination') as string;
@@ -83,10 +100,10 @@ export default function App() {
       }
     }
 
-    const data = {
+      const data = {
       destination: finalDestination,
-      checkIn: formData.get('checkin'),
-      checkOut: formData.get('checkout'),
+      checkIn: checkInDate.toISOString().split('T')[0], // ✅ Converts Date object to YYYY-MM-DD
+      checkOut: checkOutDate.toISOString().split('T')[0], // ✅ Converts Date object to YYYY-MM-DD
       adults: formData.get('adults'),
       children: formData.get('children'),
       rooms: formData.get('rooms'),
@@ -97,24 +114,35 @@ export default function App() {
     };
 
     try {
-      const response = await fetch('https://reddoorz-booking.pages.dev/api/submit-booking', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
+      // 🟢 SEND DATA DIRECTLY TO SUPABASE
+      const { error } = await supabase
+        .from('inquiries')
+        .insert({
+          destination: data.destination,
+          check_in: data.checkIn,
+          check_out: data.checkOut,
+          adults: parseInt(data.adults),
+          children: parseInt(data.children),
+          rooms: parseInt(data.rooms),
+          purpose: data.purpose,
+          priority: data.priority,
+          budget: data.budget,
+          special_request: data.specialRequest,
+          status: 'New'
+        });
 
-      if (response.ok) {
-        alert(`✅ Thank you! Your request for ${data.destination} is saved. We will contact you with suitable hotel options shortly.`);
+      if (error) {
+        console.error('Supabase Error:', error);
+        alert('❌ Something went wrong: ' + error.message);
+      } else {
+        alert(`✅ Thank you! Your request for ${data.destination} is saved. We will contact you shortly.`);
         formRef.current?.reset();
         setSelectedPurpose(null);
         setSelectedPriority(null);
-        setShowOtherInput(false);
-      } else {
-        alert('❌ Server error. Please try again later.');
       }
     } catch (error) {
-      console.error('Error submitting form:', error);
-      alert('❌ Network error. Please check your connection and try again.');
+      console.error('Unexpected error:', error);
+      alert('❌ Network error. Please try again later.');
     } finally {
       setLoading(false);
     }
@@ -198,6 +226,7 @@ export default function App() {
       </section>
 
       {/* 🟢 MOBILE-FRIENDLY SEARCH FORM */}
+            {/* FORM */}
       <section id="search" className="py-12 md:py-20 bg-[#F8FAFC] px-4">
         <div className="container">
           <div className="search-container">
@@ -208,36 +237,76 @@ export default function App() {
 
             <form ref={formRef} onSubmit={handleSubmit} className="search-form">
               
+              {/* 1. WHERE ARE YOU GOING? */}
               <div className="form-group">
                 <label htmlFor="destination">Where are you going?</label>
-                <select id="destination" name="destination" className="form-select" required onChange={handleDestinationChange}>
+                <select 
+                  id="destination" 
+                  name="destination" 
+                  className="form-select" 
+                  required
+                  onChange={handleDestinationChange}
+                >
                   <option value="" disabled selected>Select a destination</option>
                   {destinations.map((dest) => (
                     <option key={dest} value={dest}>{dest}</option>
                   ))}
                 </select>
+
                 {showOtherInput && (
                   <div className="other-wrapper" style={{ marginTop: '0.75rem' }}>
                     <label htmlFor="other-destination" className="other-label">Please specify your destination:</label>
-                    <input ref={otherInputRef} type="text" id="other-destination" name="other-destination" className="form-input" placeholder="Type your destination here..." required />
+                    <input
+                      ref={otherInputRef}
+                      type="text"
+                      id="other-destination"
+                      name="other-destination"
+                      className="form-input"
+                      placeholder="Type your destination here..."
+                      required
+                    />
                   </div>
                 )}
               </div>
 
-              <div className="form-group date-group">
+              {/* 2. WHEN? */}
+                            <div className="form-group date-group">
                 <label>When?</label>
                 <div className="date-inputs">
-                  <div className="date-wrapper">
-                    <span className="date-label">Check-in</span>
-                    <input type="date" id="checkin" name="checkin" className="form-input" required />
-                  </div>
-                  <div className="date-wrapper">
-                    <span className="date-label">Check-out</span>
-                    <input type="date" id="checkout" name="checkout" className="form-input" required />
-                  </div>
+                  <DatePickerInput
+                    label="Check-in"
+                    selected={checkInDate}
+                    onChange={(date) => {
+                      setCheckInDate(date);
+                      if (checkOutDate && date && checkOutDate <= date) {
+                        setCheckOutDate(null);
+                      }
+                      setDateError(null); // Clear error when user picks a date
+                    }}
+                    minDate={new Date()}
+                    placeholder="Pick check-in date"
+                  />
+                  <DatePickerInput
+                    label="Check-out"
+                    selected={checkOutDate}
+                    onChange={(date) => {
+                      setCheckOutDate(date);
+                      setDateError(null); // Clear error when user picks a date
+                    }}
+                    minDate={checkInDate || new Date()}
+                    placeholder="Pick check-out date"
+                  />
                 </div>
+
+                {/* 🟢 RENDER THE ERROR MESSAGE HERE */}
+                {dateError && (
+                  <p className="mt-2 text-sm font-medium text-[#E11D48] animate-in fade-in slide-in-from-top-2 duration-200">
+                    {dateError}
+                  </p>
+                )}
               </div>
 
+              {/* 3. WHO'S TRAVELING? */}
               <div className="form-group">
                 <label>Who's traveling?</label>
                 <div className="guest-grid">
@@ -256,11 +325,17 @@ export default function App() {
                 </div>
               </div>
 
+              {/* 4. WHAT'S THE PURPOSE OF YOUR STAY? */}
               <div className="form-group">
                 <label>What's the purpose of your stay?</label>
                 <div className="button-group">
                   {purposes.map((purpose) => (
-                    <button key={purpose.label} type="button" className={`option-btn purpose-btn ${selectedPurpose === purpose.label ? 'active' : ''}`} onClick={() => setSelectedPurpose(purpose.label)}>
+                    <button
+                      key={purpose.label}
+                      type="button"
+                      className={`option-btn purpose-btn ${selectedPurpose === purpose.label ? 'active' : ''}`}
+                      onClick={() => setSelectedPurpose(purpose.label)}
+                    >
                       <purpose.icon className="purpose-icon" size={16} strokeWidth={2} />
                       <span>{purpose.label}</span>
                     </button>
@@ -268,17 +343,24 @@ export default function App() {
                 </div>
               </div>
 
+              {/* 5. WHAT'S IMPORTANT? */}
               <div className="form-group">
                 <label>What's important?</label>
                 <div className="button-group">
                   {priorities.map((priority) => (
-                    <button key={priority} type="button" className={`option-btn ${selectedPriority === priority ? 'active' : ''}`} onClick={() => setSelectedPriority(priority)}>
+                    <button
+                      key={priority}
+                      type="button"
+                      className={`option-btn ${selectedPriority === priority ? 'active' : ''}`}
+                      onClick={() => setSelectedPriority(priority)}
+                    >
                       {priority}
                     </button>
                   ))}
                 </div>
               </div>
 
+              {/* 6. BUDGET? */}
               <div className="form-group">
                 <label htmlFor="budget">Budget?</label>
                 <select id="budget" name="budget" className="form-select">
@@ -289,16 +371,25 @@ export default function App() {
                 </select>
               </div>
 
+              {/* 7. SPECIAL REQUEST */}
               <div className="form-group">
                 <label htmlFor="special-request">Special request <span className="optional">(Optional)</span></label>
-                <textarea id="special-request" name="special-request" className="form-textarea" rows={3} placeholder="Any specific hotel, location, or amenity you're looking for?"></textarea>
+                <textarea
+                  id="special-request"
+                  name="special-request"
+                  className="form-textarea"
+                  rows={3}
+                  placeholder="Any specific hotel, location, or amenity you're looking for?"
+                ></textarea>
               </div>
 
+              {/* PAYMENT ASSURANCE BADGE */}
               <div className="payment-badge">
                 <CreditCard className="payment-icon" size={18} />
                 <span>We book your room – You pay directly at the hotel</span>
               </div>
 
+              {/* SUBMIT */}
               <button type="submit" className="btn-primary" disabled={loading}>
                 {loading ? '⏳ SENDING...' : <><Search className="btn-icon" size={20} /> FIND MY HOTEL</>}
               </button>
@@ -389,6 +480,16 @@ export default function App() {
         .btn-primary:active { transform: translateY(0); }
         .btn-icon { display: inline-block; }
       `}</style>
+	        {/* 🟢 FLOATING ADMIN BUTTON (Delete this when you build real auth) */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <button
+          onClick={() => window.location.href = '/admin'}
+          className="bg-[#0F172A] text-white p-4 rounded-full shadow-2xl hover:scale-105 transition"
+        >
+          🔐 Admin
+        </button>
+      </div>
+	  
     </main>
   );
 }

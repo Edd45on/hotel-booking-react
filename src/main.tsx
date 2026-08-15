@@ -1,10 +1,32 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App'
+import AdminPanel from './AdminPanel'
+import QuotationView from './QuotationView'
 import './index.css'
-import App from './App.tsx'
+import { Toaster } from 'react-hot-toast' // 🟢 Import Toaster
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+const path = window.location.pathname;
+
+if (path.startsWith('/admin')) {
+  ReactDOM.createRoot(document.getElementById('root')!).render(
+    <React.StrictMode>
+      <Toaster position="top-center" /> {/* 🟢 Add this */}
+      <AdminPanel />
+    </React.StrictMode>,
+  )
+} else if (path.startsWith('/quotation')) {
+  ReactDOM.createRoot(document.getElementById('root')!).render(
+    <React.StrictMode>
+      <Toaster position="top-center" /> {/* 🟢 Add this */}
+      <QuotationView />
+    </React.StrictMode>,
+  )
+} else {
+  ReactDOM.createRoot(document.getElementById('root')!).render(
+    <React.StrictMode>
+      <Toaster position="top-center" /> {/* 🟢 Add this */}
+      <App />
+    </React.StrictMode>,
+  )
+}

@@ -1,8 +1,0 @@
-name = "reddoorz-booking"
-pages_build_output_dir = "dist"
-compatibility_date = "2024-10-01"
-
-[[d1_databases]]
-binding = "hotel_booking_db"
-database_name = "hotel-booking-db"
-database_id = "7aa21e8d-30fe-49af-a889-ca6e370efa0f"
