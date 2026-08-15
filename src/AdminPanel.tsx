@@ -10,7 +10,6 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(false);
   const [detailsInquiry, setDetailsInquiry] = useState<any>(null);
   
-  // 🟢 EDITOR STATES
   const [currentStep, setCurrentStep] = useState<'selection' | 'draft'>('selection');
   const [draftQuotes, setDraftQuotes] = useState<any[]>([]);
   const [validUntil, setValidUntil] = useState<string>('');
@@ -54,7 +53,6 @@ export default function AdminPanel() {
     });
   };
 
-  // 🟢 GO TO DRAFT EDITOR
   const proceedToDraft = () => {
     if (selectedHotelIds.length !== 3) {
       alert('Please select exactly 3 hotels.');
@@ -66,12 +64,10 @@ export default function AdminPanel() {
       hotel: hotel,
       customTitle: hotel?.name || '',
       customDescription: index === 1 ? 'Best balance of price and location.' : index === 0 ? 'The most affordable choice.' : 'Top-tier comfort and amenities.',
-      customImage: hotel?.images ? hotel.images.split(',')[0].trim() : '',
       customBestFor: index === 1 ? 'Families / value travelers' : index === 0 ? 'Budget-conscious travelers' : 'Luxury & business travelers',
       customFacilities: hotel?.facilities || 'No Free Toiletries, AC, No Smoking, Free Wifi, Car Parking',
     })));
     
-    // Set default valid until (7 days from now)
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + 7);
     setValidUntil(futureDate.toISOString().split('T')[0]);
@@ -79,7 +75,6 @@ export default function AdminPanel() {
     setCurrentStep('draft');
   };
 
-  // 🟢 SAVE THE FINAL QUOTATION
   const generateQuotation = async () => {
     if (!selectedInquiry) return;
 
@@ -208,7 +203,7 @@ export default function AdminPanel() {
         </div>
       </div>
 
-      {/* 🟢 DRAFT EDITOR MODAL */}
+      {/* DRAFT EDITOR MODAL */}
       {selectedInquiry && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-white max-w-4xl w-full rounded-3xl shadow-2xl p-6 relative">
@@ -265,7 +260,6 @@ export default function AdminPanel() {
             {currentStep === 'draft' && (
               <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2">
                 
-                {/* 🟢 GLOBAL SETTINGS (Valid Until) */}
                 <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4">
                   <label className="block text-xs font-semibold text-[#64748B] mb-1">Quotation Valid Until</label>
                   <input 
@@ -276,7 +270,6 @@ export default function AdminPanel() {
                   />
                 </div>
 
-                {/* PER-HOTEL EDITORS */}
                 {draftQuotes.map((draft, index) => (
                   <div key={index} className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4 space-y-3">
                     <div className="flex items-center justify-between">
@@ -286,20 +279,6 @@ export default function AdminPanel() {
                       <span className="text-xs bg-white border border-[#E2E8F0] rounded-full px-3 py-1 text-[#475569]">
                         ₱{draft.hotel.price_per_night}/night
                       </span>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-xs font-semibold text-[#64748B] mb-1">Main Image URL</label>
-                      <input 
-                        type="text" 
-                        value={draft.customImage}
-                        onChange={(e) => {
-                          const newDraft = [...draftQuotes];
-                          newDraft[index].customImage = e.target.value;
-                          setDraftQuotes(newDraft);
-                        }}
-                        className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
-                      />
                     </div>
 
                     <div>
@@ -344,7 +323,6 @@ export default function AdminPanel() {
                       />
                     </div>
 
-                    {/* 🟢 FACILITIES EDITOR */}
                     <div>
                       <label className="block text-xs font-semibold text-[#64748B] mb-1">Facilities (Comma separated)</label>
                       <textarea 
