@@ -66,8 +66,6 @@ export default function AdminPanel() {
       customDescription: index === 1 ? 'Best balance of price and location.' : index === 0 ? 'The most affordable choice.' : 'Top-tier comfort and amenities.',
       customBestFor: index === 1 ? 'Families / value travelers' : index === 0 ? 'Budget-conscious travelers' : 'Luxury & business travelers',
       customFacilities: hotel?.facilities || 'No Free Toiletries, AC, No Smoking, Free Wifi, Car Parking',
-      
-      // 🟢 FIX: Explicitly initialize these so they always have a value
       customRoomOnly: 'Room only',
       customPayAtHotel: 'Pay at hotel',
       customNonRefundable: 'Non-refundable',
@@ -127,7 +125,7 @@ export default function AdminPanel() {
     return `${window.location.origin}/quotation?id=${id}`;
   };
 
-   return (
+  return (
     <div className="min-h-screen bg-[#F8FAFC] p-8">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
@@ -137,7 +135,7 @@ export default function AdminPanel() {
           </button>
         </div>
 
-        {/* LIST OF INQUIRIES */}
+        {/* 1. INQUIRY LIST */}
         <div className="grid grid-cols-1 gap-4">
           {inquiries.map((inq) => {
             const chosenQuotation = inq.quotations?.find((q: any) => q.is_customer_chosen === true);
@@ -215,7 +213,7 @@ export default function AdminPanel() {
       </div>
 
       {/* ========================================== */}
-      {/* 1. DRAFT EDITOR MODAL */}
+      {/* 2. DRAFT EDITOR MODAL */}
       {/* ========================================== */}
       {selectedInquiry && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
@@ -448,7 +446,7 @@ export default function AdminPanel() {
       )}
 
       {/* ========================================== */}
-      {/* 2. CLIENT DETAILS MODAL (SEPARATED) */}
+      {/* 3. CLIENT DETAILS MODAL */}
       {/* ========================================== */}
       {detailsInquiry && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -550,3 +548,4 @@ export default function AdminPanel() {
       )}
     </div>
   );
+}
