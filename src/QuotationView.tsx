@@ -106,8 +106,8 @@ export default function QuotationView() {
           <h1 className="text-4xl font-bold font-serif text-[#0F172A] tracking-tight">YOUR HOTEL QUOTATION</h1>
           <p className="text-lg text-[#0F172A] font-medium mt-2">{inquiry.destination}</p>
           <p className="text-md text-[#64748B] mt-1">
-            {formatDateRange(inquiry.check_in, inquiry.check_out)} · {inquiry.adults} Adults · {inquiry.rooms} Room{inquiry.rooms > 1 && 's'}
-          </p>
+  {formatDateRange(inquiry.check_in, inquiry.check_out)} · {inquiry.adults} Adults
+</p>
           <p className="text-sm text-[#64748B] mt-1">{quotations.length} suitable options found</p>
           <p className="text-xs font-mono text-[#94a3b8] mt-4 tracking-widest">{referenceId}</p>
         </div>
