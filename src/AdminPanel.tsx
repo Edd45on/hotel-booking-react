@@ -127,7 +127,7 @@ export default function AdminPanel() {
     return `${window.location.origin}/quotation?id=${id}`;
   };
 
-  return (
+   return (
     <div className="min-h-screen bg-[#F8FAFC] p-8">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
@@ -137,6 +137,7 @@ export default function AdminPanel() {
           </button>
         </div>
 
+        {/* LIST OF INQUIRIES */}
         <div className="grid grid-cols-1 gap-4">
           {inquiries.map((inq) => {
             const chosenQuotation = inq.quotations?.find((q: any) => q.is_customer_chosen === true);
@@ -213,7 +214,9 @@ export default function AdminPanel() {
         </div>
       </div>
 
-      {/* DRAFT EDITOR MODAL */}
+      {/* ========================================== */}
+      {/* 1. DRAFT EDITOR MODAL */}
+      {/* ========================================== */}
       {selectedInquiry && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-white max-w-4xl w-full rounded-3xl shadow-2xl p-6 relative">
@@ -444,7 +447,9 @@ export default function AdminPanel() {
         </div>
       )}
 
-      {/* 🟢 CLIENT DETAILS MODAL (RESTORED) */}
+      {/* ========================================== */}
+      {/* 2. CLIENT DETAILS MODAL (SEPARATED) */}
+      {/* ========================================== */}
       {detailsInquiry && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white max-w-lg w-full rounded-2xl p-6 shadow-2xl relative">
@@ -545,4 +550,3 @@ export default function AdminPanel() {
       )}
     </div>
   );
-}
