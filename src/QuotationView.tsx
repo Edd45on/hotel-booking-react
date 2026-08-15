@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from './utils/supabase';
-import { ChevronDown, ChevronUp,} from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function QuotationView() {
@@ -62,7 +62,7 @@ export default function QuotationView() {
       new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     ) : [];
 
-    // 2. Remove duplicate hotels (keep the first occurrence of each unique hotel)
+    // 2. Remove duplicate hotels (keep the first occurrence)
     const seenNames = new Set();
     const uniqueData = sortedData.filter((item: any) => {
       const name = item.hotels?.name || '';
@@ -71,7 +71,6 @@ export default function QuotationView() {
       return true;
     });
 
-    // 3. Take only the first 3 unique options
     setQuotations(uniqueData.slice(0, 3));
   };
 
@@ -100,7 +99,7 @@ export default function QuotationView() {
     <main className="min-h-screen bg-[#F8FAFC] py-12 px-4 md:py-20">
       <div className="max-w-4xl mx-auto">
         
-        {/* 🟢 BRANDED HEADER */}
+        {/* BRANDED HEADER */}
         <div className="text-center mb-12 border-b border-[#E2E8F0] pb-8">
           <h1 className="text-4xl font-bold font-serif text-[#0F172A] tracking-tight">YOUR HOTEL QUOTATION</h1>
           <p className="text-lg text-[#0F172A] font-medium mt-2">{inquiry.destination}</p>
@@ -108,12 +107,10 @@ export default function QuotationView() {
             {formatDateRange(inquiry.check_in, inquiry.check_out)} · {inquiry.adults} Adults · {inquiry.rooms} Room{inquiry.rooms > 1 && 's'}
           </p>
           <p className="text-sm text-[#64748B] mt-1">{quotations.length} suitable options found</p>
-          <p className="text-xs font-mono text-[#94a3b8] mt-4 tracking-widest">
-  {referenceId}
-</p>
+          <p className="text-xs font-mono text-[#94a3b8] mt-4 tracking-widest">{referenceId}</p>
         </div>
 
-        {/* 🟢 QUOTATION CARDS */}
+        {/* QUOTATION CARDS */}
         <div className="grid grid-cols-1 gap-10">
           {quotations.map((q: any, index: number) => {
             const badge = getBadge(index, quotations.length);
@@ -124,10 +121,10 @@ export default function QuotationView() {
             const totalPrice = q.total_price * nights;
 
             return (
-              <div key={q.id} className="bg-white rounded-3xl shadow-lg border border-[#E2E8F0] overflow-hidden flex flex-col md:flex-row p-6 md:p-8 gap-6 relative">
+              <div key={q.id} className="bg-white rounded-3xl shadow-lg border border-[#E2E8F0] overflow-hidden flex flex-col md:flex-row p-6 md:p-8 gap-6 relative pt-8">
                 
-                {/* 🟢 BADGE (Top Left) */}
-                <div className={`absolute -top-3 left-6 ${badge.color} text-white text-xs font-bold uppercase tracking-wider px-4 py-1 rounded-full shadow-sm z-10`}>
+                {/* 🟢 BADGE (NOW INSIDE THE CARD, WILL NOT BE CUT OFF) */}
+                <div className={`absolute top-4 left-4 ${badge.color} text-white text-xs font-bold uppercase tracking-wider px-4 py-1 rounded-full shadow-sm z-10 w-fit`}>
                   {badge.label}
                 </div>
 
@@ -159,7 +156,7 @@ export default function QuotationView() {
                 </div>
 
                 {/* RIGHT COLUMN: INFO */}
-                <div className="w-full md:w-2/3 flex flex-col justify-between">
+                <div className="w-full md:w-2/3 flex flex-col justify-between mt-2">
                   <div>
                     <div className="flex justify-between items-start">
                       <h2 className="text-2xl font-bold font-serif text-[#0F172A]">{q.hotels?.name}</h2>
@@ -178,12 +175,13 @@ export default function QuotationView() {
                       <div className="flex items-center gap-2"><span className="text-[#E11D48] text-xs">✓</span> No breakfast</div>
                     </div>
 
-                    {/* 🟢 WHY WE PICKED IT */}
-                    <div className={`absolute -top-3 left-6 ${badge.color} text-white text-xs font-bold uppercase tracking-wider px-4 py-1 rounded-full shadow-sm z-10 w-fit`}>
-					{badge.label}
-					</div>
+                    {/* WHY WE PICKED IT */}
+                    <div className="bg-[#F8FAFC] rounded-xl p-4 mb-4 border border-[#E2E8F0]">
+                      <p className="text-xs font-bold uppercase tracking-wider text-[#64748B] mb-1">Why we picked it</p>
+                      <p className="text-sm text-[#0F172A]">{badge.text}</p>
+                    </div>
 
-                    {/* 🟢 FACILITIES */}
+                    {/* FACILITIES */}
                     <div className="mb-4">
                       <button 
                         onClick={() => setOpenFacilitiesId(isOpen ? null : q.id)}
@@ -204,7 +202,7 @@ export default function QuotationView() {
                     </div>
                   </div>
 
-                  {/* 🟢 SELECT BUTTON */}
+                  {/* SELECT BUTTON */}
                   <button 
                     onClick={() => chooseHotel(q.id)}
                     className="w-full bg-[#E11D48] text-white py-3 rounded-xl font-bold hover:bg-[#BE123C] transition shadow-md hover:shadow-lg mt-2"
@@ -217,7 +215,7 @@ export default function QuotationView() {
           })}
         </div>
 
-        {/* 🟢 FOOTER / IMPORTANT INFO */}
+        {/* FOOTER / IMPORTANT INFO */}
         <div className="mt-16 pt-8 border-t border-[#E2E8F0] text-center text-sm text-[#64748B] max-w-2xl mx-auto">
           <p className="font-semibold uppercase tracking-wider text-xs mb-2">Important</p>
           <p>Rates and availability are subject to confirmation.</p>
