@@ -17,7 +17,7 @@ import HowItWorks from './HowItWorks';
 import TrustSection from './TrustSection';
 import FAQ from './FAQ';
 import DatePickerInput from './components/DatePickerInput'; // 🟢 Import the new component
-import { differenceInDays } from 'date-fns'; // 🟢 Import helper to calculate nights
+
 
 // ------------------ DATA CONFIGURATION ------------------
 const destinations = ["Batangas", "Cebu", "Clark", "Davao", "Metro Manila", "Tagaytay", "Other"];
@@ -100,17 +100,17 @@ export default function App() {
       }
     }
 
-      const data = {
+    const data = {
       destination: finalDestination,
-      checkIn: checkInDate.toISOString().split('T')[0], // ✅ Converts Date object to YYYY-MM-DD
-      checkOut: checkOutDate.toISOString().split('T')[0], // ✅ Converts Date object to YYYY-MM-DD
-      adults: formData.get('adults'),
-      children: formData.get('children'),
-      rooms: formData.get('rooms'),
+      checkIn: checkInDate.toISOString().split('T')[0],
+      checkOut: checkOutDate.toISOString().split('T')[0],
+      adults: formData.get('adults')?.toString() || '2',
+      children: formData.get('children')?.toString() || '0',
+      rooms: formData.get('rooms')?.toString() || '1',
       purpose: selectedPurpose || 'Not specified',
       priority: selectedPriority || 'Not specified',
-      budget: formData.get('budget'),
-      specialRequest: formData.get('special-request') || ''
+      budget: formData.get('budget')?.toString() || '',
+      specialRequest: formData.get('special-request')?.toString() || ''
     };
 
     try {
