@@ -45,22 +45,24 @@ export default function QuotationView() {
 
     const { data: qData, error } = await supabase
       .from('quotations')
-     .select(`
-        id,
-        total_price,
-        is_customer_chosen,
-        inquiry_id,
-        created_at,
-        facilities,
-        hotels (
-          id,
-          name,
-          address,
-          images,
-          facilities,
-          room_type
-        )
-      `)
+                <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-[#475569]">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[#E11D48] text-xs font-bold">✓</span> 
+                    {q.custom_room_only || 'Room only'}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[#E11D48] text-xs font-bold">✓</span> 
+                    {q.custom_pay_at_hotel || 'Pay at hotel'}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[#E11D48] text-xs font-bold">✓</span> 
+                    {q.custom_non_refundable || 'Non-refundable'}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[#E11D48] text-xs font-bold">✓</span> 
+                    {q.custom_no_breakfast || 'No breakfast'}
+                  </div>
+                </div>
       .eq('inquiry_id', inquiryId);
     
     if (error) console.error('Supabase Error:', error);

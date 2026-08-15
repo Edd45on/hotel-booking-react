@@ -66,6 +66,11 @@ export default function AdminPanel() {
       customDescription: index === 1 ? 'Best balance of price and location.' : index === 0 ? 'The most affordable choice.' : 'Top-tier comfort and amenities.',
       customBestFor: index === 1 ? 'Families / value travelers' : index === 0 ? 'Budget-conscious travelers' : 'Luxury & business travelers',
       customFacilities: hotel?.facilities || 'No Free Toiletries, AC, No Smoking, Free Wifi, Car Parking',
+      // 🟢 NEW CUSTOM FIELDS FOR CHECKMARKS
+      customRoomOnly: 'Room only',
+      customPayAtHotel: 'Pay at hotel',
+      customNonRefundable: 'Non-refundable',
+      customNoBreakfast: 'No breakfast',
     })));
     
     const futureDate = new Date();
@@ -87,6 +92,11 @@ export default function AdminPanel() {
         total_price: draft.hotel.price_per_night || 1500,
         is_customer_chosen: false,
         facilities: draft.customFacilities,
+        // 🟢 SAVING THE NEW FIELDS (We will add these columns to Supabase in the next step)
+        custom_room_only: draft.customRoomOnly,
+        custom_pay_at_hotel: draft.customPayAtHotel,
+        custom_non_refundable: draft.customNonRefundable,
+        custom_no_breakfast: draft.customNoBreakfast,
       }));
 
       const { error } = await supabase.from('quotations').insert(inserts);
@@ -337,6 +347,63 @@ export default function AdminPanel() {
                         placeholder="Free WiFi, AC, Parking, Pool"
                       />
                     </div>
+
+                    {/* 🟢 NEW EDITABLE CHECKMARKS */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-semibold text-[#64748B] mb-1">Line 1 (Room only)</label>
+                        <input 
+                          type="text" 
+                          value={draft.customRoomOnly}
+                          onChange={(e) => {
+                            const newDraft = [...draftQuotes];
+                            newDraft[index].customRoomOnly = e.target.value;
+                            setDraftQuotes(newDraft);
+                          }}
+                          className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-[#64748B] mb-1">Line 2 (Pay at hotel)</label>
+                        <input 
+                          type="text" 
+                          value={draft.customPayAtHotel}
+                          onChange={(e) => {
+                            const newDraft = [...draftQuotes];
+                            newDraft[index].customPayAtHotel = e.target.value;
+                            setDraftQuotes(newDraft);
+                          }}
+                          className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-[#64748B] mb-1">Line 3 (Non-refundable)</label>
+                        <input 
+                          type="text" 
+                          value={draft.customNonRefundable}
+                          onChange={(e) => {
+                            const newDraft = [...draftQuotes];
+                            newDraft[index].customNonRefundable = e.target.value;
+                            setDraftQuotes(newDraft);
+                          }}
+                          className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-[#64748B] mb-1">Line 4 (No breakfast)</label>
+                        <input 
+                          type="text" 
+                          value={draft.customNoBreakfast}
+                          onChange={(e) => {
+                            const newDraft = [...draftQuotes];
+                            newDraft[index].customNoBreakfast = e.target.value;
+                            setDraftQuotes(newDraft);
+                          }}
+                          className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
+                        />
+                      </div>
+                    </div>
+
                   </div>
                 ))}
               </div>
