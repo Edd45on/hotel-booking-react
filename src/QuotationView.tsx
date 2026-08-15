@@ -38,7 +38,7 @@ export default function QuotationView() {
 
     const { data: qData, error } = await supabase
       .from('quotations')
-            .select(`
+      .select(`
         id,
         total_price,
         is_customer_chosen,
@@ -49,26 +49,7 @@ export default function QuotationView() {
         custom_pay_at_hotel,
         custom_non_refundable,
         custom_no_breakfast,
-        custom_description,  -- 🟢 Added this line
-        hotels (
-          id,
-          name,
-          address,
-          images,
-          facilities,
-          room_type
-        )
-      `)
-        id,
-        total_price,
-        is_customer_chosen,
-        inquiry_id,
-        created_at,
-        facilities,
-        custom_room_only,
-        custom_pay_at_hotel,
-        custom_non_refundable,
-        custom_no_breakfast,
+        custom_description,
         hotels (
           id,
           name,
@@ -189,23 +170,23 @@ export default function QuotationView() {
                   </div>
                 </div>
 
-                {/* 🟢 DYNAMIC CHECKMARKS */}
+                {/* DYNAMIC CHECKMARKS */}
                 <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-[#475569]">
                   <div className="flex items-center gap-2">
                     <span className="text-[#E11D48] text-xs font-bold">✓</span> 
-                    {q.custom_room_only || 'Room only'}
+                    <span>{q.custom_room_only && q.custom_room_only.trim() !== '' ? q.custom_room_only : 'Room only'}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-[#E11D48] text-xs font-bold">✓</span> 
-                    {q.custom_pay_at_hotel || 'Pay at hotel'}
+                    <span>{q.custom_pay_at_hotel && q.custom_pay_at_hotel.trim() !== '' ? q.custom_pay_at_hotel : 'Pay at hotel'}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-[#E11D48] text-xs font-bold">✓</span> 
-                    {q.custom_non_refundable || 'Non-refundable'}
+                    <span>{q.custom_non_refundable && q.custom_non_refundable.trim() !== '' ? q.custom_non_refundable : 'Non-refundable'}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-[#E11D48] text-xs font-bold">✓</span> 
-                    {q.custom_no_breakfast || 'No breakfast'}
+                    <span>{q.custom_no_breakfast && q.custom_no_breakfast.trim() !== '' ? q.custom_no_breakfast : 'No breakfast'}</span>
                   </div>
                 </div>
 
