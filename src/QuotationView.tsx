@@ -114,7 +114,17 @@ export default function QuotationView() {
       <div className="max-w-6xl mx-auto">
         <h1 className="text-4xl font-bold text-[#0F172A] text-center mb-2">Your Hotel Quotation</h1>
         <p className="text-center text-[#475569] mb-12">
-          {inquiry.destination} · {inquiry.adults} Adults · {inquiry.rooms} Room(s)
+          {inquiry.destination}
+          {inquiry.check_in && inquiry.check_out && (
+            <span className="block mt-1 text-base text-[#64748B]">
+              {new Date(inquiry.check_in).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} 
+              – 
+              {new Date(inquiry.check_out).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+            </span>
+          )}
+          <span className="block text-sm text-[#94a3b8] mt-1">
+            {inquiry.adults} Adult{inquiry.adults > 1 && 's'} · {inquiry.rooms} Room{inquiry.rooms > 1 && 's'}
+          </span>
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
