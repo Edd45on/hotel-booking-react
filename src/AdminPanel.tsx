@@ -66,11 +66,12 @@ export default function AdminPanel() {
       customDescription: index === 1 ? 'Best balance of price and location.' : index === 0 ? 'The most affordable choice.' : 'Top-tier comfort and amenities.',
       customBestFor: index === 1 ? 'Families / value travelers' : index === 0 ? 'Budget-conscious travelers' : 'Luxury & business travelers',
       customFacilities: hotel?.facilities || 'No Free Toiletries, AC, No Smoking, Free Wifi, Car Parking',
-      // 🟢 NEW CUSTOM FIELDS FOR CHECKMARKS
-      customRoomOnly: 'Room only',
-      customPayAtHotel: 'Pay at hotel',
-      customNonRefundable: 'Non-refundable',
-      customNoBreakfast: 'No breakfast',
+      
+      // 🟢 FIXED: Explicitly passing these 4 strings into the draft state
+      customRoomOnly: hotel?.custom_room_only || 'Room only',
+      customPayAtHotel: hotel?.custom_pay_at_hotel || 'Pay at hotel',
+      customNonRefundable: hotel?.custom_non_refundable || 'Non-refundable',
+      customNoBreakfast: hotel?.custom_no_breakfast || 'No breakfast',
     })));
     
     const futureDate = new Date();
@@ -85,6 +86,7 @@ export default function AdminPanel() {
 
     setLoading(true);
     try {
+      // 🟢 FIXED: Ensure we explicitly map the custom fields into the Supabase insert
       const inserts = draftQuotes.map((draft) => ({
         inquiry_id: selectedInquiry.id,
         hotel_id: draft.hotel.id,
@@ -92,12 +94,13 @@ export default function AdminPanel() {
         total_price: draft.hotel.price_per_night || 1500,
         is_customer_chosen: false,
         facilities: draft.customFacilities,
-        // 🟢 SAVING THE NEW FIELDS (We will add these columns to Supabase in the next step)
         custom_room_only: draft.customRoomOnly,
         custom_pay_at_hotel: draft.customPayAtHotel,
         custom_non_refundable: draft.customNonRefundable,
         custom_no_breakfast: draft.customNoBreakfast,
       }));
+
+      console.log('📤 Sending to Supabase:', inserts); // This helps debug in the Vercel logs
 
       const { error } = await supabase.from('quotations').insert(inserts);
       if (error) throw error;
@@ -118,6 +121,7 @@ export default function AdminPanel() {
       fetchInquiries();
     } catch (err: any) {
       alert('❌ Error: ' + err.message);
+      console.error('🔥 Supabase Insert Error:', err);
     } finally {
       setLoading(false);
     }
@@ -348,7 +352,7 @@ export default function AdminPanel() {
                       />
                     </div>
 
-                    {/* 🟢 NEW EDITABLE CHECKMARKS */}
+                    {/* 🟢 FIXED: Correctly mapped 4 checkmark text fields */}
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <label className="block text-xs font-semibold text-[#64748B] mb-1">Line 1 (Room only)</label>
