@@ -42,7 +42,6 @@ export default function QuotationView() {
     const { data: inqData } = await supabase.from('inquiries').select('*').eq('id', inquiryId).single();
     setInquiry(inqData);
 
-    // 🟢 PERFECTLY FORMATTED SELECT QUERY
     const { data: qData, error } = await supabase
       .from('quotations')
       .select(`
@@ -58,7 +57,8 @@ export default function QuotationView() {
         custom_no_breakfast,
         custom_description,
         hotel_name,
-        image_url
+        image_url,
+        valid_until
       `)
       .eq('inquiry_id', inquiryId);
     
@@ -68,7 +68,7 @@ export default function QuotationView() {
       new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     ) : [];
 
-    setQuotations(sortedData.slice(0, 3)); // We only show 1 quotation now since we generate 1 per click
+    setQuotations(sortedData.slice(0, 3));
   };
 
   const openBookingModal = (quotationId: string) => {
@@ -151,7 +151,7 @@ export default function QuotationView() {
         {/* QUOTATION CARDS */}
         <div className="grid grid-cols-1 gap-10 md:gap-12">
           {quotations.map((q: any) => {
-                        // 🟢 FIX: Split the comma-separated string into an array of URLs
+            // 🟢 FIXED: Properly split the comma-separated string into an array
             const imageArray = q.image_url ? q.image_url.split(',').map((url: string) => url.trim()) : [];
             const currentActiveImage = activeImages[q.id] || (imageArray.length > 0 ? imageArray[0] : 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=600&q=80');
             const isOpen = openFacilitiesId === q.id;
@@ -196,7 +196,7 @@ export default function QuotationView() {
             return (
               <div key={q.id} className="bg-white rounded-3xl shadow-lg border border-[#E2E8F0] overflow-hidden p-6 md:p-8 relative flex flex-col gap-5">
                 
-                {/* IMAGE */}
+                {/* IMAGE & THUMBNAILS */}
                 <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-slate-100 w-full">
                   <img 
                     key={currentActiveImage}
@@ -204,6 +204,23 @@ export default function QuotationView() {
                     alt={q.hotel_name} 
                     className="w-full h-full object-cover" 
                   />
+                  
+                  {/* 🟢 PROPERLY CLOSED THUMBNAIL STRIP */}
+                  {imageArray.length > 1 && (
+                    <div className="absolute bottom-3 left-3 flex gap-2">
+                      {imageArray.slice(0, 5).map((url: string, i: number) => (
+                        <button 
+                          key={i}
+                          onClick={() => setActiveImages(prev => ({ ...prev, [q.id]: url }))}
+                          className={`w-8 h-8 rounded-full overflow-hidden border-2 border-white shadow-sm transition-all hover:scale-110 ${
+                            currentActiveImage === url ? 'ring-2 ring-[#E11D48]' : ''
+                          }`}
+                        >
+                          <img src={url} alt={`Thumbnail ${i+1}`} className="w-full h-full object-cover" />
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* TITLE & PRICE */}
@@ -296,10 +313,10 @@ export default function QuotationView() {
             <p className="font-semibold uppercase tracking-wider text-xs mb-2">IMPORTANT</p>
             <p>Rates and availability are subject to change until booking confirmation.</p>
             {quotations[0]?.valid_until && (
-  <p className="mt-1">
-    Quotation valid until: {new Date(prices[0].valid_until).toLocaleDateString()} · {new Date(prices[0].valid_until).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-  </p>
-)}
+              <p className="mt-1">
+                Quotation valid until: {new Date(quotations[0].valid_until).toLocaleDateString()} · {new Date(quotations[0].valid_until).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </p>
+            )}
           </div>
         </div>
       </div>
