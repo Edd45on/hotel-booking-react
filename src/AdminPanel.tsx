@@ -247,12 +247,14 @@ export default function AdminPanel() {
                   
                   <div className="mt-2 flex flex-wrap items-center gap-2">
                     {chosenQuotation ? (
-<span className="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold border border-green-200">
-  ✅ Booked
-</span>
-<span className="text-xs text-green-700 font-medium ml-1">
-  {chosenQuotation.hotel_name}
-</span>
+                      <div className="flex flex-wrap items-center gap-1">
+                        <span className="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold border border-green-200">
+                          ✅ Booked
+                        </span>
+                        <span className="text-xs text-green-700 font-medium ml-1">
+                          {chosenQuotation.hotel_name}
+                        </span>
+                      </div>
                     ) : hasQuotation ? (
                       <span className="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold border border-blue-200">
                         📄 Quotation Sent
