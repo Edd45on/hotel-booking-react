@@ -220,7 +220,14 @@ export default function QuotationView() {
             };
 
             return (
-              <div key={q.id} className="bg-white rounded-3xl shadow-lg border border-[#E2E8F0] overflow-hidden p-6 md:p-8 relative flex flex-col gap-5">
+              <div 
+                key={q.id} 
+                className={`bg-white rounded-3xl shadow-lg border overflow-hidden p-6 md:p-8 relative flex flex-col gap-5 transition-all duration-300 ${
+                  badge.label === 'BEST VALUE' 
+                    ? 'border-[#E11D48] ring-1 ring-[#E11D48]/20 bg-gradient-to-br from-[#FFF1F2] to-white shadow-[#E11D48]/10' 
+                    : 'border-[#E2E8F0]'
+                }`}
+              >
                 
                 {/* IMAGE & THUMBNAILS */}
                 <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-slate-100 w-full">
