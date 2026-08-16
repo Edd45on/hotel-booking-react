@@ -4,10 +4,13 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "oxlint",
-    "preview": "vite preview"
+  "dev": "next dev",
+  "build": "tsc -p tsconfig.api.json && tsc -b && vite build",
+  "start": "next start",
+  "lint": "next lint",
+  "pages:build": "npx @cloudflare/next-on-pages",
+  "preview": "npm run pages:build && wrangler pages dev"
+}
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.3",
