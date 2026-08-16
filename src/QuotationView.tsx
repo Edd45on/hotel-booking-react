@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from './utils/supabase';
-import { ChevronDown, ChevronUp, Star, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, Star, X, MessageCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function QuotationView() {
@@ -145,71 +145,35 @@ export default function QuotationView() {
   const getBadgeByPrice = (price: number, allPrices: number[]) => {
     const sorted = [...allPrices].sort((a, b) => a - b);
     if (price === sorted[0]) {
-      return { label: 'BUDGET OPTION', color: 'bg-blue-500 text-white', text: 'The most affordable choice.', bestFor: 'Budget-conscious travelers' };
+      return { label: 'BUDGET OPTION', color: 'bg-blue-500 text-white', icon: '💰', text: 'The most affordable choice.', bestFor: 'Budget-conscious travelers' };
     }
     if (price === sorted[sorted.length - 1]) {
-      return { label: 'PREMIUM OPTION', color: 'bg-purple-500 text-white', text: 'Top-tier comfort and amenities.', bestFor: 'Luxury & business travelers' };
+      return { label: 'PREMIUM OPTION', color: 'bg-purple-500 text-white', icon: '★', text: 'Top-tier comfort and amenities.', bestFor: 'Luxury & business travelers' };
     }
-    return { label: 'BEST VALUE', color: 'bg-yellow-400 text-[#0F172A]', text: 'Best balance of price and location.', bestFor: 'Families / value travelers' };
+    return { label: 'BEST VALUE', color: 'bg-yellow-400 text-[#0F172A]', icon: '⭐', text: 'Best balance of price, location and comfort.', bestFor: 'Couples / leisure' };
   };
 
   return (
     <main className="min-h-screen bg-[#F8FAFC] py-12 px-4 md:py-20">
       <div className="max-w-4xl mx-auto">
         
-        {/* HEADER */}
-        <div className="text-center mb-8 border-b border-[#E2E8F0] pb-6">
-          <h1 className="text-3xl md:text-5xl font-serif font-medium text-[#0F172A] tracking-tight mb-2">
-            Your Hotel Quotation
+        {/* 🟢 BRANDED HEADER */}
+        <div className="text-center mb-12 border-b border-[#E2E8F0] pb-10">
+          <h1 className="text-4xl md:text-5xl font-serif font-medium text-[#0F172A] tracking-tight mb-2">
+            YOUR HOTEL QUOTATION
           </h1>
-          <p className="text-lg md:text-xl text-[#0F172A] font-medium mt-2">{inquiry.destination}</p>
-          <p className="text-sm text-[#64748B] mt-1">{quotations.length} suitable options found</p>
+          <p className="text-lg md:text-xl text-[#0F172A] font-semibold mt-2 uppercase tracking-wide">
+            {inquiry.destination}
+          </p>
+          <p className="text-md text-[#64748B] mt-1">
+            {formatDateRange(inquiry.check_in, inquiry.check_out)} · {inquiry.adults} Adults · {inquiry.rooms} Room
+          </p>
+          <p className="text-sm text-[#64748B] mt-1">{quotations.length} options found</p>
           <p className="text-xs font-mono text-[#94a3b8] mt-4 tracking-widest">{referenceId}</p>
         </div>
 
-        {/* 🟢 COMPACT INFO CARDS */}
-        <div className="max-w-xl mx-auto mb-8 space-y-3">
-          
-          {/* Card 1: Dates & Guests */}
-          <div className="bg-white rounded-xl border border-[#E2E8F0] overflow-hidden shadow-sm">
-            <div className="grid grid-cols-2 border-b border-[#E2E8F0]">
-              <div className="p-4 border-r border-[#E2E8F0]">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-[#64748B]">Check In</p>
-                <p className="text-sm font-medium text-[#0F172A] mt-0.5">
-                  {new Date(inquiry.check_in).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-                </p>
-              </div>
-              <div className="p-4">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-[#64748B]">Check Out</p>
-                <p className="text-sm font-medium text-[#0F172A] mt-0.5">
-                  {new Date(inquiry.check_out).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-                </p>
-              </div>
-            </div>
-            <div className="grid grid-cols-2">
-              <div className="p-4 border-r border-[#E2E8F0]">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-[#64748B]">Room(s)</p>
-                <p className="text-sm font-medium text-[#0F172A] mt-0.5">{inquiry.rooms}</p>
-              </div>
-              <div className="p-4">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-[#64748B]">Guests</p>
-                <p className="text-sm font-medium text-[#0F172A] mt-0.5">{inquiry.adults}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Card 2: Room Type */}
-          <div className="bg-white rounded-xl border border-[#E2E8F0] p-4 shadow-sm">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-[#64748B]">Room Type</p>
-            <p className="text-sm font-medium text-[#0F172A] mt-0.5">
-              {quotations.length > 0 ? quotations[0].hotels?.room_type || 'Standard Room' : 'Standard Room'}
-            </p>
-          </div>
-
-        </div>
-
         {/* QUOTATION CARDS */}
-        <div className="grid grid-cols-1 gap-8 md:gap-10">
+        <div className="grid grid-cols-1 gap-10 md:gap-12">
           {quotations.map((q: any) => {
             const allPrices = quotations.map(item => item.total_price);
             const badge = getBadgeByPrice(q.total_price, allPrices);
@@ -225,7 +189,7 @@ export default function QuotationView() {
               
               if (q.is_customer_chosen) {
                 return (
-                  <div className="w-full bg-green-100 border border-green-300 text-green-700 py-3 rounded-xl font-bold text-center mt-1 flex items-center justify-center gap-3">
+                  <div className="w-full bg-green-100 border border-green-300 text-green-700 py-3 rounded-xl font-bold text-center mt-2 flex items-center justify-center gap-3">
                     <span>✅ Booking Confirmed</span>
                     <button 
                       onClick={() => {
@@ -240,7 +204,7 @@ export default function QuotationView() {
                 );
               } else if (isAnyCardChosen) {
                 return (
-                  <div className="w-full bg-[#E2E8F0] text-[#94a3b8] py-3 rounded-xl font-bold text-center mt-1 cursor-not-allowed">
+                  <div className="w-full bg-[#E2E8F0] text-[#94a3b8] py-3 rounded-xl font-bold text-center mt-2 cursor-not-allowed">
                     Option Unavailable
                   </div>
                 );
@@ -248,9 +212,9 @@ export default function QuotationView() {
                 return (
                   <button 
                     onClick={() => openBookingModal(q.id)}
-                    className="w-full bg-[#E11D48] text-white py-3 rounded-xl font-bold hover:bg-[#BE123C] transition shadow-md hover:shadow-lg mt-1"
+                    className="w-full bg-[#E11D48] text-white py-3 rounded-xl font-bold hover:bg-[#BE123C] transition shadow-md hover:shadow-lg mt-2"
                   >
-                    Select This Option
+                    SELECT THIS OPTION
                   </button>
                 );
               }
@@ -259,8 +223,9 @@ export default function QuotationView() {
             return (
               <div key={q.id} className="bg-white rounded-3xl shadow-lg border border-[#E2E8F0] overflow-hidden p-6 md:p-8 relative flex flex-col gap-5">
                 
+                {/* 🟢 BADGE */}
                 <div className={`absolute top-4 left-4 ${badge.color} text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-sm z-10 flex items-center gap-1`}>
-                  <Star size={12} className="fill-current" /> {badge.label}
+                  <span>{badge.icon}</span> {badge.label}
                 </div>
 
                 {/* IMAGES */}
@@ -271,38 +236,43 @@ export default function QuotationView() {
                     alt={q.hotels?.name} 
                     className="w-full h-full object-cover" 
                   />
+                  {imageArray.length > 1 && (
+                    <div className="absolute bottom-3 left-3 flex gap-2">
+                      {imageArray.slice(1, 6).map((url: string, i: number) => (
+                        <button 
+                          key={i}
+                          onClick={() => setActiveImages(prev => ({ ...prev, [q.id]: url }))}
+                          className={`w-8 h-8 rounded-full overflow-hidden border-2 border-white shadow-sm transition-all hover:scale-110 ${
+                            currentActiveImage === url ? 'ring-2 ring-[#E11D48]' : ''
+                          }`}
+                        >
+                          <img src={url} alt={`Thumbnail ${i+1}`} className="w-full h-full object-cover" />
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
-                {imageArray.length > 1 && (
-                  <div className="flex gap-2 overflow-x-auto pb-1 -mt-2">
-                    {imageArray.slice(1, 6).map((url: string, i: number) => (
-                      <button 
-                        key={i}
-                        onClick={() => setActiveImages(prev => ({ ...prev, [q.id]: url }))}
-                        className={`w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all ${
-                          currentActiveImage === url ? 'border-[#E11D48]' : 'border-transparent'
-                        }`}
-                      >
-                        <img src={url} alt={`Thumbnail ${i+1}`} className="w-full h-full object-cover" />
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                <div className="flex flex-col sm:flex-row justify-between items-start gap-2">
+                {/* TITLE & PRICE */}
+                <div className="flex flex-col sm:flex-row justify-between items-start gap-2 mt-1">
                   <div className="flex-1">
-                    <h2 className="text-xl md:text-2xl font-serif font-bold text-[#0F172A] leading-tight">
+                    <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#0F172A] leading-tight">
                       {q.hotels?.name}
                     </h2>
                     <p className="text-sm text-[#64748B] mt-1">{q.hotels?.room_type || 'Standard Room'}</p>
                   </div>
                   <div className="text-left sm:text-right flex-shrink-0">
-                    <div className="text-[#E11D48] font-bold text-xl md:text-2xl font-serif">₱{q.total_price}<span className="text-sm font-normal text-[#64748B]">/night</span></div>
-                    <div className="text-[#64748B] text-sm">₱{totalPrice.toLocaleString()} total <span className="text-[#94a3b8]">· {nights} nights</span></div>
+                    <div className="text-[#E11D48] font-bold text-2xl md:text-3xl font-serif">
+                      ₱{q.total_price} <span className="text-sm font-normal text-[#64748B]">/ night</span>
+                    </div>
+                    <div className="text-[#64748B] text-sm">
+                      ₱{totalPrice.toLocaleString()} total · {nights} nights
+                    </div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-[#475569] mt-2">
+                {/* CHECKMARKS */}
+                <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-[#475569] mt-1">
                   <div className="flex items-center gap-2">
                     <span className="text-[#E11D48] text-xs font-bold">✓</span> 
                     <span className="text-sm">{q.custom_room_only && q.custom_room_only.trim() !== '' ? q.custom_room_only : 'Room only'}</span>
@@ -321,6 +291,7 @@ export default function QuotationView() {
                   </div>
                 </div>
 
+                {/* WHY WE PICKED IT */}
                 <div className="bg-[#F8FAFC] rounded-xl p-4 md:p-5 border border-[#E2E8F0] mt-1">
                   <p className="text-xs font-bold uppercase tracking-wider text-[#64748B] mb-1">Why we picked it</p>
                   <p className="text-[#0F172A] leading-relaxed">
@@ -329,12 +300,13 @@ export default function QuotationView() {
                   <p className="text-xs text-[#64748B] mt-2">Best for: {badge.bestFor}</p>
                 </div>
 
+                {/* VIEW FACILITIES */}
                 <div className="mt-1">
                   <button 
                     onClick={() => setOpenFacilitiesId(isOpen ? null : q.id)}
                     className="flex items-center gap-1 text-sm font-medium text-[#E11D48] hover:underline transition"
                   >
-                    {isOpen ? 'Hide' : 'View'} Facilities
+                    {isOpen ? 'HIDE' : 'VIEW'} Facilities
                     {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                   </button>
                   {isOpen && (
@@ -348,17 +320,36 @@ export default function QuotationView() {
                   )}
                 </div>
 
+                {/* BUTTON */}
                 {renderButton()}
               </div>
             );
           })}
         </div>
 
-        <div className="mt-16 pt-8 border-t border-[#E2E8F0] text-center text-sm text-[#64748B] max-w-2xl mx-auto">
-          <p className="font-semibold uppercase tracking-wider text-xs mb-2">Important</p>
-          <p>Rates and availability are subject to confirmation.</p>
-          <p className="mt-1">Quotation valid until: {new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString()}</p>
-          <p className="mt-4 text-[#E11D48] font-medium hover:underline cursor-pointer">Need help deciding? Chat with us</p>
+        {/* 🟢 CHAT WITH US & IMPORTANT SECTION */}
+        <div className="mt-16 text-center max-w-2xl mx-auto">
+          
+          {/* Chat CTA */}
+          <div className="mb-8">
+            <p className="text-[#0F172A] font-medium text-lg mb-3">Need help choosing?</p>
+            <button 
+              onClick={() => alert('Chat feature coming soon!')}
+              className="inline-flex items-center gap-2 bg-[#F8FAFC] border border-[#E2E8F0] text-[#0F172A] px-6 py-3 rounded-full font-semibold hover:bg-white hover:shadow-md transition"
+            >
+              <MessageCircle className="text-[#E11D48]" size={20} />
+              Chat with us
+            </button>
+          </div>
+
+          {/* Footer Info */}
+          <div className="pt-8 border-t border-[#E2E8F0] text-sm text-[#64748B]">
+            <p className="font-semibold uppercase tracking-wider text-xs mb-2">IMPORTANT</p>
+            <p>Rates and availability are subject to change until booking confirmation.</p>
+            <p className="mt-1">
+              Quotation valid until: {new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString()} · 8:00 PM
+            </p>
+          </div>
         </div>
       </div>
 
