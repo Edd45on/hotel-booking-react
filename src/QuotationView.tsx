@@ -285,12 +285,19 @@ export default function QuotationView() {
                 </div>
 
                 {/* 🟢 SELECT BUTTON TRIGGERS THE MODAL */}
-                <button 
-                  onClick={() => openBookingModal(q.id)}
-                  className="w-full bg-[#E11D48] text-white py-3 rounded-xl font-bold hover:bg-[#BE123C] transition shadow-md hover:shadow-lg mt-1"
-                >
-                  Select This Option
-                </button>
+                                {/* 🟢 CHECK IF THIS CARD WAS ALREADY CHOSEN */}
+                {q.is_customer_chosen ? (
+                  <div className="w-full bg-green-100 border border-green-300 text-green-700 py-3 rounded-xl font-bold text-center mt-1">
+                    ✅ Booking Confirmed
+                  </div>
+                ) : (
+                  <button 
+                    onClick={() => openBookingModal(q.id)}
+                    className="w-full bg-[#E11D48] text-white py-3 rounded-xl font-bold hover:bg-[#BE123C] transition shadow-md hover:shadow-lg mt-1"
+                  >
+                    Select This Option
+                  </button>
+                )}
               </div>
             );
           })}
