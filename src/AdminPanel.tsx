@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from './utils/supabase';
-import { X, Save, ChevronLeft } from 'lucide-react';
+import { X, Save, ChevronLeft, Copy, ExternalLink } from 'lucide-react';
 
 export default function AdminPanel() {
   const [inquiries, setInquiries] = useState<any[]>([]);
@@ -8,7 +8,7 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(false);
   const [detailsInquiry, setDetailsInquiry] = useState<any>(null);
   
-  // 🟢 NEW: State for 3 separate draft forms
+  // 🟢 3 Separate draft forms
   const [drafts, setDrafts] = useState([
     {
       hotelName: '',
@@ -50,7 +50,6 @@ export default function AdminPanel() {
       imageUrl: '',
     },
   ]);
-  const [validUntil, setValidUntil] = useState('');
 
   useEffect(() => {
     fetchInquiries();
@@ -59,7 +58,14 @@ export default function AdminPanel() {
   const fetchInquiries = async () => {
     const { data } = await supabase
       .from('inquiries')
-      .select('*')
+      .select(`
+        *,
+        quotations (
+          id,
+          hotel_name,
+          is_customer_chosen
+        )
+      `)
       .order('created_at', { ascending: false });
     if (data) setInquiries(data);
   };
@@ -72,23 +78,17 @@ export default function AdminPanel() {
       { hotelName: '', roomType: '', pricePerNight: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '' },
       { hotelName: '', roomType: '', pricePerNight: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '' },
     ]);
-    const futureDate = new Date();
-    futureDate.setDate(futureDate.getDate() + 7);
-    setValidUntil(futureDate.toISOString().split('T')[0]);
   };
 
-  // 🟢 Handle updating a specific form index
   const updateDraft = (index: number, field: string, value: any) => {
     const newDrafts = [...drafts];
     newDrafts[index] = { ...newDrafts[index], [field]: value };
     setDrafts(newDrafts);
   };
 
-  // 🟢 GENERATE QUOTATION (Saves all 3 forms at once)
   const generateQuotation = async () => {
     if (!selectedInquiry) return;
     
-    // Validate that at least the first form has a name and price
     if (!drafts[0].hotelName || !drafts[0].pricePerNight) {
       alert('Please fill in the Hotel Name and Price for Option 1.');
       return;
@@ -96,8 +96,21 @@ export default function AdminPanel() {
 
     setLoading(true);
     try {
-      // Delete old quotations for this inquiry (prevent duplicates)
+      // Delete old quotations for this inquiry
       await supabase.from('quotations').delete().eq('inquiry_id', selectedInquiry.id);
+
+      // Calculate dynamic validity based on check-in date
+      const today = new Date();
+      const checkIn = new Date(selectedInquiry.check_in);
+      const daysDiff = Math.ceil((checkIn.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+      let hours = 12;
+      if (daysDiff <= 3) hours = 2;
+      else if (daysDiff <= 7) hours = 4;
+      else if (daysDiff <= 30) hours = 12;
+      else if (daysDiff > 30) hours = 24;
+      const expirationDate = new Date();
+      expirationDate.setHours(expirationDate.getHours() + hours);
+      const validUntilISO = expirationDate.toISOString();
 
       // Prepare the 3 inserts
       const inserts = drafts.map((draft) => ({
@@ -113,6 +126,7 @@ export default function AdminPanel() {
         custom_no_breakfast: draft.customNoBreakfast,
         custom_description: draft.customDescription,
         image_url: draft.imageUrl,
+        valid_until: validUntilISO,
       }));
 
       const { error } = await supabase.from('quotations').insert(inserts);
@@ -136,10 +150,6 @@ export default function AdminPanel() {
     }
   };
 
-  const getQuotationLink = (id: string) => {
-    return `${window.location.origin}/quotation?id=${id}`;
-  };
-
   return (
     <div className="min-h-screen bg-[#F8FAFC] p-8">
       <div className="max-w-6xl mx-auto">
@@ -150,231 +160,142 @@ export default function AdminPanel() {
           </button>
         </div>
 
+        {/* INQUIRY LIST WITH QUOTATION STATUS */}
         <div className="grid grid-cols-1 gap-4">
-          {inquiries.map((inq) => (
-            <div key={inq.id} className="bg-white p-6 rounded-2xl shadow-sm border border-[#E2E8F0] flex justify-between items-center">
-              <div>
-                <p className="font-bold text-[#0F172A]">{inq.destination}</p>
-                <p className="text-sm text-[#475569]">
-                  {inq.check_in} → {inq.check_out} | {inq.adults} Adults, {inq.rooms} Rooms
-                </p>
-                <span className="inline-block mt-2 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold border border-blue-200">
-                  🆕 New Inquiry
-                </span>
+          {inquiries.map((inq) => {
+            const chosenQuotation = inq.quotations?.find((q: any) => q.is_customer_chosen === true);
+            const hasQuotation = inq.quotations?.length > 0;
+
+            return (
+              <div key={inq.id} className="bg-white p-6 rounded-2xl shadow-sm border border-[#E2E8F0] flex justify-between items-center">
+                <div>
+                  <p className="font-bold text-[#0F172A]">{inq.destination}</p>
+                  <p className="text-sm text-[#475569]">
+                    {inq.check_in} → {inq.check_out} | {inq.adults} Adults, {inq.rooms} Rooms
+                  </p>
+                  
+                  {/* 🟢 STATUS BADGE WITH CUSTOMER DETAILS CHECK */}
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    {chosenQuotation ? (
+                      <span className="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold border border-green-200">
+                        ✅ Booked: {chosenQuotation.hotel_name}
+                      </span>
+                    ) : hasQuotation ? (
+                      <span className="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold border border-blue-200">
+                        📄 Quotation Sent
+                      </span>
+                    ) : (
+                      <span className="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold border border-blue-200">
+                        🆕 New Inquiry
+                      </span>
+                    )}
+
+                    {/* 🟢 QUOTATION LINK (If exists) */}
+                    {hasQuotation && (
+                      <div className="flex items-center gap-1 bg-[#F8FAFC] border border-[#E2E8F0] rounded-full px-2 py-1 text-[10px] font-mono text-[#0F172A]">
+                        <span className="max-w-[120px] truncate">
+                          {`/quotation?id=${inq.id}`}
+                        </span>
+                        <button 
+                          onClick={() => {
+                            navigator.clipboard.writeText(`${window.location.origin}/quotation?id=${inq.id}`);
+                            alert('📋 Link copied!');
+                          }}
+                          className="text-[#64748B] hover:text-[#E11D48] p-1"
+                        >
+                          <Copy size={12} />
+                        </button>
+                        <a href={`/quotation?id=${inq.id}`} target="_blank" className="text-[#64748B] hover:text-[#E11D48] p-1">
+                          <ExternalLink size={12} />
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* BUTTONS */}
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setDetailsInquiry(inq)}
+                    className="bg-[#F8FAFC] text-[#0F172A] px-4 py-2 rounded-xl font-semibold border border-[#E2E8F0] hover:bg-[#E2E8F0] transition"
+                  >
+                    Details
+                  </button>
+                  <button
+                    onClick={() => openDraftEditor(inq)}
+                    className="bg-[#E11D48] text-white px-4 py-2 rounded-xl font-semibold hover:bg-[#BE123C] transition"
+                  >
+                    {hasQuotation ? 'Resend Quote' : 'Generate Quotation'}
+                  </button>
+                </div>
               </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setDetailsInquiry(inq)}
-                  className="bg-[#F8FAFC] text-[#0F172A] px-4 py-2 rounded-xl font-semibold border border-[#E2E8F0] hover:bg-[#E2E8F0] transition"
-                >
-                  Details
-                </button>
-                <button
-                  onClick={() => openDraftEditor(inq)}
-                  className="bg-[#E11D48] text-white px-4 py-2 rounded-xl font-semibold hover:bg-[#BE123C] transition"
-                >
-                  Generate Quotation
-                </button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
-      {/* 🟢 DRAFT EDITOR MODAL (3 FORMS) */}
+      {/* DRAFT EDITOR MODAL (3 FORMS) */}
       {selectedInquiry && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-white max-w-3xl w-full rounded-3xl shadow-2xl p-6 relative">
-            
-            <button 
-              onClick={() => setSelectedInquiry(null)}
-              className="absolute top-4 right-4 text-[#475569] hover:text-[#0F172A] transition"
-            >
-              <X size={24} />
-            </button>
-
+            <button onClick={() => setSelectedInquiry(null)} className="absolute top-4 right-4 text-[#475569] hover:text-[#0F172A] transition"><X size={24} /></button>
             <div className="flex items-center gap-3 mb-6 border-b border-[#E2E8F0] pb-4">
-              <button 
-                onClick={() => setSelectedInquiry(null)}
-                className="flex items-center gap-1 text-[#64748B] hover:text-[#0F172A] transition text-sm font-medium"
-              >
-                <ChevronLeft size={16} /> Back to Dashboard
-              </button>
-              <h2 className="text-2xl font-bold flex-1 text-center">
-                Create Draft Quotation (3 Options)
-              </h2>
+              <button onClick={() => setSelectedInquiry(null)} className="flex items-center gap-1 text-[#64748B] hover:text-[#0F172A] transition text-sm font-medium"><ChevronLeft size={16} /> Back to Dashboard</button>
+              <h2 className="text-2xl font-bold flex-1 text-center">Create Draft Quotation (3 Options)</h2>
             </div>
 
-            {/* Scrollable 3-Form Container */}
             <div className="space-y-8 max-h-[60vh] overflow-y-auto pr-2">
-              
-              {/* Valid Until (Shared) */}
-              <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4">
-                <label className="block text-xs font-semibold text-[#64748B] mb-1">Quotation Valid Until</label>
-                <input 
-                  type="date" 
-                  value={validUntil}
-                  onChange={(e) => setValidUntil(e.target.value)}
-                  className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
-                />
-              </div>
-
-              {/* 3 Separate Forms */}
               {drafts.map((draft, index) => (
                 <div key={index} className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4 space-y-4">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-bold uppercase tracking-wider text-[#64748B]">
-                      Option {index + 1}
-                    </span>
-                  </div>
-
+                  <div className="flex justify-between items-center mb-2"><span className="text-sm font-bold uppercase tracking-wider text-[#64748B]">Option {index + 1}</span></div>
                   <div className="flex gap-4">
-                    <div className="flex-1">
-                      <label className="block text-xs font-semibold text-[#64748B] mb-1">Hotel Name *</label>
-                      <input 
-                        type="text" 
-                        value={draft.hotelName}
-                        onChange={(e) => updateDraft(index, 'hotelName', e.target.value)}
-                        className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
-                        placeholder="e.g. RedDoorz @ Tagaytay"
-                      />
-                    </div>
-                    <div className="w-1/3">
-                      <label className="block text-xs font-semibold text-[#64748B] mb-1">Price / night *</label>
-                      <input 
-                        type="number" 
-                        value={draft.pricePerNight}
-                        onChange={(e) => updateDraft(index, 'pricePerNight', e.target.value)}
-                        className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
-                        placeholder="1389"
-                      />
-                    </div>
+                    <div className="flex-1"><label className="block text-xs font-semibold text-[#64748B] mb-1">Hotel Name *</label><input type="text" value={draft.hotelName} onChange={(e) => updateDraft(index, 'hotelName', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" placeholder="e.g. RedDoorz @ Tagaytay" /></div>
+                    <div className="w-1/3"><label className="block text-xs font-semibold text-[#64748B] mb-1">Price / night *</label><input type="number" value={draft.pricePerNight} onChange={(e) => updateDraft(index, 'pricePerNight', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" placeholder="1389" /></div>
                   </div>
-
                   <div className="flex gap-4">
-                    <div className="flex-1">
-                      <label className="block text-xs font-semibold text-[#64748B] mb-1">Room Type</label>
-                      <input 
-                        type="text" 
-                        value={draft.roomType}
-                        onChange={(e) => updateDraft(index, 'roomType', e.target.value)}
-                        className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
-                        placeholder="Standard Room"
-                      />
-                    </div>
-                    <div className="w-1/3">
-                      <label className="block text-xs font-semibold text-[#64748B] mb-1">Image URL</label>
-                      <input 
-                        type="text" 
-                        value={draft.imageUrl}
-                        onChange={(e) => updateDraft(index, 'imageUrl', e.target.value)}
-                        className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
-                        placeholder="https://..."
-                      />
-                    </div>
+                    <div className="flex-1"><label className="block text-xs font-semibold text-[#64748B] mb-1">Room Type</label><input type="text" value={draft.roomType} onChange={(e) => updateDraft(index, 'roomType', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" placeholder="Standard Room" /></div>
+                    <div className="w-1/3"><label className="block text-xs font-semibold text-[#64748B] mb-1">Image URL</label><input type="text" value={draft.imageUrl} onChange={(e) => updateDraft(index, 'imageUrl', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" placeholder="https://..." /></div>
                   </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-[#64748B] mb-1">Why we picked it (Description)</label>
-                    <input 
-                      type="text" 
-                      value={draft.customDescription}
-                      onChange={(e) => updateDraft(index, 'customDescription', e.target.value)}
-                      className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-[#64748B] mb-1">Best For</label>
-                    <input 
-                      type="text" 
-                      value={draft.customBestFor}
-                      onChange={(e) => updateDraft(index, 'customBestFor', e.target.value)}
-                      className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-[#64748B] mb-1">Facilities (Comma separated)</label>
-                    <textarea 
-                      rows={2}
-                      value={draft.facilities}
-                      onChange={(e) => updateDraft(index, 'facilities', e.target.value)}
-                      className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48] resize-none"
-                      placeholder="Free WiFi, AC, Parking, Pool"
-                    />
-                  </div>
-
+                  <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Why we picked it (Description)</label><input type="text" value={draft.customDescription} onChange={(e) => updateDraft(index, 'customDescription', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
+                  <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Best For</label><input type="text" value={draft.customBestFor} onChange={(e) => updateDraft(index, 'customBestFor', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
+                  <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Facilities (Comma separated)</label><textarea rows={2} value={draft.facilities} onChange={(e) => updateDraft(index, 'facilities', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48] resize-none" placeholder="Free WiFi, AC, Parking, Pool" /></div>
                   <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-semibold text-[#64748B] mb-1">Line 1</label>
-                      <input 
-                        type="text" 
-                        value={draft.customRoomOnly}
-                        onChange={(e) => updateDraft(index, 'customRoomOnly', e.target.value)}
-                        className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-[#64748B] mb-1">Line 2</label>
-                      <input 
-                        type="text" 
-                        value={draft.customPayAtHotel}
-                        onChange={(e) => updateDraft(index, 'customPayAtHotel', e.target.value)}
-                        className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-[#64748B] mb-1">Line 3</label>
-                      <input 
-                        type="text" 
-                        value={draft.customNonRefundable}
-                        onChange={(e) => updateDraft(index, 'customNonRefundable', e.target.value)}
-                        className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-[#64748B] mb-1">Line 4</label>
-                      <input 
-                        type="text" 
-                        value={draft.customNoBreakfast}
-                        onChange={(e) => updateDraft(index, 'customNoBreakfast', e.target.value)}
-                        className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
-                      />
-                    </div>
+                    <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Line 1</label><input type="text" value={draft.customRoomOnly} onChange={(e) => updateDraft(index, 'customRoomOnly', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
+                    <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Line 2</label><input type="text" value={draft.customPayAtHotel} onChange={(e) => updateDraft(index, 'customPayAtHotel', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
+                    <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Line 3</label><input type="text" value={draft.customNonRefundable} onChange={(e) => updateDraft(index, 'customNonRefundable', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
+                    <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Line 4</label><input type="text" value={draft.customNoBreakfast} onChange={(e) => updateDraft(index, 'customNoBreakfast', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
                   </div>
                 </div>
               ))}
-
             </div>
 
-            {/* FOOTER BUTTONS */}
             <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-[#E2E8F0]">
-              <button
-                onClick={() => setSelectedInquiry(null)}
-                className="px-4 py-2 rounded-xl border border-[#E2E8F0] hover:bg-[#F8FAFC] transition"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={generateQuotation}
-                disabled={loading}
-                className="px-4 py-2 rounded-xl bg-[#E11D48] text-white font-bold hover:bg-[#BE123C] transition disabled:opacity-70 flex items-center gap-2"
-              >
-                {loading ? 'Saving...' : <><Save size={18} /> Generate Quotation</>}
-              </button>
+              <button onClick={() => setSelectedInquiry(null)} className="px-4 py-2 rounded-xl border border-[#E2E8F0] hover:bg-[#F8FAFC] transition">Cancel</button>
+              <button onClick={generateQuotation} disabled={loading} className="px-4 py-2 rounded-xl bg-[#E11D48] text-white font-bold hover:bg-[#BE123C] transition disabled:opacity-70 flex items-center gap-2">{loading ? 'Saving...' : <><Save size={18} /> Generate Quotation</>}</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* DETAILS MODAL */}
+      {/* 🟢 DETAILS MODAL WITH CLIENT INFO */}
       {detailsInquiry && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white max-w-lg w-full rounded-2xl p-6 shadow-2xl relative">
             <button onClick={() => setDetailsInquiry(null)} className="absolute top-4 right-4 text-[#475569] hover:text-[#0F172A] transition"><X size={24} /></button>
             <h2 className="text-2xl font-bold text-[#0F172A] mb-1">Booking Details</h2>
             <p className="text-sm text-[#64748B] mb-4">Review the customer's request.</p>
+            
+            {/* 🟢 CLIENT DETAILS BLOCK */}
+            <div className="bg-blue-50 border border-blue-100 p-4 rounded-xl mb-4">
+              <p className="text-blue-700 font-bold text-sm mb-2">👤 Customer Details</p>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <div><span className="text-[#64748B]">First Name:</span> <span className="font-semibold text-[#0F172A] block">{detailsInquiry.first_name || 'Not provided'}</span></div>
+                <div><span className="text-[#64748B]">Last Name:</span> <span className="font-semibold text-[#0F172A] block">{detailsInquiry.last_name || 'Not provided'}</span></div>
+                <div className="col-span-2"><span className="text-[#64748B]">Email:</span> <span className="font-semibold text-[#0F172A] block">{detailsInquiry.email || 'Not provided'}</span></div>
+                <div className="col-span-2"><span className="text-[#64748B]">Phone:</span> <span className="font-semibold text-[#0F172A] block">{detailsInquiry.phone || 'Not provided'}</span></div>
+              </div>
+            </div>
+
             <div className="bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0] text-sm grid grid-cols-2 gap-2">
               <div><span className="text-[#64748B]">Destination:</span> <span className="font-semibold text-[#0F172A]">{detailsInquiry.destination}</span></div>
               <div><span className="text-[#64748B]">Guests:</span> <span className="font-semibold text-[#0F172A]">{detailsInquiry.adults} Adults</span></div>
