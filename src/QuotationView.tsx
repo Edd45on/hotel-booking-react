@@ -151,7 +151,8 @@ export default function QuotationView() {
         {/* QUOTATION CARDS */}
         <div className="grid grid-cols-1 gap-10 md:gap-12">
           {quotations.map((q: any) => {
-            const imageArray = q.image_url ? [q.image_url] : [];
+                        // 🟢 FIX: Split the comma-separated string into an array of URLs
+            const imageArray = q.image_url ? q.image_url.split(',').map((url: string) => url.trim()) : [];
             const currentActiveImage = activeImages[q.id] || (imageArray.length > 0 ? imageArray[0] : 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=600&q=80');
             const isOpen = openFacilitiesId === q.id;
             const totalPrice = q.total_price * nights;
