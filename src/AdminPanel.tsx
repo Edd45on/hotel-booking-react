@@ -8,21 +8,48 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(false);
   const [detailsInquiry, setDetailsInquiry] = useState<any>(null);
   
-  const [draft, setDraft] = useState({
-    hotelName: '',
-    roomType: '',
-    pricePerNight: '',
-    totalPrice: '',
-    nights: '',
-    customRoomOnly: 'Room only',
-    customPayAtHotel: 'Pay at hotel',
-    customNonRefundable: 'Non-refundable',
-    customNoBreakfast: 'No breakfast',
-    customDescription: 'Best value for your budget.',
-    customBestFor: 'Couples / leisure',
-    facilities: 'Free WiFi, AC, Parking',
-    imageUrl: '',
-  });
+  // 🟢 NEW: State for 3 separate draft forms
+  const [drafts, setDrafts] = useState([
+    {
+      hotelName: '',
+      roomType: '',
+      pricePerNight: '',
+      customRoomOnly: 'Room only',
+      customPayAtHotel: 'Pay at hotel',
+      customNonRefundable: 'Non-refundable',
+      customNoBreakfast: 'No breakfast',
+      customDescription: 'Best value for your budget.',
+      customBestFor: 'Couples / leisure',
+      facilities: 'Free WiFi, AC, Parking',
+      imageUrl: '',
+    },
+    {
+      hotelName: '',
+      roomType: '',
+      pricePerNight: '',
+      customRoomOnly: 'Room only',
+      customPayAtHotel: 'Pay at hotel',
+      customNonRefundable: 'Non-refundable',
+      customNoBreakfast: 'No breakfast',
+      customDescription: 'Best value for your budget.',
+      customBestFor: 'Couples / leisure',
+      facilities: 'Free WiFi, AC, Parking',
+      imageUrl: '',
+    },
+    {
+      hotelName: '',
+      roomType: '',
+      pricePerNight: '',
+      customRoomOnly: 'Room only',
+      customPayAtHotel: 'Pay at hotel',
+      customNonRefundable: 'Non-refundable',
+      customNoBreakfast: 'No breakfast',
+      customDescription: 'Best value for your budget.',
+      customBestFor: 'Couples / leisure',
+      facilities: 'Free WiFi, AC, Parking',
+      imageUrl: '',
+    },
+  ]);
   const [validUntil, setValidUntil] = useState('');
 
   useEffect(() => {
@@ -39,56 +66,45 @@ export default function AdminPanel() {
 
   const openDraftEditor = (inq: any) => {
     setSelectedInquiry(inq);
-    setDraft({
-      hotelName: '',
-      roomType: '',
-      pricePerNight: '',
-      totalPrice: '',
-      nights: '',
-      customRoomOnly: 'Room only',
-      customPayAtHotel: 'Pay at hotel',
-      customNonRefundable: 'Non-refundable',
-      customNoBreakfast: 'No breakfast',
-      customDescription: 'Best value for your budget.',
-      customBestFor: 'Couples / leisure',
-      facilities: 'Free WiFi, AC, Parking',
-      imageUrl: '',
-    });
+    // Reset to 3 blank forms
+    setDrafts([
+      { hotelName: '', roomType: '', pricePerNight: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '' },
+      { hotelName: '', roomType: '', pricePerNight: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '' },
+      { hotelName: '', roomType: '', pricePerNight: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '' },
+    ]);
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + 7);
     setValidUntil(futureDate.toISOString().split('T')[0]);
   };
 
-  // 🟢 GENERATE 3 QUOTATIONS AUTOMATICALLY IN ONE CLICK
+  // 🟢 Handle updating a specific form index
+  const updateDraft = (index: number, field: string, value: any) => {
+    const newDrafts = [...drafts];
+    newDrafts[index] = { ...newDrafts[index], [field]: value };
+    setDrafts(newDrafts);
+  };
+
+  // 🟢 GENERATE QUOTATION (Saves all 3 forms at once)
   const generateQuotation = async () => {
     if (!selectedInquiry) return;
-    if (!draft.hotelName || !draft.pricePerNight) {
-      alert('Please fill in the Hotel Name and Price.');
+    
+    // Validate that at least the first form has a name and price
+    if (!drafts[0].hotelName || !drafts[0].pricePerNight) {
+      alert('Please fill in the Hotel Name and Price for Option 1.');
       return;
     }
 
     setLoading(true);
     try {
-      // 1. Delete any old quotations for this inquiry (to prevent duplicates)
+      // Delete old quotations for this inquiry (prevent duplicates)
       await supabase.from('quotations').delete().eq('inquiry_id', selectedInquiry.id);
 
-      // 2. Generate 3 unique options based on the single input
-      const hotelNames = [
-        draft.hotelName,
-        `${draft.hotelName} (Alternative)`,
-        `${draft.hotelName} (Premium)`
-      ];
-      const priceVariants = [
-        parseInt(draft.pricePerNight),
-        parseInt(draft.pricePerNight) + 200,
-        parseInt(draft.pricePerNight) + 500
-      ];
-
-      const inserts = hotelNames.map((name, index) => ({
+      // Prepare the 3 inserts
+      const inserts = drafts.map((draft) => ({
         inquiry_id: selectedInquiry.id,
-        hotel_name: name,
+        hotel_name: draft.hotelName,
         room_type: draft.roomType,
-        total_price: priceVariants[index],
+        total_price: parseInt(draft.pricePerNight) || 0,
         is_customer_chosen: false,
         facilities: draft.facilities,
         custom_room_only: draft.customRoomOnly,
@@ -165,10 +181,10 @@ export default function AdminPanel() {
         </div>
       </div>
 
-      {/* DRAFT EDITOR MODAL */}
+      {/* 🟢 DRAFT EDITOR MODAL (3 FORMS) */}
       {selectedInquiry && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-white max-w-2xl w-full rounded-3xl shadow-2xl p-6 relative">
+          <div className="bg-white max-w-3xl w-full rounded-3xl shadow-2xl p-6 relative">
             
             <button 
               onClick={() => setSelectedInquiry(null)}
@@ -185,13 +201,14 @@ export default function AdminPanel() {
                 <ChevronLeft size={16} /> Back to Dashboard
               </button>
               <h2 className="text-2xl font-bold flex-1 text-center">
-                Create Draft Quotation
+                Create Draft Quotation (3 Options)
               </h2>
             </div>
 
-            <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2">
+            {/* Scrollable 3-Form Container */}
+            <div className="space-y-8 max-h-[60vh] overflow-y-auto pr-2">
               
-              {/* Valid Until */}
+              {/* Valid Until (Shared) */}
               <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4">
                 <label className="block text-xs font-semibold text-[#64748B] mb-1">Quotation Valid Until</label>
                 <input 
@@ -202,127 +219,132 @@ export default function AdminPanel() {
                 />
               </div>
 
-              {/* HOTEL NAME & PRICE */}
-              <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4 space-y-4">
-                <div className="flex gap-4">
-                  <div className="flex-1">
-                    <label className="block text-xs font-semibold text-[#64748B] mb-1">Hotel Name *</label>
+              {/* 3 Separate Forms */}
+              {drafts.map((draft, index) => (
+                <div key={index} className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4 space-y-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-bold uppercase tracking-wider text-[#64748B]">
+                      Option {index + 1}
+                    </span>
+                  </div>
+
+                  <div className="flex gap-4">
+                    <div className="flex-1">
+                      <label className="block text-xs font-semibold text-[#64748B] mb-1">Hotel Name *</label>
+                      <input 
+                        type="text" 
+                        value={draft.hotelName}
+                        onChange={(e) => updateDraft(index, 'hotelName', e.target.value)}
+                        className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
+                        placeholder="e.g. RedDoorz @ Tagaytay"
+                      />
+                    </div>
+                    <div className="w-1/3">
+                      <label className="block text-xs font-semibold text-[#64748B] mb-1">Price / night *</label>
+                      <input 
+                        type="number" 
+                        value={draft.pricePerNight}
+                        onChange={(e) => updateDraft(index, 'pricePerNight', e.target.value)}
+                        className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
+                        placeholder="1389"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4">
+                    <div className="flex-1">
+                      <label className="block text-xs font-semibold text-[#64748B] mb-1">Room Type</label>
+                      <input 
+                        type="text" 
+                        value={draft.roomType}
+                        onChange={(e) => updateDraft(index, 'roomType', e.target.value)}
+                        className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
+                        placeholder="Standard Room"
+                      />
+                    </div>
+                    <div className="w-1/3">
+                      <label className="block text-xs font-semibold text-[#64748B] mb-1">Image URL</label>
+                      <input 
+                        type="text" 
+                        value={draft.imageUrl}
+                        onChange={(e) => updateDraft(index, 'imageUrl', e.target.value)}
+                        className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
+                        placeholder="https://..."
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-[#64748B] mb-1">Why we picked it (Description)</label>
                     <input 
                       type="text" 
-                      value={draft.hotelName}
-                      onChange={(e) => setDraft({ ...draft, hotelName: e.target.value })}
+                      value={draft.customDescription}
+                      onChange={(e) => updateDraft(index, 'customDescription', e.target.value)}
                       className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
-                      placeholder="e.g. RedDoorz @ Tagaytay"
                     />
                   </div>
-                  <div className="w-1/3">
-                    <label className="block text-xs font-semibold text-[#64748B] mb-1">Price / night *</label>
-                    <input 
-                      type="number" 
-                      value={draft.pricePerNight}
-                      onChange={(e) => setDraft({ ...draft, pricePerNight: e.target.value })}
-                      className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
-                      placeholder="1389"
-                    />
-                  </div>
-                </div>
-                <div className="flex gap-4">
-                  <div className="flex-1">
-                    <label className="block text-xs font-semibold text-[#64748B] mb-1">Room Type</label>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-[#64748B] mb-1">Best For</label>
                     <input 
                       type="text" 
-                      value={draft.roomType}
-                      onChange={(e) => setDraft({ ...draft, roomType: e.target.value })}
+                      value={draft.customBestFor}
+                      onChange={(e) => updateDraft(index, 'customBestFor', e.target.value)}
                       className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
-                      placeholder="Standard Room"
                     />
                   </div>
-                  <div className="w-1/3">
-                    <label className="block text-xs font-semibold text-[#64748B] mb-1">Image URL</label>
-                    <input 
-                      type="text" 
-                      value={draft.imageUrl}
-                      onChange={(e) => setDraft({ ...draft, imageUrl: e.target.value })}
-                      className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
-                      placeholder="https://..."
+
+                  <div>
+                    <label className="block text-xs font-semibold text-[#64748B] mb-1">Facilities (Comma separated)</label>
+                    <textarea 
+                      rows={2}
+                      value={draft.facilities}
+                      onChange={(e) => updateDraft(index, 'facilities', e.target.value)}
+                      className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48] resize-none"
+                      placeholder="Free WiFi, AC, Parking, Pool"
                     />
                   </div>
-                </div>
-              </div>
 
-              {/* DESCRIPTION & BEST FOR */}
-              <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4 space-y-3">
-                <div>
-                  <label className="block text-xs font-semibold text-[#64748B] mb-1">Why we picked it (Description)</label>
-                  <input 
-                    type="text" 
-                    value={draft.customDescription}
-                    onChange={(e) => setDraft({ ...draft, customDescription: e.target.value })}
-                    className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
-                  />
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-[#64748B] mb-1">Line 1</label>
+                      <input 
+                        type="text" 
+                        value={draft.customRoomOnly}
+                        onChange={(e) => updateDraft(index, 'customRoomOnly', e.target.value)}
+                        className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-[#64748B] mb-1">Line 2</label>
+                      <input 
+                        type="text" 
+                        value={draft.customPayAtHotel}
+                        onChange={(e) => updateDraft(index, 'customPayAtHotel', e.target.value)}
+                        className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-[#64748B] mb-1">Line 3</label>
+                      <input 
+                        type="text" 
+                        value={draft.customNonRefundable}
+                        onChange={(e) => updateDraft(index, 'customNonRefundable', e.target.value)}
+                        className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-[#64748B] mb-1">Line 4</label>
+                      <input 
+                        type="text" 
+                        value={draft.customNoBreakfast}
+                        onChange={(e) => updateDraft(index, 'customNoBreakfast', e.target.value)}
+                        className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-xs font-semibold text-[#64748B] mb-1">Best For</label>
-                  <input 
-                    type="text" 
-                    value={draft.customBestFor}
-                    onChange={(e) => setDraft({ ...draft, customBestFor: e.target.value })}
-                    className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
-                  />
-                </div>
-              </div>
-
-              {/* FACILITIES */}
-              <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4">
-                <label className="block text-xs font-semibold text-[#64748B] mb-1">Facilities (Comma separated)</label>
-                <textarea 
-                  rows={2}
-                  value={draft.facilities}
-                  onChange={(e) => setDraft({ ...draft, facilities: e.target.value })}
-                  className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48] resize-none"
-                  placeholder="Free WiFi, AC, Parking, Pool"
-                />
-              </div>
-
-              {/* 4 CUSTOM CHECKMARKS */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-3">
-                  <label className="block text-xs font-semibold text-[#64748B] mb-1">Line 1</label>
-                  <input 
-                    type="text" 
-                    value={draft.customRoomOnly}
-                    onChange={(e) => setDraft({ ...draft, customRoomOnly: e.target.value })}
-                    className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
-                  />
-                </div>
-                <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-3">
-                  <label className="block text-xs font-semibold text-[#64748B] mb-1">Line 2</label>
-                  <input 
-                    type="text" 
-                    value={draft.customPayAtHotel}
-                    onChange={(e) => setDraft({ ...draft, customPayAtHotel: e.target.value })}
-                    className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
-                  />
-                </div>
-                <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-3">
-                  <label className="block text-xs font-semibold text-[#64748B] mb-1">Line 3</label>
-                  <input 
-                    type="text" 
-                    value={draft.customNonRefundable}
-                    onChange={(e) => setDraft({ ...draft, customNonRefundable: e.target.value })}
-                    className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
-                  />
-                </div>
-                <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-3">
-                  <label className="block text-xs font-semibold text-[#64748B] mb-1">Line 4</label>
-                  <input 
-                    type="text" 
-                    value={draft.customNoBreakfast}
-                    onChange={(e) => setDraft({ ...draft, customNoBreakfast: e.target.value })}
-                    className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
-                  />
-                </div>
-              </div>
+              ))}
 
             </div>
 
