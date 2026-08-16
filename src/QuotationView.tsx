@@ -68,7 +68,7 @@ export default function QuotationView() {
       new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     ) : [];
 
-    setQuotations(sortedData.slice(0, 1)); // We only show 1 quotation now since we generate 1 per click
+    setQuotations(sortedData.slice(0, 3)); // We only show 1 quotation now since we generate 1 per click
   };
 
   const openBookingModal = (quotationId: string) => {
