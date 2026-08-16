@@ -151,7 +151,6 @@ export default function QuotationView() {
         {/* QUOTATION CARDS */}
         <div className="grid grid-cols-1 gap-10 md:gap-12">
           {quotations.map((q: any) => {
-            // 🟢 FIXED: Properly split the comma-separated string into an array
             const imageArray = q.image_url ? q.image_url.split(',').map((url: string) => url.trim()) : [];
             const currentActiveImage = activeImages[q.id] || (imageArray.length > 0 ? imageArray[0] : 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=600&q=80');
             const isOpen = openFacilitiesId === q.id;
@@ -164,10 +163,37 @@ export default function QuotationView() {
                 return (
                   <div className="w-full bg-green-100 border border-green-300 text-green-700 py-3 rounded-xl font-bold text-center mt-2 flex items-center justify-center gap-3">
                     <span>✅ Booking Confirmed</span>
+                    {/* 🟢 RESTORED TOAST CONFIRMATION FOR CHANGE */}
                     <button 
                       onClick={() => {
-                        supabase.from('quotations').update({ is_customer_chosen: false }).eq('id', q.id)
-                          .then(() => fetchQuotation(inquiry.id));
+                        toast((t) => (
+                          <div className="flex flex-col gap-2 p-2">
+                            <span className="font-bold text-[#0F172A]">
+                              Are you sure you want to change your hotel choice?
+                            </span>
+                            <div className="flex justify-end gap-2 mt-1">
+                              <button 
+                                onClick={() => toast.dismiss(t.id)}
+                                className="px-3 py-1 bg-[#E2E8F0] text-[#475569] rounded-lg text-sm font-semibold hover:bg-[#CBD5E1] transition"
+                              >
+                                Cancel
+                              </button>
+                              <button 
+                                onClick={() => {
+                                  toast.dismiss(t.id);
+                                  supabase.from('quotations').update({ is_customer_chosen: false }).eq('id', q.id)
+                                    .then(() => fetchQuotation(inquiry.id));
+                                }}
+                                className="px-3 py-1 bg-[#E11D48] text-white rounded-lg text-sm font-semibold hover:bg-[#BE123C] transition"
+                              >
+                                Yes, Change
+                              </button>
+                            </div>
+                          </div>
+                        ), {
+                          duration: 10000,
+                          position: 'top-center',
+                        });
                       }}
                       className="text-xs bg-white border border-green-300 text-green-700 px-3 py-1 rounded-full hover:bg-green-50 transition"
                     >
@@ -205,7 +231,6 @@ export default function QuotationView() {
                     className="w-full h-full object-cover" 
                   />
                   
-                  {/* 🟢 PROPERLY CLOSED THUMBNAIL STRIP */}
                   {imageArray.length > 1 && (
                     <div className="absolute bottom-3 left-3 flex gap-2">
                       {imageArray.slice(0, 5).map((url: string, i: number) => (
