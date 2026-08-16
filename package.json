@@ -2,9 +2,10 @@
   "name": "hotel-booking-react",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
+    "scripts": {
+    "vercel-build": "npm install && npm run build",
     "dev": "vite",
-    "build": "tsc -p tsconfig.api.json && vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint ."
   },
