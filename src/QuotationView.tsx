@@ -151,14 +151,18 @@ export default function QuotationView() {
   const nights = getNights(inquiry.check_in, inquiry.check_out);
   const referenceId = `#STY-${String(inquiry.id).slice(-6).toUpperCase()}`;
 
-  const getBadge = (index: number, total: number) => {
-    if (total === 3 && index === 1) {
-      return { label: 'BEST VALUE', color: 'bg-yellow-400 text-[#0F172A]', text: 'Best balance of price and location.', bestFor: 'Families / value travelers' };
-    }
-    if (index === 0) {
+  // 🟢 FIX: Badges assigned based on actual price, not array index
+  const getBadgeByPrice = (price: number, allPrices: number[]) => {
+    const sorted = [...allPrices].sort((a, b) => a - b); // Sort cheapest to most expensive
+    
+    if (price === sorted[0]) {
       return { label: 'BUDGET OPTION', color: 'bg-blue-500 text-white', text: 'The most affordable choice.', bestFor: 'Budget-conscious travelers' };
     }
-    return { label: 'PREMIUM OPTION', color: 'bg-purple-500 text-white', text: 'Top-tier comfort and amenities.', bestFor: 'Luxury & business travelers' };
+    if (price === sorted[sorted.length - 1]) {
+      return { label: 'PREMIUM OPTION', color: 'bg-purple-500 text-white', text: 'Top-tier comfort and amenities.', bestFor: 'Luxury & business travelers' };
+    }
+    // If there are 3 items, the middle one is Best Value
+    return { label: 'BEST VALUE', color: 'bg-yellow-400 text-[#0F172A]', text: 'Best balance of price and location.', bestFor: 'Families / value travelers' };
   };
 
   return (
@@ -178,8 +182,10 @@ export default function QuotationView() {
 
         {/* QUOTATION CARDS */}
         <div className="grid grid-cols-1 gap-8">
-          {quotations.map((q: any, index: number) => {
-            const badge = getBadge(index, quotations.length);
+           {quotations.map((q: any, index: number) => {
+            // 🟢 Collect all prices to determine badges correctly
+            const allPrices = quotations.map(item => item.total_price);
+            const badge = getBadgeByPrice(q.total_price, allPrices);
             const imageArray = q.hotels?.images ? q.hotels.images.split(',').map((url: string) => url.trim()) : [];
             const fallbackImage = 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=600&q=80';
             const currentActiveImage = activeImages[q.id] || (imageArray.length > 0 ? imageArray[0] : fallbackImage);
