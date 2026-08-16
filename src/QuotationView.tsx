@@ -284,19 +284,51 @@ export default function QuotationView() {
                   )}
                 </div>
 
-                {/* 🟢 SELECT BUTTON TRIGGERS THE MODAL */}
-                                {/* 🟢 CHECK IF THIS CARD WAS ALREADY CHOSEN */}
-                {q.is_customer_chosen ? (
-                  <div className="w-full bg-green-100 border border-green-300 text-green-700 py-3 rounded-xl font-bold text-center mt-1">
-                    ✅ Booking Confirmed
-                  </div>
-                ) : (
-                  <button 
-                    onClick={() => openBookingModal(q.id)}
-                    className="w-full bg-[#E11D48] text-white py-3 rounded-xl font-bold hover:bg-[#BE123C] transition shadow-md hover:shadow-lg mt-1"
-                  >
-                    Select This Option
-                  </button>
+                {/* 🟢 LOGIC: CHECK IF ANY ROOM IS ALREADY CHOSEN */}
+                {(() => {
+                  // Check if ANY of the 3 cards is confirmed
+                  const isAnyCardChosen = quotations.some(item => item.is_customer_chosen === true);
+                  
+                  // If THIS card is the chosen one
+                  if (q.is_customer_chosen) {
+                    return (
+                      <div className="w-full bg-green-100 border border-green-300 text-green-700 py-3 rounded-xl font-bold text-center mt-1 flex items-center justify-center gap-3">
+                        <span>✅ Booking Confirmed</span>
+                        <button 
+                          onClick={() => {
+                            // Cancel this selection so they can pick again
+                            supabase.from('quotations').update({ is_customer_chosen: false }).eq('id', q.id)
+                              .then(() => fetchQuotation(inquiry.id));
+                          }}
+                          className="text-xs bg-white border border-green-300 text-green-700 px-3 py-1 rounded-full hover:bg-green-50 transition"
+                        >
+                          Change
+                        </button>
+                      </div>
+                    );
+                  } 
+                  
+                  // If a DIFFERENT card is chosen, DISABLE this one
+                  else if (isAnyCardChosen) {
+                    return (
+                      <div className="w-full bg-[#E2E8F0] text-[#94a3b8] py-3 rounded-xl font-bold text-center mt-1 cursor-not-allowed">
+                        Option Unavailable
+                      </div>
+                    );
+                  }
+                  
+                  // If NO card is chosen yet, show the active red button
+                  else {
+                    return (
+                      <button 
+                        onClick={() => openBookingModal(q.id)}
+                        className="w-full bg-[#E11D48] text-white py-3 rounded-xl font-bold hover:bg-[#BE123C] transition shadow-md hover:shadow-lg mt-1"
+                      >
+                        Select This Option
+                      </button>
+                    );
+                  }
+                })()}
                 )}
               </div>
             );
