@@ -119,7 +119,7 @@ export default function App() {
     };
 
     try {
-      const response = await fetch('/api/submit-booking', {
+      const response = await fetch('/submit-booking', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
