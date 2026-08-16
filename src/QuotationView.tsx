@@ -185,17 +185,42 @@ export default function QuotationView() {
                 return (
                   <div className="w-full bg-green-100 border border-green-300 text-green-700 py-3 rounded-xl font-bold text-center mt-1 flex items-center justify-center gap-3">
                     <span>✅ Booking Confirmed</span>
-				<button 
-					onClick={() => {
-					if (confirm('Are you sure you want to change your hotel choice?')) {
-					supabase.from('quotations').update({ is_customer_chosen: false }).eq('id', q.id)
-					.then(() => fetchQuotation(inquiry.id));
-					}
-					}}
-					// ...
-					>
-						Change
-						</button>
+                    <button 
+                      onClick={() => {
+                        // 🟢 REPLACED confirm() WITH A MODERN TOAST
+                        toast((t) => (
+                          <div className="flex flex-col gap-2 p-2">
+                            <span className="font-bold text-[#0F172A]">
+                              Are you sure you want to change your hotel choice?
+                            </span>
+                            <div className="flex justify-end gap-2 mt-1">
+                              <button 
+                                onClick={() => toast.dismiss(t.id)}
+                                className="px-3 py-1 bg-[#E2E8F0] text-[#475569] rounded-lg text-sm font-semibold hover:bg-[#CBD5E1] transition"
+                              >
+                                Cancel
+                              </button>
+                              <button 
+                                onClick={() => {
+                                  toast.dismiss(t.id);
+                                  supabase.from('quotations').update({ is_customer_chosen: false }).eq('id', q.id)
+                                    .then(() => fetchQuotation(inquiry.id));
+                                }}
+                                className="px-3 py-1 bg-[#E11D48] text-white rounded-lg text-sm font-semibold hover:bg-[#BE123C] transition"
+                              >
+                                Yes, Change
+                              </button>
+                            </div>
+                          </div>
+                        ), {
+                          duration: 10000, // Stays on screen for 10 seconds until they decide
+                          position: 'top-center',
+                        });
+                      }}
+                      className="text-xs bg-white border border-green-300 text-green-700 px-3 py-1 rounded-full hover:bg-green-50 transition"
+                    >
+                      Change
+                    </button>
                   </div>
                 );
               } else if (isAnyCardChosen) {
