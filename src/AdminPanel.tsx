@@ -146,7 +146,49 @@ export default function AdminPanel() {
       expirationDate.setHours(expirationDate.getHours() + hours);
       const validUntilISO = expirationDate.toISOString();
 
-      const inserts = drafts.map((draft) => ({
+      // 🟢 STEP 1: Loop through drafts to find or create hotel IDs
+      const finalDrafts = await Promise.all(drafts.map(async (draft) => {
+        let finalHotelId = draft.hotelId || null;
+
+        // If there is no hotelId, check if it exists by name in the hotels table
+        if (!finalHotelId && draft.hotelName) {
+          const { data: existingHotel } = await supabase
+            .from('hotels')
+            .select('id')
+            .eq('name', draft.hotelName)
+            .maybeSingle();
+
+          if (existingHotel) {
+            finalHotelId = existingHotel.id;
+          } else {
+            // 🟢 STEP 2: If it doesn't exist, automatically create it!
+            const { data: newHotel, error: createError } = await supabase
+              .from('hotels')
+              .insert({
+                name: draft.hotelName,
+                room_type: draft.roomType,
+                price_per_night: parseInt(draft.pricePerNight) || 0,
+                facilities: draft.facilities,
+                images: draft.imageUrl,
+                description: draft.customDescription,
+                best_for: draft.customBestFor
+              })
+              .select('id')
+              .single();
+
+            if (createError) throw createError;
+            if (newHotel) finalHotelId = newHotel.id;
+          }
+        }
+
+        return {
+          ...draft,
+          hotelId: finalHotelId
+        };
+      }));
+
+      // 🟢 STEP 3: Generate the quotations using the resolved hotel IDs
+      const inserts = finalDrafts.map((draft) => ({
         inquiry_id: selectedInquiry.id,
         hotel_id: draft.hotelId || null,
         hotel_name: draft.hotelName,
