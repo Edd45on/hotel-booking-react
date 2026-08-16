@@ -294,9 +294,11 @@ export default function QuotationView() {
           <div className="pt-8 border-t border-[#E2E8F0] text-sm text-[#64748B]">
             <p className="font-semibold uppercase tracking-wider text-xs mb-2">IMPORTANT</p>
             <p>Rates and availability are subject to change until booking confirmation.</p>
-            <p className="mt-1">
-              Quotation valid until: {new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString()} · 8:00 PM
-            </p>
+            {prices[0]?.valid_until && (
+  <p className="mt-1">
+    Quotation valid until: {new Date(prices[0].valid_until).toLocaleDateString()} · {new Date(prices[0].valid_until).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+  </p>
+)}
           </div>
         </div>
       </div>
