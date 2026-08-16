@@ -238,7 +238,7 @@ export default function AdminPanel() {
             const hasQuotation = inq.quotations?.length > 0;
 
             return (
-              <div key={inq.id} className="bg-white p-6 rounded-2xl shadow-sm border border-[#E2E8F0] flex justify-between items-center">
+              <div key={inq.id} className="bg-white p-6 rounded-2xl shadow-sm border border-[#E2E8F0] flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                   <p className="font-bold text-[#0F172A]">{inq.destination}</p>
                   <p className="text-sm text-[#475569]">
@@ -247,9 +247,12 @@ export default function AdminPanel() {
                   
                   <div className="mt-2 flex flex-wrap items-center gap-2">
                     {chosenQuotation ? (
-                      <span className="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold border border-green-200">
-                        ✅ Booked: {chosenQuotation.hotel_name}
-                      </span>
+<span className="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold border border-green-200">
+  ✅ Booked
+</span>
+<span className="text-xs text-green-700 font-medium ml-1">
+  {chosenQuotation.hotel_name}
+</span>
                     ) : hasQuotation ? (
                       <span className="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold border border-blue-200">
                         📄 Quotation Sent
@@ -282,19 +285,19 @@ export default function AdminPanel() {
                   </div>
                 </div>
 
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setDetailsInquiry(inq)}
-                    className="bg-[#F8FAFC] text-[#0F172A] px-4 py-2 rounded-xl font-semibold border border-[#E2E8F0] hover:bg-[#E2E8F0] transition"
-                  >
-                    Details
-                  </button>
-                  <button
-                    onClick={() => openDraftEditor(inq)}
-                    className="bg-[#E11D48] text-white px-4 py-2 rounded-xl font-semibold hover:bg-[#BE123C] transition"
-                  >
-                    {hasQuotation ? 'Resend Quote' : 'Generate Quotation'}
-                  </button>
+                <div className="flex gap-2 w-full md:w-auto">
+                <button
+				onClick={() => setDetailsInquiry(inq)}
+					className="bg-[#F8FAFC] text-[#0F172A] px-4 py-2 rounded-xl font-semibold border border-[#E2E8F0] hover:bg-[#E2E8F0] transition flex-1 md:flex-none"
+					>
+					Details
+					</button>
+				<button
+				onClick={() => openDraftEditor(inq)}
+				className="bg-[#E11D48] text-white px-4 py-2 rounded-xl font-semibold hover:bg-[#BE123C] transition flex-1 md:flex-none"
+				>
+				{hasQuotation ? 'Resend Quote' : 'Generate Quotation'}
+				</button>
                 </div>
               </div>
             );
