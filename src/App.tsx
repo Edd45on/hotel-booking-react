@@ -406,7 +406,17 @@ export default function App() {
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-4xl font-bold mb-4">Ready to find your hotel?</h2>
           <p className="text-[#94a3b8] mb-8">Tell us your destination, dates and budget.</p>
-          <a href="#search" className="inline-block bg-[#E11D48] text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:bg-[#BE123C] transition w-full md:w-auto">FIND MY HOTEL</a>
+          <a href="#search" className="inline-block bg-[#E11D48] text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:bg-[#BE123C] transition">
+            FIND MY HOTEL
+          </a>
+          
+          {/* 🟢 HIDDEN ADMIN LINK */}
+          <a 
+            href="/admin" 
+            className="block mt-8 text-[#475569] text-xs hover:text-[#94a3b8] transition"
+          >
+            Admin
+          </a>
         </div>
       </section>
 
