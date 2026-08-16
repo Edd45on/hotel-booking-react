@@ -14,7 +14,8 @@ export default function AdminPanel() {
   // 🟢 3 separate draft forms
   const [drafts, setDrafts] = useState([
     {
-      hotelName: '',
+      hotelId: null, // 🟢 ADDED
+	  hotelName: '',
       roomType: '',
       pricePerNight: '',
       customRoomOnly: 'Room only',
@@ -28,7 +29,8 @@ export default function AdminPanel() {
       showSuggestions: false, // Track if dropdown is open
     },
     {
-      hotelName: '',
+      hotelId: null, // 🟢 ADDED
+	  hotelName: '',
       roomType: '',
       pricePerNight: '',
       customRoomOnly: 'Room only',
@@ -42,7 +44,8 @@ export default function AdminPanel() {
       showSuggestions: false,
     },
     {
-      hotelName: '',
+      hotelId: null, // 🟢 ADDED
+	  hotelName: '',
       roomType: '',
       pricePerNight: '',
       customRoomOnly: 'Room only',
@@ -113,6 +116,7 @@ export default function AdminPanel() {
     const newDrafts = [...drafts];
     newDrafts[index] = {
       ...newDrafts[index],
+	  hotelId: hotel.id, // 🟢 SAVE THE ID
       hotelName: hotel.name,
       roomType: hotel.room_type || '',
       pricePerNight: hotel.price_per_night || '',
@@ -149,8 +153,9 @@ export default function AdminPanel() {
       expirationDate.setHours(expirationDate.getHours() + hours);
       const validUntilISO = expirationDate.toISOString();
 
-      const inserts = drafts.map((draft) => ({
+        const inserts = drafts.map((draft) => ({
         inquiry_id: selectedInquiry.id,
+        hotel_id: draft.hotelId || null, // 🟢 ADDED: Saves the ID if selected from dropdown
         hotel_name: draft.hotelName,
         room_type: draft.roomType,
         total_price: parseInt(draft.pricePerNight) || 0,
