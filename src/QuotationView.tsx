@@ -63,6 +63,8 @@ export default function QuotationView() {
           images,
           facilities,
           room_type
+		  hotel_name,    -- 🟢 ADDED
+          image_url 
         )
       `)
       .eq('inquiry_id', inquiryId);
@@ -230,12 +232,12 @@ export default function QuotationView() {
 
                 {/* IMAGES */}
                 <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-slate-100 w-full">
-                  <img 
-                    key={currentActiveImage}
-                    src={currentActiveImage} 
-                    alt={q.hotels?.name} 
-                    className="w-full h-full object-cover" 
-                  />
+				<img 
+					key={currentActiveImage}
+					src={q.image_url || 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=600&q=80'} 
+					alt={q.hotel_name} 
+					className="w-full h-full object-cover" 
+					/>
                   {imageArray.length > 1 && (
                     <div className="absolute bottom-3 left-3 flex gap-2">
                       {imageArray.slice(1, 6).map((url: string, i: number) => (
@@ -257,8 +259,8 @@ export default function QuotationView() {
                 <div className="flex flex-col sm:flex-row justify-between items-start gap-2 mt-1">
                   <div className="flex-1">
                     <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#0F172A] leading-tight">
-                      {q.hotels?.name}
-                    </h2>
+					{q.hotel_name || 'Hotel Name'}
+					</h2>
                     <p className="text-sm text-[#64748B] mt-1">{q.hotels?.room_type || 'Standard Room'}</p>
                   </div>
                   <div className="text-left sm:text-right flex-shrink-0">

@@ -73,7 +73,7 @@ export default function AdminPanel() {
     setLoading(true);
     try {
       // 1. Insert the single quotation into Supabase
-      const { error } = await supabase.from('quotations').insert({
+       const { error } = await supabase.from('quotations').insert({
         inquiry_id: selectedInquiry.id,
         room_type: draft.roomType,
         total_price: parseInt(draft.pricePerNight),
@@ -84,7 +84,9 @@ export default function AdminPanel() {
         custom_non_refundable: draft.customNonRefundable,
         custom_no_breakfast: draft.customNoBreakfast,
         custom_description: draft.customDescription,
-        // We store the custom hotel name and image in a JSON field or just use the default hotels table if needed
+        // 🟢 ADDED THESE TWO FIELDS
+        hotel_name: draft.hotelName,
+        image_url: draft.imageUrl,
       });
 
       if (error) throw error;
