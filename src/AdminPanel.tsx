@@ -8,29 +8,12 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(false);
   const [detailsInquiry, setDetailsInquiry] = useState<any>(null);
   
-  // 🟢 1. Fetch all hotels from the database for auto-suggest
   const [hotelDatabase, setHotelDatabase] = useState<any[]>([]);
 
-  // 🟢 3 separate draft forms
   const [drafts, setDrafts] = useState([
     {
-      hotelId: null, // 🟢 ADDED
-	  hotelName: '',
-      roomType: '',
-      pricePerNight: '',
-      customRoomOnly: 'Room only',
-      customPayAtHotel: 'Pay at hotel',
-      customNonRefundable: 'Non-refundable',
-      customNoBreakfast: 'No breakfast',
-      customDescription: 'Best value for your budget.',
-      customBestFor: 'Couples / leisure',
-      facilities: 'Free WiFi, AC, Parking',
-      imageUrl: '',
-      showSuggestions: false, // Track if dropdown is open
-    },
-    {
-      hotelId: null, // 🟢 ADDED
-	  hotelName: '',
+      hotelId: null,
+      hotelName: '',
       roomType: '',
       pricePerNight: '',
       customRoomOnly: 'Room only',
@@ -44,8 +27,23 @@ export default function AdminPanel() {
       showSuggestions: false,
     },
     {
-      hotelId: null, // 🟢 ADDED
-	  hotelName: '',
+      hotelId: null,
+      hotelName: '',
+      roomType: '',
+      pricePerNight: '',
+      customRoomOnly: 'Room only',
+      customPayAtHotel: 'Pay at hotel',
+      customNonRefundable: 'Non-refundable',
+      customNoBreakfast: 'No breakfast',
+      customDescription: 'Best value for your budget.',
+      customBestFor: 'Couples / leisure',
+      facilities: 'Free WiFi, AC, Parking',
+      imageUrl: '',
+      showSuggestions: false,
+    },
+    {
+      hotelId: null,
+      hotelName: '',
       roomType: '',
       pricePerNight: '',
       customRoomOnly: 'Room only',
@@ -63,7 +61,7 @@ export default function AdminPanel() {
 
   useEffect(() => {
     fetchInquiries();
-    fetchHotels(); // 🟢 Load the hotel database
+    fetchHotels();
   }, []);
 
   const fetchInquiries = async () => {
@@ -81,7 +79,6 @@ export default function AdminPanel() {
     if (data) setInquiries(data);
   };
 
-  // 🟢 2. Fetch all hotels for the autocomplete list
   const fetchHotels = async () => {
     const { data } = await supabase.from('hotels').select('*');
     if (data) setHotelDatabase(data);
@@ -89,34 +86,30 @@ export default function AdminPanel() {
 
   const openDraftEditor = (inq: any) => {
     setSelectedInquiry(inq);
-    // Reset to 3 blank forms (with showSuggestions off)
     setDrafts([
-      { hotelName: '', roomType: '', pricePerNight: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '', showSuggestions: false },
-      { hotelName: '', roomType: '', pricePerNight: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '', showSuggestions: false },
-      { hotelName: '', roomType: '', pricePerNight: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '', showSuggestions: false },
+      { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '', showSuggestions: false },
+      { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '', showSuggestions: false },
+      { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '', showSuggestions: false },
     ]);
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + 7);
     setValidUntil(futureDate.toISOString().split('T')[0]);
   };
 
-  // 🟢 3. Handle text input for the auto-suggest
   const updateDraft = (index: number, field: string, value: any) => {
     const newDrafts = [...drafts];
     newDrafts[index] = { ...newDrafts[index], [field]: value };
-    // If typing in hotelName, open the dropdown
     if (field === 'hotelName') {
       newDrafts[index].showSuggestions = true;
     }
     setDrafts(newDrafts);
   };
 
-  // 🟢 4. Handle selecting a hotel from the dropdown
   const selectHotel = (index: number, hotel: any) => {
     const newDrafts = [...drafts];
     newDrafts[index] = {
       ...newDrafts[index],
-	  hotelId: hotel.id, // 🟢 SAVE THE ID
+      hotelId: hotel.id,
       hotelName: hotel.name,
       roomType: hotel.room_type || '',
       pricePerNight: hotel.price_per_night || '',
@@ -124,7 +117,7 @@ export default function AdminPanel() {
       facilities: hotel.facilities || '',
       customDescription: hotel.description || 'Best value for your budget.',
       customBestFor: hotel.best_for || 'Couples / leisure',
-      showSuggestions: false, // Close dropdown
+      showSuggestions: false,
     };
     setDrafts(newDrafts);
   };
@@ -153,9 +146,9 @@ export default function AdminPanel() {
       expirationDate.setHours(expirationDate.getHours() + hours);
       const validUntilISO = expirationDate.toISOString();
 
-        const inserts = drafts.map((draft) => ({
+      const inserts = drafts.map((draft) => ({
         inquiry_id: selectedInquiry.id,
-        hotel_id: draft.hotelId || null, // 🟢 ADDED: Saves the ID if selected from dropdown
+        hotel_id: draft.hotelId || null,
         hotel_name: draft.hotelName,
         room_type: draft.roomType,
         total_price: parseInt(draft.pricePerNight) || 0,
@@ -271,7 +264,7 @@ export default function AdminPanel() {
         </div>
       </div>
 
-      {/* 🟢 DRAFT EDITOR MODAL WITH AUTO-SUGGEST */}
+      {/* DRAFT EDITOR MODAL WITH AUTO-SUGGEST */}
       {selectedInquiry && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-white max-w-3xl w-full rounded-3xl shadow-2xl p-6 relative">
@@ -283,10 +276,9 @@ export default function AdminPanel() {
 
             <div className="space-y-8 max-h-[60vh] overflow-y-auto pr-2">
               {drafts.map((draft, index) => {
-                // 🟢 5. Filter the hotel list based on typed text
-                const filteredHotels = hotelDatabase.filter(hotel => 
+                const filteredHotels = hotelDatabase ? hotelDatabase.filter(hotel => 
                   hotel.name.toLowerCase().includes(draft.hotelName.toLowerCase())
-                );
+                ) : [];
 
                 return (
                   <div key={index} className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4 space-y-4 relative">
@@ -308,7 +300,7 @@ export default function AdminPanel() {
                           placeholder="e.g. RedDoorz @ Tagaytay"
                         />
                         
-                        {/* 🟢 6. AUTO-SUGGEST DROPDOWN */}
+                        {/* AUTO-SUGGEST DROPDOWN */}
                         {draft.showSuggestions && draft.hotelName.length > 0 && filteredHotels.length > 0 && (
                           <div className="absolute top-full left-0 w-full bg-white border border-[#E2E8F0] rounded-lg shadow-xl z-50 max-h-48 overflow-y-auto mt-1">
                             {filteredHotels.slice(0, 8).map((hotel) => (
