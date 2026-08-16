@@ -1,5 +1,4 @@
 import { useState, useRef } from 'react';
-import DatePickerInput from './components/DatePickerInput';
 import {
   Search,
   CreditCard,
@@ -16,6 +15,7 @@ import {
 import HowItWorks from './HowItWorks';
 import TrustSection from './TrustSection';
 import FAQ from './FAQ';
+import DatePickerInput from './components/DatePickerInput'; // 🟢 Imported correctly
 
 // ------------------ DATA ------------------
 const destinations = ["Batangas", "Cebu", "Clark", "Davao", "Metro Manila", "Tagaytay", "Other"];
@@ -51,7 +51,7 @@ export default function App() {
   const formRef = useRef<HTMLFormElement>(null);
   const otherInputRef = useRef<HTMLInputElement>(null);
 
-  // 🟢 SECRET TAP SHORTCUT (Works on Mobile & Desktop)
+  // 🟢 SECRET TAP SHORTCUT
   const [tapCount, setTapCount] = useState(0);
   const handleSecretTap = () => {
     setTapCount(prev => prev + 1);
@@ -251,7 +251,6 @@ export default function App() {
                 )}
               </div>
 
-              {/* DATE PICKER */}
               <div className="form-group date-group">
                 <label>When?</label>
                 <div className="date-inputs">
@@ -279,7 +278,6 @@ export default function App() {
                     placeholder="Pick check-out date"
                   />
                 </div>
-                {/* 🟢 RENDER DATE ERROR */}
                 {dateError && (
                   <p className="mt-2 text-sm font-medium text-[#E11D48] animate-in fade-in slide-in-from-top-2 duration-200">
                     {dateError}
@@ -367,7 +365,6 @@ export default function App() {
           <a href="#search" className="inline-block bg-[#E11D48] text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:bg-[#BE123C] transition">
             FIND MY HOTEL
           </a>
-          {/* 🟢 HIDDEN ADMIN LINK */}
           <a 
             href="/admin" 
             className="block mt-8 text-[#475569] text-xs hover:text-[#94a3b8] transition"
@@ -377,6 +374,76 @@ export default function App() {
         </div>
       </section>
 
+      {/* 🟢 RESTORED CSS FOR THE FORM */}
+      <style>{`
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+        @media (min-width: 768px) { .container { padding: 0 2rem; } }
+        @media (min-width: 1024px) { .container { padding: 0 4rem; } }
+
+        .search-container { background: #ffffff; padding: 1.5rem; border-radius: 24px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08); max-width: 800px; margin: 0 auto; }
+        @media (min-width: 768px) { .search-container { padding: 3rem; } }
+        
+        .search-header { text-align: center; margin-bottom: 1.5rem; }
+        .search-header h2 { font-size: 1.75rem; font-weight: 800; color: #0F172A; margin-bottom: 0.5rem; }
+        @media (min-width: 768px) { .search-header h2 { font-size: 2rem; } }
+        .search-header p { color: #475569; font-size: 1rem; }
+
+        .form-group { margin-bottom: 1.5rem; }
+        @media (min-width: 768px) { .form-group { margin-bottom: 2rem; } }
+
+        .form-group label { display: block; font-weight: 600; color: #0F172A; margin-bottom: 0.5rem; font-size: 0.95rem; }
+        .form-select { width: 100%; padding: 0.75rem 1rem; border: 2px solid #E2E8F0; border-radius: 12px; background: #ffffff; font-size: 1rem; color: #0F172A; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; transition: border-color 0.2s ease; cursor: pointer; }
+        .form-select:focus { outline: none; border-color: #E11D48; box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.1); }
+        
+        .other-wrapper { animation: fadeSlideIn 0.3s ease-out; }
+        .other-label { display: block; font-size: 0.875rem; color: #64748b; font-weight: 500; margin-bottom: 0.5rem; }
+        @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .date-group { margin-bottom: 1.5rem; }
+        @media (min-width: 768px) { .date-group { margin-bottom: 2rem; } }
+
+        .date-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+        @media (min-width: 500px) { .date-inputs { gap: 1rem; } }
+        .date-wrapper { display: flex; flex-direction: column; gap: 0.25rem; }
+        .date-label { font-size: 0.875rem; color: #64748b; font-weight: 500; }
+        .form-input[type="date"] { width: 100%; padding: 0.75rem 1rem; border: 2px solid #E2E8F0; border-radius: 12px; font-size: 1rem; color: #0F172A; transition: border-color 0.2s ease; cursor: pointer; }
+        .form-input[type="date"]:focus { outline: none; border-color: #E11D48; box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.1); }
+        
+        .form-input { width: 100%; padding: 0.75rem 1rem; border: 2px solid #E2E8F0; border-radius: 12px; font-size: 1rem; color: #0F172A; transition: border-color 0.2s ease; }
+        .form-input:focus { outline: none; border-color: #E11D48; box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.1); }
+
+        .guest-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+        @media (min-width: 500px) { .guest-grid { gap: 1rem; } }
+        .guest-field { display: flex; flex-direction: column; gap: 0.25rem; }
+        .guest-field label { font-size: 0.75rem; color: #64748b; font-weight: 500; margin-bottom: 0; }
+        @media (min-width: 768px) { .guest-field label { font-size: 0.875rem; } }
+        .form-input[type="number"] { width: 100%; padding: 0.75rem 1rem; border: 2px solid #E2E8F0; border-radius: 12px; font-size: 1rem; color: #0F172A; transition: border-color 0.2s ease; }
+        .form-input[type="number"]::-webkit-inner-spin-button, .form-input[type="number"]::-webkit-outer-spin-button { opacity: 1; }
+
+        .button-group { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .option-btn { padding: 0.4rem 1rem; border: 2px solid #E2E8F0; background: #ffffff; border-radius: 50px; color: #475569; font-weight: 500; font-size: 0.8rem; cursor: pointer; transition: all 0.2s ease; }
+        @media (min-width: 768px) { .option-btn { padding: 0.5rem 1.25rem; font-size: 0.9rem; } }
+        .option-btn:hover { border-color: #E11D48; color: #E11D48; background: #FFF1F2; }
+        .option-btn.active { border-color: #E11D48; background: #E11D48; color: #ffffff; }
+        .purpose-btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.4rem 0.75rem; }
+        @media (min-width: 768px) { .purpose-btn { padding: 0.5rem 1rem; } }
+        .purpose-icon { color: #64748B; transition: color 0.2s ease; }
+        .purpose-btn:hover .purpose-icon { color: #E11D48; }
+        .purpose-btn.active .purpose-icon { color: #ffffff; }
+
+        .optional { font-weight: 400; color: #94a3b8; font-size: 0.75rem; }
+        .form-textarea { width: 100%; padding: 0.75rem 1rem; border: 2px solid #E2E8F0; border-radius: 12px; font-size: 1rem; color: #0F172A; font-family: inherit; resize: vertical; transition: border-color 0.2s ease; }
+        .form-textarea:focus { outline: none; border-color: #E11D48; box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.1); }
+
+        .payment-badge { display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: #FFF1F2; border: 1px solid #FECDD3; color: #BE123C; padding: 0.75rem 1rem; border-radius: 12px; margin-top: 0.5rem; margin-bottom: 1rem; font-weight: 600; font-size: 0.85rem; text-align: center; flex-wrap: wrap; }
+        .payment-icon { display: inline-block; flex-shrink: 0; }
+
+        .btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem; width: 100%; background: #E11D48; color: #ffffff; padding: 1rem 1.5rem; border-radius: 12px; font-weight: 700; font-size: 1rem; border: none; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 14px rgba(225, 29, 72, 0.3); margin-top: 0.5rem; }
+        @media (min-width: 768px) { .btn-primary { padding: 1rem 2.5rem; font-size: 1.125rem; } }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(225, 29, 72, 0.4); background: #BE123C; }
+        .btn-primary:active { transform: translateY(0); }
+        .btn-icon { display: inline-block; }
+      `}</style>
     </main>
   );
 }
