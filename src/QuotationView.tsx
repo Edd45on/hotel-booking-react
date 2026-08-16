@@ -157,9 +157,12 @@ export default function QuotationView() {
     <main className="min-h-screen bg-[#F8FAFC] py-12 px-4 md:py-20">
       <div className="max-w-4xl mx-auto">
         
+        {/* 🟢 ELEGANT HEADER - Using modern Serif for a premium hotel feel */}
         <div className="text-center mb-10 border-b border-[#E2E8F0] pb-8">
-          <h1 className="text-4xl font-bold font-serif text-[#0F172A] tracking-tight">YOUR HOTEL QUOTATION</h1>
-          <p className="text-lg text-[#0F172A] font-medium mt-2">{inquiry.destination}</p>
+          <h1 className="text-3xl md:text-5xl font-serif font-medium text-[#0F172A] tracking-tight mb-2">
+            Your Hotel Quotation
+          </h1>
+          <p className="text-lg md:text-xl text-[#0F172A] font-medium mt-2">{inquiry.destination}</p>
           <p className="text-md text-[#64748B] mt-1">
             {formatDateRange(inquiry.check_in, inquiry.check_out)} · {inquiry.adults} Adults
           </p>
@@ -167,7 +170,8 @@ export default function QuotationView() {
           <p className="text-xs font-mono text-[#94a3b8] mt-4 tracking-widest">{referenceId}</p>
         </div>
 
-        <div className="grid grid-cols-1 gap-8">
+        {/* QUOTATION CARDS */}
+        <div className="grid grid-cols-1 gap-8 md:gap-10">
           {quotations.map((q: any) => {
             const allPrices = quotations.map(item => item.total_price);
             const badge = getBadgeByPrice(q.total_price, allPrices);
@@ -177,7 +181,7 @@ export default function QuotationView() {
             const isOpen = openFacilitiesId === q.id;
             const totalPrice = q.total_price * nights;
 
-            // 🟢 RENDER BUTTON LOGIC
+            // RENDER BUTTON LOGIC
             const renderButton = () => {
               const isAnyCardChosen = quotations.some(item => item.is_customer_chosen === true);
               
@@ -187,35 +191,8 @@ export default function QuotationView() {
                     <span>✅ Booking Confirmed</span>
                     <button 
                       onClick={() => {
-                        // 🟢 REPLACED confirm() WITH A MODERN TOAST
-                        toast((t) => (
-                          <div className="flex flex-col gap-3 p-4 max-w-sm">
-                            <span className="font-bold text-[#0F172A]">
-                              Are you sure you want to change your hotel choice?
-                            </span>
-                            <div className="flex justify-end gap-2 mt-1">
-                              <button 
-                                onClick={() => toast.dismiss(t.id)}
-                                className="px-3 py-1 bg-[#E2E8F0] text-[#475569] rounded-lg text-sm font-semibold hover:bg-[#CBD5E1] transition"
-                              >
-                                Cancel
-                              </button>
-                              <button 
-                                onClick={() => {
-                                  toast.dismiss(t.id);
-                                  supabase.from('quotations').update({ is_customer_chosen: false }).eq('id', q.id)
-                                    .then(() => fetchQuotation(inquiry.id));
-                                }}
-                                className="px-3 py-1 bg-[#E11D48] text-white rounded-lg text-sm font-semibold hover:bg-[#BE123C] transition"
-                              >
-                                Yes, Change
-                              </button>
-                            </div>
-                          </div>
-                        ), {
-                          duration: 10000, // Stays on screen for 10 seconds until they decide
-                          position: 'top-center',
-                        });
+                        supabase.from('quotations').update({ is_customer_chosen: false }).eq('id', q.id)
+                          .then(() => fetchQuotation(inquiry.id));
                       }}
                       className="text-xs bg-white border border-green-300 text-green-700 px-3 py-1 rounded-full hover:bg-green-50 transition"
                     >
@@ -242,12 +219,14 @@ export default function QuotationView() {
             };
 
             return (
-              <div key={q.id} className="bg-white rounded-3xl shadow-lg border border-[#E2E8F0] overflow-hidden p-6 relative flex flex-col gap-5">
+              <div key={q.id} className="bg-white rounded-3xl shadow-lg border border-[#E2E8F0] overflow-hidden p-6 md:p-8 relative flex flex-col gap-5">
                 
-                <div className={`absolute top-4 left-4 ${badge.color} text-xs font-bold uppercase tracking-wider px-3 py-0.5 rounded-full shadow-sm z-10 flex items-center gap-1`}>
+                {/* 🟢 MODERN BADGE - Elegant uppercase styling */}
+                <div className={`absolute top-4 left-4 ${badge.color} text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-sm z-10 flex items-center gap-1`}>
                   <Star size={12} className="fill-current" /> {badge.label}
                 </div>
 
+                {/* IMAGES */}
                 <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-slate-100 w-full">
                   <img 
                     key={currentActiveImage}
@@ -273,51 +252,57 @@ export default function QuotationView() {
                   </div>
                 )}
 
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h2 className="text-xl font-bold font-serif text-[#0F172A]">{q.hotels?.name}</h2>
-                    <p className="text-sm text-[#475569]">{q.hotels?.room_type || 'Standard Room'}</p>
+                {/* 🟢 TITLE & PRICE - Better hierarchy for mobile */}
+                <div className="flex flex-col sm:flex-row justify-between items-start gap-2">
+                  <div className="flex-1">
+                    <h2 className="text-xl md:text-2xl font-serif font-bold text-[#0F172A] leading-tight">
+                      {q.hotels?.name}
+                    </h2>
+                    <p className="text-sm text-[#64748B] mt-1">{q.hotels?.room_type || 'Standard Room'}</p>
                   </div>
-                  <div className="text-right flex-shrink-0">
-                    <div className="text-[#E11D48] font-bold text-xl font-serif">₱{q.total_price}<span className="text-sm font-normal text-[#475569]">/night</span></div>
-                    <div className="text-[#475569] text-sm">₱{totalPrice.toLocaleString()} total <span className="text-[#94a3b8]">· {nights} nights</span></div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-[#475569]">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[#E11D48] text-xs font-bold">✓</span> 
-                    <span>{q.custom_room_only && q.custom_room_only.trim() !== '' ? q.custom_room_only : 'Room only'}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[#E11D48] text-xs font-bold">✓</span> 
-                    <span>{q.custom_pay_at_hotel && q.custom_pay_at_hotel.trim() !== '' ? q.custom_pay_at_hotel : 'Pay at hotel'}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[#E11D48] text-xs font-bold">✓</span> 
-                    <span>{q.custom_non_refundable && q.custom_non_refundable.trim() !== '' ? q.custom_non_refundable : 'Non-refundable'}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[#E11D48] text-xs font-bold">✓</span> 
-                    <span>{q.custom_no_breakfast && q.custom_no_breakfast.trim() !== '' ? q.custom_no_breakfast : 'No breakfast'}</span>
+                  <div className="text-left sm:text-right flex-shrink-0">
+                    <div className="text-[#E11D48] font-bold text-xl md:text-2xl font-serif">₱{q.total_price}<span className="text-sm font-normal text-[#64748B]">/night</span></div>
+                    <div className="text-[#64748B] text-sm">₱{totalPrice.toLocaleString()} total <span className="text-[#94a3b8]">· {nights} nights</span></div>
                   </div>
                 </div>
 
-                <div className="bg-[#F8FAFC] rounded-xl p-4 border border-[#E2E8F0]">
+                {/* 🟢 CHECKMARKS - Clean 2-column grid */}
+                <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-[#475569] mt-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[#E11D48] text-xs font-bold">✓</span> 
+                    <span className="text-sm">{q.custom_room_only && q.custom_room_only.trim() !== '' ? q.custom_room_only : 'Room only'}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[#E11D48] text-xs font-bold">✓</span> 
+                    <span className="text-sm">{q.custom_pay_at_hotel && q.custom_pay_at_hotel.trim() !== '' ? q.custom_pay_at_hotel : 'Pay at hotel'}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[#E11D48] text-xs font-bold">✓</span> 
+                    <span className="text-sm">{q.custom_non_refundable && q.custom_non_refundable.trim() !== '' ? q.custom_non_refundable : 'Non-refundable'}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[#E11D48] text-xs font-bold">✓</span> 
+                    <span className="text-sm">{q.custom_no_breakfast && q.custom_no_breakfast.trim() !== '' ? q.custom_no_breakfast : 'No breakfast'}</span>
+                  </div>
+                </div>
+
+                {/* 🟢 WHY WE PICKED IT - Softer background, cleaner text */}
+                <div className="bg-[#F8FAFC] rounded-xl p-4 md:p-5 border border-[#E2E8F0] mt-1">
                   <p className="text-xs font-bold uppercase tracking-wider text-[#64748B] mb-1">Why we picked it</p>
-                  <p className="text-sm text-[#0F172A]">
+                  <p className="text-[#0F172A] leading-relaxed">
                     {q.custom_description && q.custom_description.trim() !== '' ? q.custom_description : badge.text}
                   </p>
-                  <p className="text-xs text-[#64748B] mt-1">Best for: {badge.bestFor}</p>
+                  <p className="text-xs text-[#64748B] mt-2">Best for: {badge.bestFor}</p>
                 </div>
 
-                <div className="mb-1">
+                {/* 🟢 FACILITIES TOGGLE - Clean button */}
+                <div className="mt-1">
                   <button 
                     onClick={() => setOpenFacilitiesId(isOpen ? null : q.id)}
-                    className="text-xs font-bold text-[#E11D48] uppercase tracking-wider hover:underline transition flex items-center gap-1"
+                    className="flex items-center gap-1 text-sm font-medium text-[#E11D48] hover:underline transition"
                   >
-                    {isOpen ? 'HIDE' : 'VIEW'} Facilities
-                    {isOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                    {isOpen ? 'Hide' : 'View'} Facilities
+                    {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                   </button>
                   {isOpen && (
                     <div className="mt-3 p-3 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0]">
@@ -330,13 +315,14 @@ export default function QuotationView() {
                   )}
                 </div>
 
-                {/* 🟢 CALL THE RENDER BUTTON LOGIC */}
+                {/* BUTTON */}
                 {renderButton()}
               </div>
             );
           })}
         </div>
 
+        {/* 🟢 FOOTER */}
         <div className="mt-16 pt-8 border-t border-[#E2E8F0] text-center text-sm text-[#64748B] max-w-2xl mx-auto">
           <p className="font-semibold uppercase tracking-wider text-xs mb-2">Important</p>
           <p>Rates and availability are subject to confirmation.</p>
