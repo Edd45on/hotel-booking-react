@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from './utils/supabase';
-import { ChevronDown, ChevronUp, Star, X, MessageCircle } from 'lucide-react';
+import { ChevronDown, ChevronUp, Star, X, MessageCircle, Wallet, Award, Gem } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function QuotationView() {
@@ -133,12 +133,12 @@ export default function QuotationView() {
   const getBadgeByPrice = (price: number, allPrices: number[]) => {
     const sorted = [...allPrices].sort((a, b) => a - b);
     if (price === sorted[0]) {
-      return { label: 'BUDGET OPTION', color: 'bg-blue-500 text-white', icon: '💰', text: 'The most affordable choice.', bestFor: 'Budget-conscious travelers' };
+      return { label: 'BUDGET OPTION', color: 'bg-blue-500 text-white', icon: Wallet, text: 'The most affordable choice.', bestFor: 'Budget-conscious travelers' };
     }
     if (price === sorted[sorted.length - 1]) {
-      return { label: 'PREMIUM OPTION', color: 'bg-purple-500 text-white', icon: '★', text: 'Top-tier comfort and amenities.', bestFor: 'Luxury & business travelers' };
+      return { label: 'PREMIUM OPTION', color: 'bg-purple-500 text-white', icon: Gem, text: 'Top-tier comfort and amenities.', bestFor: 'Luxury & business travelers' };
     }
-    return { label: 'BEST VALUE', color: 'bg-yellow-400 text-[#0F172A]', icon: '⭐', text: 'Best balance of price, location and comfort.', bestFor: 'Couples / leisure' };
+    return { label: 'BEST VALUE', color: 'bg-yellow-400 text-[#0F172A]', icon: Award, text: 'Best balance of price, location and comfort.', bestFor: 'Couples / leisure' };
   };
 
   return (
@@ -246,7 +246,7 @@ export default function QuotationView() {
                 
                 {/* BADGE */}
                 <div className={`absolute top-4 left-4 ${badge.color} text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-sm z-10 flex items-center gap-1`}>
-                  <span>{badge.icon}</span> {badge.label}
+                  <badge.icon size={14} className="fill-current" /> {badge.label}
                 </div>
 
                 {/* IMAGE & THUMBNAILS */}
