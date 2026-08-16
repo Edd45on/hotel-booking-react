@@ -182,7 +182,7 @@ export default function QuotationView() {
 
         {/* QUOTATION CARDS */}
         <div className="grid grid-cols-1 gap-8">
-           {quotations.map((q: any, index: number) => {
+           {quotations.map((q: any ) => {
             // 🟢 Collect all prices to determine badges correctly
             const allPrices = quotations.map(item => item.total_price);
             const badge = getBadgeByPrice(q.total_price, allPrices);
