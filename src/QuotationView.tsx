@@ -189,7 +189,7 @@ export default function QuotationView() {
                       onClick={() => {
                         // 🟢 REPLACED confirm() WITH A MODERN TOAST
                         toast((t) => (
-                          <div className="flex flex-col gap-2 p-2">
+                          <div className="flex flex-col gap-3 p-4 max-w-sm">
                             <span className="font-bold text-[#0F172A]">
                               Are you sure you want to change your hotel choice?
                             </span>
