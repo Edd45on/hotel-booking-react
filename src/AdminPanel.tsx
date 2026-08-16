@@ -8,7 +8,6 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(false);
   const [detailsInquiry, setDetailsInquiry] = useState<any>(null);
   
-  // 🟢 NEW: Draft State for the Blank Form
   const [draft, setDraft] = useState({
     hotelName: '',
     roomType: '',
@@ -38,10 +37,8 @@ export default function AdminPanel() {
     if (data) setInquiries(data);
   };
 
-  // 🟢 OPEN THE BLANK DRAFT EDITOR
   const openDraftEditor = (inq: any) => {
     setSelectedInquiry(inq);
-    // Reset the form to blank defaults
     setDraft({
       hotelName: '',
       roomType: '',
@@ -62,7 +59,7 @@ export default function AdminPanel() {
     setValidUntil(futureDate.toISOString().split('T')[0]);
   };
 
-  // 🟢 GENERATE THE QUOTATION & SAVE TO SUPABASE
+  // 🟢 GENERATE 3 QUOTATIONS AUTOMATICALLY IN ONE CLICK
   const generateQuotation = async () => {
     if (!selectedInquiry) return;
     if (!draft.hotelName || !draft.pricePerNight) {
@@ -72,7 +69,10 @@ export default function AdminPanel() {
 
     setLoading(true);
     try {
-      // 🟢 GENERATE 3 ROWS BASED ON THE SINGLE FORM INPUT
+      // 1. Delete any old quotations for this inquiry (to prevent duplicates)
+      await supabase.from('quotations').delete().eq('inquiry_id', selectedInquiry.id);
+
+      // 2. Generate 3 unique options based on the single input
       const hotelNames = [
         draft.hotelName,
         `${draft.hotelName} (Alternative)`,
@@ -83,9 +83,6 @@ export default function AdminPanel() {
         parseInt(draft.pricePerNight) + 200,
         parseInt(draft.pricePerNight) + 500
       ];
-
-      // Clear out old quotations for this inquiry so we don't get duplicates
-      await supabase.from('quotations').delete().eq('inquiry_id', selectedInquiry.id);
 
       const inserts = hotelNames.map((name, index) => ({
         inquiry_id: selectedInquiry.id,
@@ -137,7 +134,6 @@ export default function AdminPanel() {
           </button>
         </div>
 
-        {/* LIST OF INQUIRIES */}
         <div className="grid grid-cols-1 gap-4">
           {inquiries.map((inq) => (
             <div key={inq.id} className="bg-white p-6 rounded-2xl shadow-sm border border-[#E2E8F0] flex justify-between items-center">
@@ -169,7 +165,7 @@ export default function AdminPanel() {
         </div>
       </div>
 
-      {/* 🟢 DRAFT EDITOR MODAL (BLANK FORM) */}
+      {/* DRAFT EDITOR MODAL */}
       {selectedInquiry && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-white max-w-2xl w-full rounded-3xl shadow-2xl p-6 relative">
