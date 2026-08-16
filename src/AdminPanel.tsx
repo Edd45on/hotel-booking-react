@@ -72,11 +72,26 @@ export default function AdminPanel() {
 
     setLoading(true);
     try {
-      // 1. Insert the single quotation into Supabase
-       const { error } = await supabase.from('quotations').insert({
+      // 🟢 GENERATE 3 ROWS BASED ON THE SINGLE FORM INPUT
+      const hotelNames = [
+        draft.hotelName,
+        `${draft.hotelName} (Alternative)`,
+        `${draft.hotelName} (Premium)`
+      ];
+      const priceVariants = [
+        parseInt(draft.pricePerNight),
+        parseInt(draft.pricePerNight) + 200,
+        parseInt(draft.pricePerNight) + 500
+      ];
+
+      // Clear out old quotations for this inquiry so we don't get duplicates
+      await supabase.from('quotations').delete().eq('inquiry_id', selectedInquiry.id);
+
+      const inserts = hotelNames.map((name, index) => ({
         inquiry_id: selectedInquiry.id,
+        hotel_name: name,
         room_type: draft.roomType,
-        total_price: parseInt(draft.pricePerNight),
+        total_price: priceVariants[index],
         is_customer_chosen: false,
         facilities: draft.facilities,
         custom_room_only: draft.customRoomOnly,
@@ -84,25 +99,21 @@ export default function AdminPanel() {
         custom_non_refundable: draft.customNonRefundable,
         custom_no_breakfast: draft.customNoBreakfast,
         custom_description: draft.customDescription,
-        // 🟢 ADDED THESE TWO FIELDS
-        hotel_name: draft.hotelName,
         image_url: draft.imageUrl,
-      });
+      }));
 
+      const { error } = await supabase.from('quotations').insert(inserts);
       if (error) throw error;
 
-      // 2. Generate the live link for the customer
       const customerLink = `${window.location.origin}/quotation?id=${selectedInquiry.id}`;
       
-      // 3. Copy to clipboard
       try {
         await navigator.clipboard.writeText(customerLink);
-        alert(`✅ Quotation generated!\n\nThe customer link has been copied to your clipboard:\n\n${customerLink}`);
+        alert(`✅ Quotation generated!\n\n3 options created. The link has been copied to your clipboard:\n\n${customerLink}`);
       } catch (err) {
         alert(`✅ Quotation generated!\n\nCopy this link manually:\n\n${customerLink}`);
       }
 
-      // 4. Close the editor and refresh
       setSelectedInquiry(null);
       fetchInquiries();
     } catch (err: any) {
