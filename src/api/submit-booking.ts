@@ -1,15 +1,29 @@
 import { createClient } from '@supabase/supabase-js';
 
-// ✅ Connect to Supabase directly inside the function
+// 🔹 Define the shape of the incoming data
+interface BookingData {
+  destination: string;
+  checkIn: string;
+  checkOut: string;
+  adults: string;
+  children: string;
+  rooms: string;
+  purpose: string;
+  priority: string;
+  budget: string;
+  specialRequest: string;
+}
+
+// Connect to Supabase
 const supabaseUrl = process.env.VITE_SUPABASE_URL as string;
 const supabaseKey = process.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 export async function POST(request: Request) {
   try {
-    const data = await request.json();
+    // 🔹 Cast the parsed JSON to our known type
+    const data = await request.json() as BookingData;
     
-    // ✅ Insert into Supabase
     const { error } = await supabase
       .from('booking_requests')
       .insert({
