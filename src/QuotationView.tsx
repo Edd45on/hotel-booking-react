@@ -157,8 +157,8 @@ export default function QuotationView() {
     <main className="min-h-screen bg-[#F8FAFC] py-12 px-4 md:py-20">
       <div className="max-w-4xl mx-auto">
         
-        {/* 🟢 BRANDED HEADER */}
-        <div className="text-center mb-10 border-b border-[#E2E8F0] pb-8">
+        {/* HEADER */}
+        <div className="text-center mb-8 border-b border-[#E2E8F0] pb-6">
           <h1 className="text-3xl md:text-5xl font-serif font-medium text-[#0F172A] tracking-tight mb-2">
             Your Hotel Quotation
           </h1>
@@ -167,41 +167,41 @@ export default function QuotationView() {
           <p className="text-xs font-mono text-[#94a3b8] mt-4 tracking-widest">{referenceId}</p>
         </div>
 
-        {/* 🟢 ELEGANT INFO CARDS */}
-        <div className="max-w-2xl mx-auto mb-10 space-y-4">
+        {/* 🟢 COMPACT INFO CARDS */}
+        <div className="max-w-xl mx-auto mb-8 space-y-3">
           
-          {/* Card 1: Check-In / Check-Out / Rooms / Guests */}
-          <div className="bg-white rounded-2xl border border-[#E2E8F0] overflow-hidden shadow-sm">
+          {/* Card 1: Dates & Guests */}
+          <div className="bg-white rounded-xl border border-[#E2E8F0] overflow-hidden shadow-sm">
             <div className="grid grid-cols-2 border-b border-[#E2E8F0]">
-              <div className="p-5 border-r border-[#E2E8F0]">
-                <p className="text-xs font-semibold uppercase tracking-wider text-[#64748B]">Check In</p>
-                <p className="text-base font-medium text-[#0F172A] mt-1">
+              <div className="p-4 border-r border-[#E2E8F0]">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#64748B]">Check In</p>
+                <p className="text-sm font-medium text-[#0F172A] mt-0.5">
                   {new Date(inquiry.check_in).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
                 </p>
               </div>
-              <div className="p-5">
-                <p className="text-xs font-semibold uppercase tracking-wider text-[#64748B]">Check Out</p>
-                <p className="text-base font-medium text-[#0F172A] mt-1">
+              <div className="p-4">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#64748B]">Check Out</p>
+                <p className="text-sm font-medium text-[#0F172A] mt-0.5">
                   {new Date(inquiry.check_out).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
                 </p>
               </div>
             </div>
             <div className="grid grid-cols-2">
-              <div className="p-5 border-r border-[#E2E8F0]">
-                <p className="text-xs font-semibold uppercase tracking-wider text-[#64748B]">Room(s)</p>
-                <p className="text-base font-medium text-[#0F172A] mt-1">{inquiry.rooms}</p>
+              <div className="p-4 border-r border-[#E2E8F0]">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#64748B]">Room(s)</p>
+                <p className="text-sm font-medium text-[#0F172A] mt-0.5">{inquiry.rooms}</p>
               </div>
-              <div className="p-5">
-                <p className="text-xs font-semibold uppercase tracking-wider text-[#64748B]">Guests</p>
-                <p className="text-base font-medium text-[#0F172A] mt-1">{inquiry.adults}</p>
+              <div className="p-4">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#64748B]">Guests</p>
+                <p className="text-sm font-medium text-[#0F172A] mt-0.5">{inquiry.adults}</p>
               </div>
             </div>
           </div>
 
           {/* Card 2: Room Type */}
-          <div className="bg-white rounded-2xl border border-[#E2E8F0] p-5 shadow-sm">
-            <p className="text-xs font-semibold uppercase tracking-wider text-[#64748B]">Room Type</p>
-            <p className="text-base font-medium text-[#0F172A] mt-1">
+          <div className="bg-white rounded-xl border border-[#E2E8F0] p-4 shadow-sm">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-[#64748B]">Room Type</p>
+            <p className="text-sm font-medium text-[#0F172A] mt-0.5">
               {quotations.length > 0 ? quotations[0].hotels?.room_type || 'Standard Room' : 'Standard Room'}
             </p>
           </div>
