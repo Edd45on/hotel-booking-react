@@ -42,6 +42,7 @@ export default function QuotationView() {
     const { data: inqData } = await supabase.from('inquiries').select('*').eq('id', inquiryId).single();
     setInquiry(inqData);
 
+    // 🟢 PERFECTLY FORMATTED SELECT QUERY
     const { data: qData, error } = await supabase
       .from('quotations')
       .select(`
@@ -56,16 +57,8 @@ export default function QuotationView() {
         custom_non_refundable,
         custom_no_breakfast,
         custom_description,
-        hotels (
-          id,
-          name,
-          address,
-          images,
-          facilities,
-          room_type
-		  hotel_name,    -- 🟢 ADDED
-          image_url 
-        )
+        hotel_name,
+        image_url
       `)
       .eq('inquiry_id', inquiryId);
     
@@ -75,15 +68,7 @@ export default function QuotationView() {
       new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     ) : [];
 
-    const seenNames = new Set();
-    const uniqueData = sortedData.filter((item: any) => {
-      const name = item.hotels?.name || '';
-      if (seenNames.has(name)) return false;
-      seenNames.add(name);
-      return true;
-    });
-
-    setQuotations(uniqueData.slice(0, 3));
+    setQuotations(sortedData.slice(0, 1)); // We only show 1 quotation now since we generate 1 per click
   };
 
   const openBookingModal = (quotationId: string) => {
@@ -144,22 +129,11 @@ export default function QuotationView() {
   const nights = getNights(inquiry.check_in, inquiry.check_out);
   const referenceId = `#STY-${String(inquiry.id).slice(-6).toUpperCase()}`;
 
-  const getBadgeByPrice = (price: number, allPrices: number[]) => {
-    const sorted = [...allPrices].sort((a, b) => a - b);
-    if (price === sorted[0]) {
-      return { label: 'BUDGET OPTION', color: 'bg-blue-500 text-white', icon: '💰', text: 'The most affordable choice.', bestFor: 'Budget-conscious travelers' };
-    }
-    if (price === sorted[sorted.length - 1]) {
-      return { label: 'PREMIUM OPTION', color: 'bg-purple-500 text-white', icon: '★', text: 'Top-tier comfort and amenities.', bestFor: 'Luxury & business travelers' };
-    }
-    return { label: 'BEST VALUE', color: 'bg-yellow-400 text-[#0F172A]', icon: '⭐', text: 'Best balance of price, location and comfort.', bestFor: 'Couples / leisure' };
-  };
-
   return (
     <main className="min-h-screen bg-[#F8FAFC] py-12 px-4 md:py-20">
       <div className="max-w-4xl mx-auto">
         
-        {/* 🟢 BRANDED HEADER */}
+        {/* HEADER */}
         <div className="text-center mb-12 border-b border-[#E2E8F0] pb-10">
           <h1 className="text-4xl md:text-5xl font-serif font-medium text-[#0F172A] tracking-tight mb-2">
             YOUR HOTEL QUOTATION
@@ -177,15 +151,11 @@ export default function QuotationView() {
         {/* QUOTATION CARDS */}
         <div className="grid grid-cols-1 gap-10 md:gap-12">
           {quotations.map((q: any) => {
-            const allPrices = quotations.map(item => item.total_price);
-            const badge = getBadgeByPrice(q.total_price, allPrices);
-            const imageArray = q.hotels?.images ? q.hotels.images.split(',').map((url: string) => url.trim()) : [];
-            const fallbackImage = 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=600&q=80';
-            const currentActiveImage = activeImages[q.id] || (imageArray.length > 0 ? imageArray[0] : fallbackImage);
+            const imageArray = q.image_url ? [q.image_url] : [];
+            const currentActiveImage = activeImages[q.id] || (imageArray.length > 0 ? imageArray[0] : 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=600&q=80');
             const isOpen = openFacilitiesId === q.id;
             const totalPrice = q.total_price * nights;
 
-            // RENDER BUTTON LOGIC
             const renderButton = () => {
               const isAnyCardChosen = quotations.some(item => item.is_customer_chosen === true);
               
@@ -225,43 +195,23 @@ export default function QuotationView() {
             return (
               <div key={q.id} className="bg-white rounded-3xl shadow-lg border border-[#E2E8F0] overflow-hidden p-6 md:p-8 relative flex flex-col gap-5">
                 
-                {/* 🟢 BADGE */}
-                <div className={`absolute top-4 left-4 ${badge.color} text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-sm z-10 flex items-center gap-1`}>
-                  <span>{badge.icon}</span> {badge.label}
-                </div>
-
-                {/* IMAGES */}
+                {/* IMAGE */}
                 <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-slate-100 w-full">
-				<img 
-					key={currentActiveImage}
-					src={q.image_url || 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=600&q=80'} 
-					alt={q.hotel_name} 
-					className="w-full h-full object-cover" 
-					/>
-                  {imageArray.length > 1 && (
-                    <div className="absolute bottom-3 left-3 flex gap-2">
-                      {imageArray.slice(1, 6).map((url: string, i: number) => (
-                        <button 
-                          key={i}
-                          onClick={() => setActiveImages(prev => ({ ...prev, [q.id]: url }))}
-                          className={`w-8 h-8 rounded-full overflow-hidden border-2 border-white shadow-sm transition-all hover:scale-110 ${
-                            currentActiveImage === url ? 'ring-2 ring-[#E11D48]' : ''
-                          }`}
-                        >
-                          <img src={url} alt={`Thumbnail ${i+1}`} className="w-full h-full object-cover" />
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                  <img 
+                    key={currentActiveImage}
+                    src={currentActiveImage} 
+                    alt={q.hotel_name} 
+                    className="w-full h-full object-cover" 
+                  />
                 </div>
 
                 {/* TITLE & PRICE */}
                 <div className="flex flex-col sm:flex-row justify-between items-start gap-2 mt-1">
                   <div className="flex-1">
                     <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#0F172A] leading-tight">
-					{q.hotel_name || 'Hotel Name'}
-					</h2>
-                    <p className="text-sm text-[#64748B] mt-1">{q.hotels?.room_type || 'Standard Room'}</p>
+                      {q.hotel_name}
+                    </h2>
+                    <p className="text-sm text-[#64748B] mt-1">{q.room_type || 'Standard Room'}</p>
                   </div>
                   <div className="text-left sm:text-right flex-shrink-0">
                     <div className="text-[#E11D48] font-bold text-2xl md:text-3xl font-serif">
@@ -297,9 +247,9 @@ export default function QuotationView() {
                 <div className="bg-[#F8FAFC] rounded-xl p-4 md:p-5 border border-[#E2E8F0] mt-1">
                   <p className="text-xs font-bold uppercase tracking-wider text-[#64748B] mb-1">Why we picked it</p>
                   <p className="text-[#0F172A] leading-relaxed">
-                    {q.custom_description && q.custom_description.trim() !== '' ? q.custom_description : badge.text}
+                    {q.custom_description && q.custom_description.trim() !== '' ? q.custom_description : 'Best value for your budget.'}
                   </p>
-                  <p className="text-xs text-[#64748B] mt-2">Best for: {badge.bestFor}</p>
+                  <p className="text-xs text-[#64748B] mt-2">Best for: {q.custom_best_for || 'Couples / leisure'}</p>
                 </div>
 
                 {/* VIEW FACILITIES */}
@@ -314,7 +264,7 @@ export default function QuotationView() {
                   {isOpen && (
                     <div className="mt-3 p-3 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0]">
                       <div className="flex flex-wrap gap-2">
-                        {q.hotels?.facilities ? q.hotels.facilities.split(',').map((fac: string, i: number) => (
+                        {q.facilities ? q.facilities.split(',').map((fac: string, i: number) => (
                           <span key={i} className="px-3 py-1 bg-white border border-[#E2E8F0] rounded-full text-xs text-[#475569]">{fac.trim()}</span>
                         )) : (<p className="text-xs text-[#94a3b8]">No facilities listed</p>)}
                       </div>
@@ -322,17 +272,14 @@ export default function QuotationView() {
                   )}
                 </div>
 
-                {/* BUTTON */}
                 {renderButton()}
               </div>
             );
           })}
         </div>
 
-        {/* 🟢 CHAT WITH US & IMPORTANT SECTION */}
+        {/* CHAT WITH US & IMPORTANT SECTION */}
         <div className="mt-16 text-center max-w-2xl mx-auto">
-          
-          {/* Chat CTA */}
           <div className="mb-8">
             <p className="text-[#0F172A] font-medium text-lg mb-3">Need help choosing?</p>
             <button 
@@ -344,7 +291,6 @@ export default function QuotationView() {
             </button>
           </div>
 
-          {/* Footer Info */}
           <div className="pt-8 border-t border-[#E2E8F0] text-sm text-[#64748B]">
             <p className="font-semibold uppercase tracking-wider text-xs mb-2">IMPORTANT</p>
             <p>Rates and availability are subject to change until booking confirmation.</p>
