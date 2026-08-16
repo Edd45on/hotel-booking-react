@@ -129,6 +129,18 @@ export default function QuotationView() {
   const nights = getNights(inquiry.check_in, inquiry.check_out);
   const referenceId = `#STY-${String(inquiry.id).slice(-6).toUpperCase()}`;
 
+  // 🟢 RESTORED BADGE LOGIC
+  const getBadgeByPrice = (price: number, allPrices: number[]) => {
+    const sorted = [...allPrices].sort((a, b) => a - b);
+    if (price === sorted[0]) {
+      return { label: 'BUDGET OPTION', color: 'bg-blue-500 text-white', icon: '💰', text: 'The most affordable choice.', bestFor: 'Budget-conscious travelers' };
+    }
+    if (price === sorted[sorted.length - 1]) {
+      return { label: 'PREMIUM OPTION', color: 'bg-purple-500 text-white', icon: '★', text: 'Top-tier comfort and amenities.', bestFor: 'Luxury & business travelers' };
+    }
+    return { label: 'BEST VALUE', color: 'bg-yellow-400 text-[#0F172A]', icon: '⭐', text: 'Best balance of price, location and comfort.', bestFor: 'Couples / leisure' };
+  };
+
   return (
     <main className="min-h-screen bg-[#F8FAFC] py-12 px-4 md:py-20">
       <div className="max-w-4xl mx-auto">
@@ -151,6 +163,10 @@ export default function QuotationView() {
         {/* QUOTATION CARDS */}
         <div className="grid grid-cols-1 gap-10 md:gap-12">
           {quotations.map((q: any) => {
+            // 🟢 CALCULATE BADGE FOR EACH CARD
+            const allPrices = quotations.map(item => item.total_price);
+            const badge = getBadgeByPrice(q.total_price, allPrices);
+
             const imageArray = q.image_url ? q.image_url.split(',').map((url: string) => url.trim()) : [];
             const currentActiveImage = activeImages[q.id] || (imageArray.length > 0 ? imageArray[0] : 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=600&q=80');
             const isOpen = openFacilitiesId === q.id;
@@ -163,7 +179,6 @@ export default function QuotationView() {
                 return (
                   <div className="w-full bg-green-100 border border-green-300 text-green-700 py-3 rounded-xl font-bold text-center mt-2 flex items-center justify-center gap-3">
                     <span>✅ Booking Confirmed</span>
-                    {/* 🟢 RESTORED TOAST CONFIRMATION FOR CHANGE */}
                     <button 
                       onClick={() => {
                         toast((t) => (
@@ -229,6 +244,11 @@ export default function QuotationView() {
                 }`}
               >
                 
+                {/* BADGE */}
+                <div className={`absolute top-4 left-4 ${badge.color} text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-sm z-10 flex items-center gap-1`}>
+                  <span>{badge.icon}</span> {badge.label}
+                </div>
+
                 {/* IMAGE & THUMBNAILS */}
                 <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-slate-100 w-full">
                   <img 
@@ -297,9 +317,9 @@ export default function QuotationView() {
                 <div className="bg-[#F8FAFC] rounded-xl p-4 md:p-5 border border-[#E2E8F0] mt-1">
                   <p className="text-xs font-bold uppercase tracking-wider text-[#64748B] mb-1">Why we picked it</p>
                   <p className="text-[#0F172A] leading-relaxed">
-                    {q.custom_description && q.custom_description.trim() !== '' ? q.custom_description : 'Best value for your budget.'}
+                    {q.custom_description && q.custom_description.trim() !== '' ? q.custom_description : badge.text}
                   </p>
-                  <p className="text-xs text-[#64748B] mt-2">Best for: {q.custom_best_for || 'Couples / leisure'}</p>
+                  <p className="text-xs text-[#64748B] mt-2">Best for: {badge.bestFor}</p>
                 </div>
 
                 {/* VIEW FACILITIES */}
