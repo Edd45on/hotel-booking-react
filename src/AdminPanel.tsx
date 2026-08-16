@@ -146,11 +146,9 @@ export default function AdminPanel() {
       expirationDate.setHours(expirationDate.getHours() + hours);
       const validUntilISO = expirationDate.toISOString();
 
-      // 🟢 STEP 1: Loop through drafts to find or create hotel IDs
       const finalDrafts = await Promise.all(drafts.map(async (draft) => {
         let finalHotelId = draft.hotelId || null;
 
-        // If there is no hotelId, check if it exists by name in the hotels table
         if (!finalHotelId && draft.hotelName) {
           const { data: existingHotel } = await supabase
             .from('hotels')
@@ -161,7 +159,6 @@ export default function AdminPanel() {
           if (existingHotel) {
             finalHotelId = existingHotel.id;
           } else {
-            // 🟢 STEP 2: If it doesn't exist, automatically create it!
             const { data: newHotel, error: createError } = await supabase
               .from('hotels')
               .insert({
@@ -187,7 +184,6 @@ export default function AdminPanel() {
         };
       }));
 
-      // 🟢 STEP 3: Generate the quotations using the resolved hotel IDs
       const inserts = finalDrafts.map((draft) => ({
         inquiry_id: selectedInquiry.id,
         hotel_id: draft.hotelId || null,
@@ -388,13 +384,15 @@ export default function AdminPanel() {
         </div>
       )}
 
-      {/* DETAILS MODAL */}
+      {/* 🟢 UPDATED DETAILS MODAL */}
       {detailsInquiry && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white max-w-lg w-full rounded-2xl p-6 shadow-2xl relative">
             <button onClick={() => setDetailsInquiry(null)} className="absolute top-4 right-4 text-[#475569] hover:text-[#0F172A] transition"><X size={24} /></button>
             <h2 className="text-2xl font-bold text-[#0F172A] mb-1">Booking Details</h2>
             <p className="text-sm text-[#64748B] mb-4">Review the customer's request.</p>
+            
+            {/* Customer Details */}
             <div className="bg-blue-50 border border-blue-100 p-4 rounded-xl mb-4">
               <p className="text-blue-700 font-bold text-sm mb-2">👤 Customer Details</p>
               <div className="grid grid-cols-2 gap-2 text-sm">
@@ -404,12 +402,44 @@ export default function AdminPanel() {
                 <div className="col-span-2"><span className="text-[#64748B]">Phone:</span> <span className="font-semibold text-[#0F172A] block">{detailsInquiry.phone || 'Not provided'}</span></div>
               </div>
             </div>
+
+            {/* Booking Request Details */}
             <div className="bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0] text-sm grid grid-cols-2 gap-2">
               <div><span className="text-[#64748B]">Destination:</span> <span className="font-semibold text-[#0F172A]">{detailsInquiry.destination}</span></div>
-              <div><span className="text-[#64748B]">Guests:</span> <span className="font-semibold text-[#0F172A]">{detailsInquiry.adults} Adults</span></div>
+              <div><span className="text-[#64748B]">Guests:</span> <span className="font-semibold text-[#0F172A]">{detailsInquiry.adults} Adults · {detailsInquiry.rooms} Room(s)</span></div>
               <div><span className="text-[#64748B]">Check-in:</span> <span className="font-semibold text-[#0F172A]">{detailsInquiry.check_in}</span></div>
               <div><span className="text-[#64748B]">Check-out:</span> <span className="font-semibold text-[#0F172A]">{detailsInquiry.check_out}</span></div>
             </div>
+
+            {/* 🟢 CHOSEN HOTEL BLOCK (Restored) */}
+            {(() => {
+              const chosen = detailsInquiry.quotations?.find((q: any) => q.is_customer_chosen === true);
+              if (!chosen) return null;
+              return (
+                <div className="mt-4 bg-green-50 border border-green-200 p-4 rounded-xl">
+                  <p className="text-green-700 font-bold text-sm mb-1">✅ Chosen Hotel</p>
+                  <p className="font-bold text-[#0F172A] text-lg">
+                    {chosen.hotel_name}
+                  </p>
+                  <button 
+                    onClick={() => {
+                      navigator.clipboard.writeText(
+                        `Customer: ${detailsInquiry.first_name || 'N/A'} ${detailsInquiry.last_name || 'N/A'}\n` +
+                        `Email: ${detailsInquiry.email || 'N/A'}\n` +
+                        `Phone: ${detailsInquiry.phone || 'N/A'}\n` +
+                        `Destination: ${detailsInquiry.destination}\n` +
+                        `Rooms: ${detailsInquiry.rooms}\n` +
+                        `Hotel: ${chosen.hotel_name}`
+                      );
+                      alert('📋 Full booking details copied to clipboard!');
+                    }}
+                    className="w-full mt-2 bg-white border border-green-200 text-green-700 py-2 rounded-xl font-semibold hover:bg-green-50 transition"
+                  >
+                    Copy to Clipboard for RedSeller
+                  </button>
+                </div>
+              );
+            })()}
           </div>
         </div>
       )}
