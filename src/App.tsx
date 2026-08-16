@@ -490,14 +490,6 @@ export default function App() {
         .btn-primary:active { transform: translateY(0); }
         .btn-icon { display: inline-block; }
       `}</style>
-	        {/* 🟢 FLOATING ADMIN BUTTON (Delete this when you build real auth) */}
-      <div className="fixed bottom-6 right-6 z-50">
-        <button
-          onClick={() => window.location.href = '/admin'}
-          className="bg-[#0F172A] text-white p-4 rounded-full shadow-2xl hover:scale-105 transition"
-        >
-          🔐 Admin
-        </button>
       </div>
 	  
     </main>
