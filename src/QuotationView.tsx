@@ -157,17 +157,55 @@ export default function QuotationView() {
     <main className="min-h-screen bg-[#F8FAFC] py-12 px-4 md:py-20">
       <div className="max-w-4xl mx-auto">
         
-        {/* 🟢 ELEGANT HEADER - Using modern Serif for a premium hotel feel */}
+        {/* 🟢 BRANDED HEADER */}
         <div className="text-center mb-10 border-b border-[#E2E8F0] pb-8">
           <h1 className="text-3xl md:text-5xl font-serif font-medium text-[#0F172A] tracking-tight mb-2">
             Your Hotel Quotation
           </h1>
           <p className="text-lg md:text-xl text-[#0F172A] font-medium mt-2">{inquiry.destination}</p>
-          <p className="text-md text-[#64748B] mt-1">
-            {formatDateRange(inquiry.check_in, inquiry.check_out)} · {inquiry.adults} Adults
-          </p>
           <p className="text-sm text-[#64748B] mt-1">{quotations.length} suitable options found</p>
           <p className="text-xs font-mono text-[#94a3b8] mt-4 tracking-widest">{referenceId}</p>
+        </div>
+
+        {/* 🟢 ELEGANT INFO CARDS */}
+        <div className="max-w-2xl mx-auto mb-10 space-y-4">
+          
+          {/* Card 1: Check-In / Check-Out / Rooms / Guests */}
+          <div className="bg-white rounded-2xl border border-[#E2E8F0] overflow-hidden shadow-sm">
+            <div className="grid grid-cols-2 border-b border-[#E2E8F0]">
+              <div className="p-5 border-r border-[#E2E8F0]">
+                <p className="text-xs font-semibold uppercase tracking-wider text-[#64748B]">Check In</p>
+                <p className="text-base font-medium text-[#0F172A] mt-1">
+                  {new Date(inquiry.check_in).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                </p>
+              </div>
+              <div className="p-5">
+                <p className="text-xs font-semibold uppercase tracking-wider text-[#64748B]">Check Out</p>
+                <p className="text-base font-medium text-[#0F172A] mt-1">
+                  {new Date(inquiry.check_out).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2">
+              <div className="p-5 border-r border-[#E2E8F0]">
+                <p className="text-xs font-semibold uppercase tracking-wider text-[#64748B]">Room(s)</p>
+                <p className="text-base font-medium text-[#0F172A] mt-1">{inquiry.rooms}</p>
+              </div>
+              <div className="p-5">
+                <p className="text-xs font-semibold uppercase tracking-wider text-[#64748B]">Guests</p>
+                <p className="text-base font-medium text-[#0F172A] mt-1">{inquiry.adults}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 2: Room Type */}
+          <div className="bg-white rounded-2xl border border-[#E2E8F0] p-5 shadow-sm">
+            <p className="text-xs font-semibold uppercase tracking-wider text-[#64748B]">Room Type</p>
+            <p className="text-base font-medium text-[#0F172A] mt-1">
+              {quotations.length > 0 ? quotations[0].hotels?.room_type || 'Standard Room' : 'Standard Room'}
+            </p>
+          </div>
+
         </div>
 
         {/* QUOTATION CARDS */}
@@ -221,7 +259,6 @@ export default function QuotationView() {
             return (
               <div key={q.id} className="bg-white rounded-3xl shadow-lg border border-[#E2E8F0] overflow-hidden p-6 md:p-8 relative flex flex-col gap-5">
                 
-                {/* 🟢 MODERN BADGE - Elegant uppercase styling */}
                 <div className={`absolute top-4 left-4 ${badge.color} text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-sm z-10 flex items-center gap-1`}>
                   <Star size={12} className="fill-current" /> {badge.label}
                 </div>
@@ -252,7 +289,6 @@ export default function QuotationView() {
                   </div>
                 )}
 
-                {/* 🟢 TITLE & PRICE - Better hierarchy for mobile */}
                 <div className="flex flex-col sm:flex-row justify-between items-start gap-2">
                   <div className="flex-1">
                     <h2 className="text-xl md:text-2xl font-serif font-bold text-[#0F172A] leading-tight">
@@ -266,7 +302,6 @@ export default function QuotationView() {
                   </div>
                 </div>
 
-                {/* 🟢 CHECKMARKS - Clean 2-column grid */}
                 <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-[#475569] mt-2">
                   <div className="flex items-center gap-2">
                     <span className="text-[#E11D48] text-xs font-bold">✓</span> 
@@ -286,7 +321,6 @@ export default function QuotationView() {
                   </div>
                 </div>
 
-                {/* 🟢 WHY WE PICKED IT - Softer background, cleaner text */}
                 <div className="bg-[#F8FAFC] rounded-xl p-4 md:p-5 border border-[#E2E8F0] mt-1">
                   <p className="text-xs font-bold uppercase tracking-wider text-[#64748B] mb-1">Why we picked it</p>
                   <p className="text-[#0F172A] leading-relaxed">
@@ -295,7 +329,6 @@ export default function QuotationView() {
                   <p className="text-xs text-[#64748B] mt-2">Best for: {badge.bestFor}</p>
                 </div>
 
-                {/* 🟢 FACILITIES TOGGLE - Clean button */}
                 <div className="mt-1">
                   <button 
                     onClick={() => setOpenFacilitiesId(isOpen ? null : q.id)}
@@ -315,14 +348,12 @@ export default function QuotationView() {
                   )}
                 </div>
 
-                {/* BUTTON */}
                 {renderButton()}
               </div>
             );
           })}
         </div>
 
-        {/* 🟢 FOOTER */}
         <div className="mt-16 pt-8 border-t border-[#E2E8F0] text-center text-sm text-[#64748B] max-w-2xl mx-auto">
           <p className="font-semibold uppercase tracking-wider text-xs mb-2">Important</p>
           <p>Rates and availability are subject to confirmation.</p>
