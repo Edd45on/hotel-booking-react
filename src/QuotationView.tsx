@@ -185,15 +185,17 @@ export default function QuotationView() {
                 return (
                   <div className="w-full bg-green-100 border border-green-300 text-green-700 py-3 rounded-xl font-bold text-center mt-1 flex items-center justify-center gap-3">
                     <span>✅ Booking Confirmed</span>
-                    <button 
-                      onClick={() => {
-                        supabase.from('quotations').update({ is_customer_chosen: false }).eq('id', q.id)
-                          .then(() => fetchQuotation(inquiry.id));
-                      }}
-                      className="text-xs bg-white border border-green-300 text-green-700 px-3 py-1 rounded-full hover:bg-green-50 transition"
-                    >
-                      Change
-                    </button>
+				<button 
+					onClick={() => {
+					if (confirm('Are you sure you want to change your hotel choice?')) {
+					supabase.from('quotations').update({ is_customer_chosen: false }).eq('id', q.id)
+					.then(() => fetchQuotation(inquiry.id));
+					}
+					}}
+					// ...
+					>
+						Change
+						</button>
                   </div>
                 );
               } else if (isAnyCardChosen) {
