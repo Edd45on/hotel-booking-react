@@ -15,7 +15,6 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Missing Supabase credentials' });
     }
 
-    // Send the data to Supabase's REST API using fetch
     const response = await fetch(`${supabaseUrl}/rest/v1/booking_requests`, {
       method: 'POST',
       headers: {
