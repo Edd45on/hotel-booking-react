@@ -17,7 +17,7 @@ export default async function handler(req, res) {
     }
 
     // 🔥 FIXED: Sending data exactly as Supabase expects
-    const response = await fetch(`${supabaseUrl}/rest/v1/booking_requests`, {
+    const response = await fetch(`${supabaseUrl}/rest/v1/inquiries`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
