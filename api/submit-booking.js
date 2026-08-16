@@ -25,10 +25,10 @@ export default async function handler(req, res) {
         'Authorization': `Bearer ${supabaseKey}`,
         'Prefer': 'return=minimal'
       },
-      body: JSON.stringify({
+        body: JSON.stringify({
         destination: data.destination,
-        checkin: data.checkIn,
-        checkout: data.checkOut,
+        check_in: data.checkIn,         // ✅ Added underscore to match your table
+        check_out: data.checkOut,       // ✅ Added underscore to match your table
         adults: parseInt(data.adults),
         children: parseInt(data.children),
         rooms: parseInt(data.rooms),
