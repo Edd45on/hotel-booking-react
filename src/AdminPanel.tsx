@@ -53,7 +53,7 @@ export default function AdminPanel() {
     });
   };
 
-  const proceedToDraft = () => {
+   const proceedToDraft = () => {
     if (selectedHotelIds.length !== 3) {
       alert('Please select exactly 3 hotels.');
       return;
@@ -63,13 +63,15 @@ export default function AdminPanel() {
     setDraftQuotes(selectedHotels.map((hotel, index) => ({
       hotel: hotel,
       customTitle: hotel?.name || '',
-      customDescription: index === 1 ? 'Best balance of price and location.' : index === 0 ? 'The most affordable choice.' : 'Top-tier comfort and amenities.',
-      customBestFor: index === 1 ? 'Families / value travelers' : index === 0 ? 'Budget-conscious travelers' : 'Luxury & business travelers',
+      // 🟢 DYNAMIC: Pulls data from the `hotels` table, falls back to hardcoded defaults
+      customDescription: hotel?.description || (index === 1 ? 'Best balance of price and location.' : index === 0 ? 'The most affordable choice.' : 'Top-tier comfort and amenities.'),
+      customBestFor: hotel?.best_for || (index === 1 ? 'Families / value travelers' : index === 0 ? 'Budget-conscious travelers' : 'Luxury & business travelers'),
       customFacilities: hotel?.facilities || 'No Free Toiletries, AC, No Smoking, Free Wifi, Car Parking',
-      customRoomOnly: 'Room only',
-      customPayAtHotel: 'Pay at hotel',
-      customNonRefundable: 'Non-refundable',
-      customNoBreakfast: 'No breakfast',
+      // 🟢 DYNAMIC: Pulls the 4 checkmark lines from the `hotels` table
+      customRoomOnly: hotel?.room_only_label || 'Room only',
+      customPayAtHotel: hotel?.pay_at_hotel_label || 'Pay at hotel',
+      customNonRefundable: hotel?.non_refundable_label || 'Non-refundable',
+      customNoBreakfast: hotel?.no_breakfast_label || 'No breakfast',
     })));
     
     const futureDate = new Date();
