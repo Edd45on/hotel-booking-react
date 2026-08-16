@@ -8,7 +8,10 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(false);
   const [detailsInquiry, setDetailsInquiry] = useState<any>(null);
   
-  // 🟢 3 Separate draft forms
+  // 🟢 1. Fetch all hotels from the database for auto-suggest
+  const [hotelDatabase, setHotelDatabase] = useState<any[]>([]);
+
+  // 🟢 3 separate draft forms
   const [drafts, setDrafts] = useState([
     {
       hotelName: '',
@@ -22,6 +25,7 @@ export default function AdminPanel() {
       customBestFor: 'Couples / leisure',
       facilities: 'Free WiFi, AC, Parking',
       imageUrl: '',
+      showSuggestions: false, // Track if dropdown is open
     },
     {
       hotelName: '',
@@ -35,6 +39,7 @@ export default function AdminPanel() {
       customBestFor: 'Couples / leisure',
       facilities: 'Free WiFi, AC, Parking',
       imageUrl: '',
+      showSuggestions: false,
     },
     {
       hotelName: '',
@@ -48,11 +53,14 @@ export default function AdminPanel() {
       customBestFor: 'Couples / leisure',
       facilities: 'Free WiFi, AC, Parking',
       imageUrl: '',
+      showSuggestions: false,
     },
   ]);
+  const [validUntil, setValidUntil] = useState('');
 
   useEffect(() => {
     fetchInquiries();
+    fetchHotels(); // 🟢 Load the hotel database
   }, []);
 
   const fetchInquiries = async () => {
@@ -70,19 +78,50 @@ export default function AdminPanel() {
     if (data) setInquiries(data);
   };
 
-  const openDraftEditor = (inq: any) => {
-    setSelectedInquiry(inq);
-    // Reset to 3 blank forms
-    setDrafts([
-      { hotelName: '', roomType: '', pricePerNight: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '' },
-      { hotelName: '', roomType: '', pricePerNight: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '' },
-      { hotelName: '', roomType: '', pricePerNight: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '' },
-    ]);
+  // 🟢 2. Fetch all hotels for the autocomplete list
+  const fetchHotels = async () => {
+    const { data } = await supabase.from('hotels').select('*');
+    if (data) setHotelDatabase(data);
   };
 
+  const openDraftEditor = (inq: any) => {
+    setSelectedInquiry(inq);
+    // Reset to 3 blank forms (with showSuggestions off)
+    setDrafts([
+      { hotelName: '', roomType: '', pricePerNight: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '', showSuggestions: false },
+      { hotelName: '', roomType: '', pricePerNight: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '', showSuggestions: false },
+      { hotelName: '', roomType: '', pricePerNight: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '', showSuggestions: false },
+    ]);
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + 7);
+    setValidUntil(futureDate.toISOString().split('T')[0]);
+  };
+
+  // 🟢 3. Handle text input for the auto-suggest
   const updateDraft = (index: number, field: string, value: any) => {
     const newDrafts = [...drafts];
     newDrafts[index] = { ...newDrafts[index], [field]: value };
+    // If typing in hotelName, open the dropdown
+    if (field === 'hotelName') {
+      newDrafts[index].showSuggestions = true;
+    }
+    setDrafts(newDrafts);
+  };
+
+  // 🟢 4. Handle selecting a hotel from the dropdown
+  const selectHotel = (index: number, hotel: any) => {
+    const newDrafts = [...drafts];
+    newDrafts[index] = {
+      ...newDrafts[index],
+      hotelName: hotel.name,
+      roomType: hotel.room_type || '',
+      pricePerNight: hotel.price_per_night || '',
+      imageUrl: hotel.images ? hotel.images.split(',')[0].trim() : '',
+      facilities: hotel.facilities || '',
+      customDescription: hotel.description || 'Best value for your budget.',
+      customBestFor: hotel.best_for || 'Couples / leisure',
+      showSuggestions: false, // Close dropdown
+    };
     setDrafts(newDrafts);
   };
 
@@ -96,10 +135,8 @@ export default function AdminPanel() {
 
     setLoading(true);
     try {
-      // Delete old quotations for this inquiry
       await supabase.from('quotations').delete().eq('inquiry_id', selectedInquiry.id);
 
-      // Calculate dynamic validity based on check-in date
       const today = new Date();
       const checkIn = new Date(selectedInquiry.check_in);
       const daysDiff = Math.ceil((checkIn.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
@@ -112,7 +149,6 @@ export default function AdminPanel() {
       expirationDate.setHours(expirationDate.getHours() + hours);
       const validUntilISO = expirationDate.toISOString();
 
-      // Prepare the 3 inserts
       const inserts = drafts.map((draft) => ({
         inquiry_id: selectedInquiry.id,
         hotel_name: draft.hotelName,
@@ -160,7 +196,6 @@ export default function AdminPanel() {
           </button>
         </div>
 
-        {/* INQUIRY LIST WITH QUOTATION STATUS */}
         <div className="grid grid-cols-1 gap-4">
           {inquiries.map((inq) => {
             const chosenQuotation = inq.quotations?.find((q: any) => q.is_customer_chosen === true);
@@ -174,7 +209,6 @@ export default function AdminPanel() {
                     {inq.check_in} → {inq.check_out} | {inq.adults} Adults, {inq.rooms} Rooms
                   </p>
                   
-                  {/* 🟢 STATUS BADGE WITH CUSTOMER DETAILS CHECK */}
                   <div className="mt-2 flex flex-wrap items-center gap-2">
                     {chosenQuotation ? (
                       <span className="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold border border-green-200">
@@ -190,7 +224,6 @@ export default function AdminPanel() {
                       </span>
                     )}
 
-                    {/* 🟢 QUOTATION LINK (If exists) */}
                     {hasQuotation && (
                       <div className="flex items-center gap-1 bg-[#F8FAFC] border border-[#E2E8F0] rounded-full px-2 py-1 text-[10px] font-mono text-[#0F172A]">
                         <span className="max-w-[120px] truncate">
@@ -213,7 +246,6 @@ export default function AdminPanel() {
                   </div>
                 </div>
 
-                {/* BUTTONS */}
                 <div className="flex gap-2">
                   <button
                     onClick={() => setDetailsInquiry(inq)}
@@ -234,7 +266,7 @@ export default function AdminPanel() {
         </div>
       </div>
 
-      {/* DRAFT EDITOR MODAL (3 FORMS) */}
+      {/* 🟢 DRAFT EDITOR MODAL WITH AUTO-SUGGEST */}
       {selectedInquiry && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-white max-w-3xl w-full rounded-3xl shadow-2xl p-6 relative">
@@ -245,28 +277,68 @@ export default function AdminPanel() {
             </div>
 
             <div className="space-y-8 max-h-[60vh] overflow-y-auto pr-2">
-              {drafts.map((draft, index) => (
-                <div key={index} className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4 space-y-4">
-                  <div className="flex justify-between items-center mb-2"><span className="text-sm font-bold uppercase tracking-wider text-[#64748B]">Option {index + 1}</span></div>
-                  <div className="flex gap-4">
-                    <div className="flex-1"><label className="block text-xs font-semibold text-[#64748B] mb-1">Hotel Name *</label><input type="text" value={draft.hotelName} onChange={(e) => updateDraft(index, 'hotelName', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" placeholder="e.g. RedDoorz @ Tagaytay" /></div>
-                    <div className="w-1/3"><label className="block text-xs font-semibold text-[#64748B] mb-1">Price / night *</label><input type="number" value={draft.pricePerNight} onChange={(e) => updateDraft(index, 'pricePerNight', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" placeholder="1389" /></div>
+              {drafts.map((draft, index) => {
+                // 🟢 5. Filter the hotel list based on typed text
+                const filteredHotels = hotelDatabase.filter(hotel => 
+                  hotel.name.toLowerCase().includes(draft.hotelName.toLowerCase())
+                );
+
+                return (
+                  <div key={index} className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4 space-y-4 relative">
+                    <div className="flex justify-between items-center mb-2"><span className="text-sm font-bold uppercase tracking-wider text-[#64748B]">Option {index + 1}</span></div>
+                    
+                    <div className="flex gap-4 relative">
+                      <div className="flex-1 relative">
+                        <label className="block text-xs font-semibold text-[#64748B] mb-1">Hotel Name *</label>
+                        <input 
+                          type="text" 
+                          value={draft.hotelName}
+                          onChange={(e) => updateDraft(index, 'hotelName', e.target.value)}
+                          onFocus={() => {
+                            const newDrafts = [...drafts];
+                            newDrafts[index].showSuggestions = true;
+                            setDrafts(newDrafts);
+                          }}
+                          className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
+                          placeholder="e.g. RedDoorz @ Tagaytay"
+                        />
+                        
+                        {/* 🟢 6. AUTO-SUGGEST DROPDOWN */}
+                        {draft.showSuggestions && draft.hotelName.length > 0 && filteredHotels.length > 0 && (
+                          <div className="absolute top-full left-0 w-full bg-white border border-[#E2E8F0] rounded-lg shadow-xl z-50 max-h-48 overflow-y-auto mt-1">
+                            {filteredHotels.slice(0, 8).map((hotel) => (
+                              <button 
+                                key={hotel.id}
+                                onClick={() => selectHotel(index, hotel)}
+                                className="w-full text-left px-4 py-2 text-sm text-[#0F172A] hover:bg-[#F8FAFC] transition border-b border-[#E2E8F0] last:border-0"
+                              >
+                                <p className="font-semibold">{hotel.name}</p>
+                                <p className="text-xs text-[#64748B]">₱{hotel.price_per_night}/night · {hotel.room_type}</p>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      <div className="w-1/3"><label className="block text-xs font-semibold text-[#64748B] mb-1">Price / night *</label><input type="number" value={draft.pricePerNight} onChange={(e) => updateDraft(index, 'pricePerNight', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" placeholder="1389" /></div>
+                    </div>
+
+                    <div className="flex gap-4">
+                      <div className="flex-1"><label className="block text-xs font-semibold text-[#64748B] mb-1">Room Type</label><input type="text" value={draft.roomType} onChange={(e) => updateDraft(index, 'roomType', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" placeholder="Standard Room" /></div>
+                      <div className="w-1/3"><label className="block text-xs font-semibold text-[#64748B] mb-1">Image URL</label><input type="text" value={draft.imageUrl} onChange={(e) => updateDraft(index, 'imageUrl', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" placeholder="https://..." /></div>
+                    </div>
+
+                    <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Why we picked it (Description)</label><input type="text" value={draft.customDescription} onChange={(e) => updateDraft(index, 'customDescription', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
+                    <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Best For</label><input type="text" value={draft.customBestFor} onChange={(e) => updateDraft(index, 'customBestFor', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
+                    <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Facilities (Comma separated)</label><textarea rows={2} value={draft.facilities} onChange={(e) => updateDraft(index, 'facilities', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48] resize-none" placeholder="Free WiFi, AC, Parking, Pool" /></div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Line 1</label><input type="text" value={draft.customRoomOnly} onChange={(e) => updateDraft(index, 'customRoomOnly', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
+                      <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Line 2</label><input type="text" value={draft.customPayAtHotel} onChange={(e) => updateDraft(index, 'customPayAtHotel', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
+                      <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Line 3</label><input type="text" value={draft.customNonRefundable} onChange={(e) => updateDraft(index, 'customNonRefundable', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
+                      <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Line 4</label><input type="text" value={draft.customNoBreakfast} onChange={(e) => updateDraft(index, 'customNoBreakfast', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
+                    </div>
                   </div>
-                  <div className="flex gap-4">
-                    <div className="flex-1"><label className="block text-xs font-semibold text-[#64748B] mb-1">Room Type</label><input type="text" value={draft.roomType} onChange={(e) => updateDraft(index, 'roomType', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" placeholder="Standard Room" /></div>
-                    <div className="w-1/3"><label className="block text-xs font-semibold text-[#64748B] mb-1">Image URL</label><input type="text" value={draft.imageUrl} onChange={(e) => updateDraft(index, 'imageUrl', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" placeholder="https://..." /></div>
-                  </div>
-                  <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Why we picked it (Description)</label><input type="text" value={draft.customDescription} onChange={(e) => updateDraft(index, 'customDescription', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
-                  <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Best For</label><input type="text" value={draft.customBestFor} onChange={(e) => updateDraft(index, 'customBestFor', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
-                  <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Facilities (Comma separated)</label><textarea rows={2} value={draft.facilities} onChange={(e) => updateDraft(index, 'facilities', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48] resize-none" placeholder="Free WiFi, AC, Parking, Pool" /></div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Line 1</label><input type="text" value={draft.customRoomOnly} onChange={(e) => updateDraft(index, 'customRoomOnly', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
-                    <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Line 2</label><input type="text" value={draft.customPayAtHotel} onChange={(e) => updateDraft(index, 'customPayAtHotel', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
-                    <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Line 3</label><input type="text" value={draft.customNonRefundable} onChange={(e) => updateDraft(index, 'customNonRefundable', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
-                    <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Line 4</label><input type="text" value={draft.customNoBreakfast} onChange={(e) => updateDraft(index, 'customNoBreakfast', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-[#E2E8F0]">
@@ -277,15 +349,13 @@ export default function AdminPanel() {
         </div>
       )}
 
-      {/* 🟢 DETAILS MODAL WITH CLIENT INFO */}
+      {/* DETAILS MODAL */}
       {detailsInquiry && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white max-w-lg w-full rounded-2xl p-6 shadow-2xl relative">
             <button onClick={() => setDetailsInquiry(null)} className="absolute top-4 right-4 text-[#475569] hover:text-[#0F172A] transition"><X size={24} /></button>
             <h2 className="text-2xl font-bold text-[#0F172A] mb-1">Booking Details</h2>
             <p className="text-sm text-[#64748B] mb-4">Review the customer's request.</p>
-            
-            {/* 🟢 CLIENT DETAILS BLOCK */}
             <div className="bg-blue-50 border border-blue-100 p-4 rounded-xl mb-4">
               <p className="text-blue-700 font-bold text-sm mb-2">👤 Customer Details</p>
               <div className="grid grid-cols-2 gap-2 text-sm">
@@ -295,7 +365,6 @@ export default function AdminPanel() {
                 <div className="col-span-2"><span className="text-[#64748B]">Phone:</span> <span className="font-semibold text-[#0F172A] block">{detailsInquiry.phone || 'Not provided'}</span></div>
               </div>
             </div>
-
             <div className="bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0] text-sm grid grid-cols-2 gap-2">
               <div><span className="text-[#64748B]">Destination:</span> <span className="font-semibold text-[#0F172A]">{detailsInquiry.destination}</span></div>
               <div><span className="text-[#64748B]">Guests:</span> <span className="font-semibold text-[#0F172A]">{detailsInquiry.adults} Adults</span></div>
