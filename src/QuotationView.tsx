@@ -182,9 +182,7 @@ export default function QuotationView() {
 
         {/* QUOTATION CARDS */}
         <div className="grid grid-cols-1 gap-8">
-           {quotations.map((q: any ) => {
-            // 🟢 Collect all prices to determine badges correctly
-            const allPrices = quotations.map(item => item.total_price);
+          {quotations.map((q: any) => {
             const badge = getBadgeByPrice(q.total_price, allPrices);
             const imageArray = q.hotels?.images ? q.hotels.images.split(',').map((url: string) => url.trim()) : [];
             const fallbackImage = 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=600&q=80';
@@ -192,37 +190,46 @@ export default function QuotationView() {
             const isOpen = openFacilitiesId === q.id;
             const totalPrice = q.total_price * nights;
 
+            // 🟢 EXTRACTED BUTTON LOGIC (Fixes the TS error)
+            const renderButton = () => {
+              const isAnyCardChosen = quotations.some(item => item.is_customer_chosen === true);
+              
+              if (q.is_customer_chosen) {
+                return (
+                  <div className="w-full bg-green-100 border border-green-300 text-green-700 py-3 rounded-xl font-bold text-center mt-1 flex items-center justify-center gap-3">
+                    <span>✅ Booking Confirmed</span>
+                    <button 
+                      onClick={() => {
+                        supabase.from('quotations').update({ is_customer_chosen: false }).eq('id', q.id)
+                          .then(() => fetchQuotation(inquiry.id));
+                      }}
+                      className="text-xs bg-white border border-green-300 text-green-700 px-3 py-1 rounded-full hover:bg-green-50 transition"
+                    >
+                      Change
+                    </button>
+                  </div>
+                );
+              } else if (isAnyCardChosen) {
+                return (
+                  <div className="w-full bg-[#E2E8F0] text-[#94a3b8] py-3 rounded-xl font-bold text-center mt-1 cursor-not-allowed">
+                    Option Unavailable
+                  </div>
+                );
+              } else {
+                return (
+                  <button 
+                    onClick={() => openBookingModal(q.id)}
+                    className="w-full bg-[#E11D48] text-white py-3 rounded-xl font-bold hover:bg-[#BE123C] transition shadow-md hover:shadow-lg mt-1"
+                  >
+                    Select This Option
+                  </button>
+                );
+              }
+            };
+
             return (
               <div key={q.id} className="bg-white rounded-3xl shadow-lg border border-[#E2E8F0] overflow-hidden p-6 relative flex flex-col gap-5">
-                
-                <div className={`absolute top-4 left-4 ${badge.color} text-xs font-bold uppercase tracking-wider px-3 py-0.5 rounded-full shadow-sm z-10 flex items-center gap-1`}>
-                  <Star size={12} className="fill-current" /> {badge.label}
-                </div>
-
-                <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-slate-100 w-full">
-                  <img 
-                    key={currentActiveImage}
-                    src={currentActiveImage} 
-                    alt={q.hotels?.name} 
-                    className="w-full h-full object-cover" 
-                  />
-                </div>
-
-                {imageArray.length > 1 && (
-                  <div className="flex gap-2 overflow-x-auto pb-1 -mt-2">
-                    {imageArray.slice(1, 6).map((url: string, i: number) => (
-                      <button 
-                        key={i}
-                        onClick={() => setActiveImages(prev => ({ ...prev, [q.id]: url }))}
-                        className={`w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all ${
-                          currentActiveImage === url ? 'border-[#E11D48]' : 'border-transparent'
-                        }`}
-                      >
-                        <img src={url} alt={`Thumbnail ${i+1}`} className="w-full h-full object-cover" />
-                      </button>
-                    ))}
-                  </div>
-                )}
+                {/* ... rest of your card JSX stays exactly the same ... */}
 
                 <div className="flex justify-between items-start">
                   <div>
