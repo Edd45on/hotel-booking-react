@@ -417,9 +417,10 @@ export default function AdminPanel() {
                                             <div>
                         <label className="block text-xs font-semibold text-[#64748B] mb-1">Image URL</label>
                         
-                        {/* 🟢 DRAG & DROP ZONE */}
+                        {/* 🟢 DRAG & DROP ZONE + CLICK TO SELECT */}
                         <div 
                           className="w-full p-4 border-2 border-dashed border-[#E2E8F0] rounded-lg bg-[#F8FAFC] hover:bg-white hover:border-[#E11D48] transition cursor-pointer text-center text-xs text-[#64748B]"
+                          onClick={() => document.getElementById(`file-input-${index}`)?.click()}
                           onDragOver={(e) => e.preventDefault()}
                           onDrop={async (e) => {
                             e.preventDefault();
@@ -445,6 +446,34 @@ export default function AdminPanel() {
                         >
                           <p>Drag & drop an image here, or click to select</p>
                           <p className="text-[10px] text-[#94a3b8] mt-1">PNG, JPG, WEBP supported</p>
+                          
+                          {/* 🟢 HIDDEN FILE INPUT (Triggers file explorer) */}
+                          <input 
+                            type="file" 
+                            id={`file-input-${index}`} 
+                            className="hidden" 
+                            accept="image/png,image/jpeg,image/webp"
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+
+                              const formData = new FormData();
+                              formData.append('file', file);
+
+                              try {
+                                const res = await fetch('/api/upload-image', {
+                                  method: 'POST',
+                                  body: formData,
+                                });
+                                const data = await res.json();
+                                if (data.url) {
+                                  updateDraft(index, 'imageUrl', data.url);
+                                }
+                              } catch (err) {
+                                alert('Upload failed. Please try again.');
+                              }
+                            }}
+                          />
                         </div>
 
                         {/* 🟢 MANUAL INPUT FALLBACK */}
