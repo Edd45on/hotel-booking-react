@@ -379,9 +379,37 @@ export default function AdminPanel() {
                       <div className="w-1/3"><label className="block text-xs font-semibold text-[#64748B] mb-1">Price / night *</label><input type="number" value={draft.pricePerNight} onChange={(e) => updateDraft(index, 'pricePerNight', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" placeholder="1389" /></div>
                     </div>
 
-                    <div className="flex gap-4">
-                      <div className="flex-1"><label className="block text-xs font-semibold text-[#64748B] mb-1">Room Type</label><input type="text" value={draft.roomType} onChange={(e) => updateDraft(index, 'roomType', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" placeholder="Standard Room" /></div>
-                      <div className="w-1/3"><label className="block text-xs font-semibold text-[#64748B] mb-1">Address</label><input type="text" value={draft.address} onChange={(e) => updateDraft(index, 'address', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" placeholder="Hotel Street, City" /></div>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-xs font-semibold text-[#64748B] mb-1">Room Type</label>
+                        <input 
+                          type="text" 
+                          value={draft.roomType}
+                          onChange={(e) => updateDraft(index, 'roomType', e.target.value)}
+                          className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
+                          placeholder="Standard Room"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-[#64748B] mb-1">Address</label>
+                        <input 
+                          type="text" 
+                          value={draft.address}
+                          onChange={(e) => updateDraft(index, 'address', e.target.value)}
+                          className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
+                          placeholder="Hotel Street, City"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-[#64748B] mb-1">Image URL</label>
+                        <input 
+                          type="text" 
+                          value={draft.imageUrl}
+                          onChange={(e) => updateDraft(index, 'imageUrl', e.target.value)}
+                          className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
+                          placeholder="https://..."
+                        />
+                      </div>
                     </div>
 
                     <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Why we picked it (Description)</label><input type="text" value={draft.customDescription} onChange={(e) => updateDraft(index, 'customDescription', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
