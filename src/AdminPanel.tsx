@@ -11,8 +11,55 @@ export default function AdminPanel() {
   const [hotelDatabase, setHotelDatabase] = useState<any[]>([]);
 
   // 🟢 Dynamic drafts state (starts with 1 empty form)
-  const [drafts, setDrafts] = useState<any[]>([
-    { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '', showSuggestions: false }
+  const [drafts, setDrafts] = useState([
+    {
+      hotelId: null,
+      hotelName: '',
+      roomType: '',
+      pricePerNight: '',
+      address: '',                // 🟢 ADDED
+      customRoomOnly: 'Room only',
+      customPayAtHotel: 'Pay at hotel',
+      customNonRefundable: 'Non-refundable',
+      customNoBreakfast: 'No breakfast',
+      customDescription: 'Best value for your budget.',
+      customBestFor: 'Couples / leisure',
+      facilities: 'Free WiFi, AC, Parking',
+      imageUrl: '',
+      showSuggestions: false,
+    },
+    {
+      hotelId: null,
+      hotelName: '',
+      roomType: '',
+      pricePerNight: '',
+      address: '',                // 🟢 ADDED
+      customRoomOnly: 'Room only',
+      customPayAtHotel: 'Pay at hotel',
+      customNonRefundable: 'Non-refundable',
+      customNoBreakfast: 'No breakfast',
+      customDescription: 'Best value for your budget.',
+      customBestFor: 'Couples / leisure',
+      facilities: 'Free WiFi, AC, Parking',
+      imageUrl: '',
+      showSuggestions: false,
+    },
+    {
+      hotelId: null,
+      hotelName: '',
+      roomType: '',
+      pricePerNight: '',
+      address: '',                // 🟢 ADDED
+      customRoomOnly: 'Room only',
+      customPayAtHotel: 'Pay at hotel',
+      customNonRefundable: 'Non-refundable',
+      customNoBreakfast: 'No breakfast',
+      customDescription: 'Best value for your budget.',
+      customBestFor: 'Couples / leisure',
+      facilities: 'Free WiFi, AC, Parking',
+      imageUrl: '',
+      showSuggestions: false,
+    },
   ]);
   const [validUntil, setValidUntil] = useState('');
 
@@ -44,7 +91,9 @@ export default function AdminPanel() {
   const openDraftEditor = (inq: any) => {
     setSelectedInquiry(inq);
     setDrafts([
-      { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '', showSuggestions: false }
+      { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '', showSuggestions: false },
+      { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '', showSuggestions: false },
+      { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '', showSuggestions: false },
     ]);
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + 7);
@@ -158,6 +207,7 @@ export default function AdminPanel() {
         hotel_name: draft.hotelName,
         room_type: draft.roomType,
         total_price: parseInt(draft.pricePerNight) || 0,
+        address: draft.address,          // 🟢 ADDED
         is_customer_chosen: false,
         facilities: draft.facilities,
         custom_room_only: draft.customRoomOnly,
@@ -330,24 +380,29 @@ export default function AdminPanel() {
                       <div className="w-1/3"><label className="block text-xs font-semibold text-[#64748B] mb-1">Price / night *</label><input type="number" value={draft.pricePerNight} onChange={(e) => updateDraft(index, 'pricePerNight', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" placeholder="1389" /></div>
                     </div>
 
-                    <div className="flex gap-4">
-                      <div className="flex-1"><label className="block text-xs font-semibold text-[#64748B] mb-1">Room Type</label><input type="text" value={draft.roomType} onChange={(e) => updateDraft(index, 'roomType', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" placeholder="Standard Room" /></div>
-                      <div className="w-1/3"><label className="block text-xs font-semibold text-[#64748B] mb-1">Image URL</label><input type="text" value={draft.imageUrl} onChange={(e) => updateDraft(index, 'imageUrl', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" placeholder="https://..." /></div>
+                  <div className="flex gap-4">
+                    <div className="flex-1">
+                      <label className="block text-xs font-semibold text-[#64748B] mb-1">Room Type</label>
+                      <input 
+                        type="text" 
+                        value={draft.roomType}
+                        onChange={(e) => updateDraft(index, 'roomType', e.target.value)}
+                        className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
+                        placeholder="Standard Room"
+                      />
                     </div>
-
-                    <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Why we picked it (Description)</label><input type="text" value={draft.customDescription} onChange={(e) => updateDraft(index, 'customDescription', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
-                    <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Best For</label><input type="text" value={draft.customBestFor} onChange={(e) => updateDraft(index, 'customBestFor', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
-                    <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Facilities (Comma separated)</label><textarea rows={2} value={draft.facilities} onChange={(e) => updateDraft(index, 'facilities', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48] resize-none" placeholder="Free WiFi, AC, Parking, Pool" /></div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Line 1</label><input type="text" value={draft.customRoomOnly} onChange={(e) => updateDraft(index, 'customRoomOnly', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
-                      <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Line 2</label><input type="text" value={draft.customPayAtHotel} onChange={(e) => updateDraft(index, 'customPayAtHotel', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
-                      <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Line 3</label><input type="text" value={draft.customNonRefundable} onChange={(e) => updateDraft(index, 'customNonRefundable', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
-                      <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Line 4</label><input type="text" value={draft.customNoBreakfast} onChange={(e) => updateDraft(index, 'customNoBreakfast', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
+                    {/* 🟢 ADD THE ADDRESS INPUT HERE */}
+                    <div className="w-1/3">
+                      <label className="block text-xs font-semibold text-[#64748B] mb-1">Address</label>
+                      <input 
+                        type="text" 
+                        value={draft.address}
+                        onChange={(e) => updateDraft(index, 'address', e.target.value)}
+                        className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
+                        placeholder="Hotel Street, City"
+                      />
                     </div>
                   </div>
-                );
-              })}
-            </div>
 
             {/* Dynamic Form Controls */}
             <div className="flex justify-between items-center mt-4 mb-6 border-t border-[#E2E8F0] pt-4">
