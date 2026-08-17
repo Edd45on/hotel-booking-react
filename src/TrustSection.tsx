@@ -1,10 +1,10 @@
 import { User, Wallet, ListChecks, CreditCard } from 'lucide-react';
 
 const points = [
-  { title: "Talk to a real person", desc: "Instead of searching dozens of hotels yourself, tell us what you need and we'll narrow down suitable options.", icon: User },
-  { title: "Options matched to your budget", desc: "We look for suitable choices based on your preferred price range.", icon: Wallet },
-  { title: "No complicated booking process", desc: "Tell us your requirements → receive options → choose → booking confirmation.", icon: ListChecks },
-  { title: "Pay at the hotel", desc: "We secure your room. You pay directly at the hotel upon check-in. No upfront fees.", icon: CreditCard }
+  { title: "Talk to a real person", desc: "Get help choosing the right hotel for your trip.", icon: User },
+  { title: "Options matched to your budget", desc: "We look for suitable choices based on your needs.", icon: Wallet },
+  { title: "No complicated booking process", desc: "Tell us what you need. We handle the hotel search and booking process.", icon: ListChecks },
+  { title: "Pay at the hotel", desc: "Where available, choose properties with pay-at-hotel options.", icon: CreditCard }
 ];
 
 export default function TrustSection() {

@@ -19,7 +19,7 @@ import DatePickerInput from './components/DatePickerInput';
 
 // Data
 const destinations = ["Batangas", "Cebu", "Clark", "Davao", "Metro Manila", "Tagaytay", "Other"];
-const priorities = ["Cheapest", "Best Value", "Near Airport", "Family", "Business"];
+const priorities = ["Lowest price", "Best Value", "Near my destination", "Family-friendly", "Business trip"];
 const budgets = [
   { label: "Under ₱1,000", value: "under-1000" },
   { label: "₱1,000 – ₱1,500", value: "1000-1500" },
@@ -62,6 +62,9 @@ export default function App() {
   };
 
   const destinationsR2 = [
+  <a 
+  href={`#search?destination=${city.name}`} 
+  className="block relative rounded-2xl overflow-hidden aspect-[4/3] group cursor-pointer border border-[#E2E8F0] bg-slate-200">
     { name: "Metro Manila", region: "Luzon", image: "https://pub-520fe91b713446edb95e193ae19ef26f.r2.dev/images/metro-manila.jpg" },
     { name: "Tagaytay", region: "Luzon", image: "https://pub-520fe91b713446edb95e193ae19ef26f.r2.dev/images/tagaytay.jpg" },
     { name: "Cebu", region: "Visayas", image: "https://pub-520fe91b713446edb95e193ae19ef26f.r2.dev/images/cebu.jpg" },
@@ -69,6 +72,21 @@ export default function App() {
     { name: "Batangas", region: "Luzon", image: "https://pub-520fe91b713446edb95e193ae19ef26f.r2.dev/images/batangas.jpg" },
     { name: "Davao", region: "Mindanao", image: "https://pub-520fe91b713446edb95e193ae19ef26f.r2.dev/images/davao.jpg" }
   ];
+    // 🟢 Auto-fill destination from URL hash
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const destFromUrl = params.get('destination');
+    if (destFromUrl) {
+      // Find the destination in the dropdown and select it
+      const selectElement = document.getElementById('destination') as HTMLSelectElement;
+      if (selectElement) {
+        selectElement.value = destFromUrl;
+        // Trigger the change event so the "Other" logic handles it if needed
+        const event = new Event('change', { bubbles: true });
+        selectElement.dispatchEvent(event);
+      }
+    }
+  }, []);
 
   const handleDestinationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
@@ -153,9 +171,10 @@ export default function App() {
               className="text-4xl md:text-6xl font-black leading-tight mb-6 cursor-pointer select-none"
               onClick={handleSecretTap}
             >
-              Your Personal Hotel Booking Assistant
+              Find Hotels That Fit Your Trip
             </h1>
-            <p className="text-lg md:text-xl text-white/80 mb-8 max-w-lg">Tell us your destination, travel dates and budget. We'll help you find suitable hotel options in the Philippines.</p>
+			<p className="text-lg md:text-xl text-white/80 mb-8 max-w-lg">Your personal hotel booking assistant in the Philippines.</p>
+            <p className="text-lg md:text-xl text-white/80 mb-8 max-w-lg">Your personal hotel booking assistant for stays across the Philippines. Tell us your destination, dates, budget, and preferences—we'll find suitable options for you.</p>
             <a href="#search" className="inline-block bg-white text-[#E11D48] px-8 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition w-full md:w-auto text-center">FIND MY HOTEL</a>
           </div>
           <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/20 mt-4 lg:mt-0">
@@ -167,7 +186,7 @@ export default function App() {
       {/* PARTNER HOTELS */}
       <section className="py-8 bg-white border-b border-[#E2E8F0]">
         <div className="max-w-6xl mx-auto px-4">
-          <h3 className="text-sm font-bold text-[#64748B] uppercase tracking-wider text-center mb-6">Featured Hotels</h3>
+          <h3 className="text-sm font-bold text-[#64748B] uppercase tracking-wider text-center mb-6">HOTEL PARTNERS</h3>
           <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6">
             {['reddoorz-logo', 'sans-hotel', 'urbanview-hotel', 'sunerra-hotels', 'koolkost'].map((logo, i) => (
               <div key={i} className="bg-[#F8FAFC] px-4 py-3 md:px-6 rounded-xl border border-[#E2E8F0] hover:border-[#E11D48] transition">
@@ -183,8 +202,8 @@ export default function App() {
       {/* POPULAR DESTINATIONS */}
       <section className="py-20 bg-[#F8FAFC]">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-4xl font-bold text-[#0F172A] text-center mb-4">Where to next?</h2>
-          <p className="text-center text-[#475569] mb-12">Pick a destination to get started</p>
+          <h2 className="text-4xl font-bold text-[#0F172A] text-center mb-4">Where are you going?</h2>
+          <p className="text-center text-[#475569] mb-12">Start by choosing your destination.</p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {destinationsR2.map((city) => (
               <div key={city.name} className="relative rounded-2xl overflow-hidden aspect-[4/3] group cursor-pointer border border-[#E2E8F0] bg-slate-200">
@@ -228,8 +247,8 @@ export default function App() {
         <div className="container">
           <div className="search-container">
             <div className="search-header">
-              <h2>Find your perfect stay</h2>
-              <p>Fill in the details to get started</p>
+              <h2>Find Your Perfect Stay</h2>
+              <p>Tell us your trip details and preferences. We'll find suitable options for you.</p>
             </div>
 
             <form ref={formRef} onSubmit={handleSubmit} className="search-form">
@@ -314,7 +333,7 @@ export default function App() {
               </div>
 
               <div className="form-group">
-                <label>What's important?</label>
+                <label>What matters most?</label>
                 <div className="button-group">
                   {priorities.map((priority) => (
                     <button key={priority} type="button" className={`option-btn ${selectedPriority === priority ? 'active' : ''}`} onClick={() => setSelectedPriority(priority)}>
@@ -358,8 +377,8 @@ export default function App() {
       {/* FINAL CTA */}
       <section className="bg-[#0F172A] text-white py-20 px-4">
         <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-4xl font-bold mb-4">Ready to find your hotel?</h2>
-          <p className="text-[#94a3b8] mb-8">Tell us your destination, dates and budget.</p>
+          <h2 className="text-4xl font-bold mb-4">Ready to find the right hotel?h2>
+          <p className="text-[#94a3b8] mb-8">Tell us your destination, dates, and budget.</p>
           <a href="#search" className="inline-block bg-[#E11D48] text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:bg-[#BE123C] transition">
             FIND MY HOTEL
           </a>
