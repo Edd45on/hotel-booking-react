@@ -313,13 +313,31 @@ export default function QuotationView() {
                   </div>
                 </div>
 
-                {/* WHY WE PICKED IT */}
-                <div className="bg-[#F8FAFC] rounded-xl p-4 md:p-5 border border-[#E2E8F0] mt-1">
+                                {/* WHY WE PICKED IT & MAP */}
+                <div className="bg-[#F8FAFC] rounded-xl p-4 md:p-5 border border-[#E2E8F0] mt-1 space-y-3">
                   <p className="text-xs font-bold uppercase tracking-wider text-[#64748B] mb-1">Why we picked it</p>
                   <p className="text-[#0F172A] leading-relaxed">
                     {q.custom_description && q.custom_description.trim() !== '' ? q.custom_description : badge.text}
                   </p>
                   <p className="text-xs text-[#64748B] mt-2">Best for: {badge.bestFor}</p>
+
+                  {/* 🟢 MAP EMBED - Replaces the old address line */}
+                  <div className="mt-2 pt-2 border-t border-[#E2E8F0] w-full h-24 rounded-xl overflow-hidden">
+                    <iframe
+                      width="100%"
+                      height="100%"
+                      style={{ border: 0 }}
+                      loading="lazy"
+                      allowFullScreen
+                      referrerPolicy="no-referrer-when-downgrade"
+                      src={`https://www.google.com/maps/embed/v1/place?key=YOUR_GOOGLE_MAPS_API_KEY&q=${encodeURIComponent(q.hotel_name + ', ' + (q.address || ''))}`}
+                    ></iframe>
+                  </div>
+                  
+                  {/* 🟢 Address text right below the map */}
+                  <p className="text-xs text-[#64748B] mt-1">
+                    {q.address || 'No address listed'}
+                  </p>
                 </div>
 
                 {/* VIEW FACILITIES */}
