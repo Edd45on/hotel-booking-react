@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from './utils/supabase';
-import { ChevronDown, ChevronUp, Star, X, MessageCircle, Wallet, Award, Gem } from 'lucide-react';
+import { ChevronDown, ChevronUp, Star, X, MessageCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function QuotationView() {
@@ -58,7 +58,8 @@ export default function QuotationView() {
         custom_description,
         hotel_name,
         image_url,
-        valid_until
+        valid_until,
+        address
       `)
       .eq('inquiry_id', inquiryId);
     
@@ -129,16 +130,15 @@ export default function QuotationView() {
   const nights = getNights(inquiry.check_in, inquiry.check_out);
   const referenceId = `#STY-${String(inquiry.id).slice(-6).toUpperCase()}`;
 
-  // 🟢 RESTORED BADGE LOGIC
   const getBadgeByPrice = (price: number, allPrices: number[]) => {
     const sorted = [...allPrices].sort((a, b) => a - b);
     if (price === sorted[0]) {
-      return { label: 'BUDGET OPTION', color: 'bg-blue-500 text-white', icon: Wallet, text: 'The most affordable choice.', bestFor: 'Budget-conscious travelers' };
+      return { label: 'BUDGET OPTION', color: 'bg-blue-500 text-white', icon: '💰', text: 'The most affordable choice.', bestFor: 'Budget-conscious travelers' };
     }
     if (price === sorted[sorted.length - 1]) {
-      return { label: 'PREMIUM OPTION', color: 'bg-purple-500 text-white', icon: Gem, text: 'Top-tier comfort and amenities.', bestFor: 'Luxury & business travelers' };
+      return { label: 'PREMIUM OPTION', color: 'bg-purple-500 text-white', icon: '★', text: 'Top-tier comfort and amenities.', bestFor: 'Luxury & business travelers' };
     }
-    return { label: 'BEST VALUE', color: 'bg-yellow-400 text-[#0F172A]', icon: Award, text: 'Best balance of price, location and comfort.', bestFor: 'Couples / leisure' };
+    return { label: 'BEST VALUE', color: 'bg-yellow-400 text-[#0F172A]', icon: '⭐', text: 'Best balance of price, location and comfort.', bestFor: 'Couples / leisure' };
   };
 
   return (
@@ -163,10 +163,8 @@ export default function QuotationView() {
         {/* QUOTATION CARDS */}
         <div className="grid grid-cols-1 gap-10 md:gap-12">
           {quotations.map((q: any) => {
-            // 🟢 CALCULATE BADGE FOR EACH CARD
             const allPrices = quotations.map(item => item.total_price);
             const badge = getBadgeByPrice(q.total_price, allPrices);
-
             const imageArray = q.image_url ? q.image_url.split(',').map((url: string) => url.trim()) : [];
             const currentActiveImage = activeImages[q.id] || (imageArray.length > 0 ? imageArray[0] : 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=600&q=80');
             const isOpen = openFacilitiesId === q.id;
@@ -235,18 +233,10 @@ export default function QuotationView() {
             };
 
             return (
-              <div 
-                key={q.id} 
-                className={`bg-white rounded-3xl shadow-lg border overflow-hidden p-6 md:p-8 relative flex flex-col gap-5 transition-all duration-300 ${
-                  badge.label === 'BEST VALUE' 
-                    ? 'border-[#E11D48] ring-1 ring-[#E11D48]/20 bg-gradient-to-br from-[#FFF1F2] to-white shadow-[#E11D48]/10' 
-                    : 'border-[#E2E8F0]'
-                }`}
-              >
+              <div key={q.id} className="bg-white rounded-3xl shadow-lg border border-[#E2E8F0] overflow-hidden p-6 md:p-8 relative flex flex-col gap-5">
                 
-                {/* BADGE */}
                 <div className={`absolute top-4 left-4 ${badge.color} text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-sm z-10 flex items-center gap-1`}>
-                  <badge.icon size={14} className="fill-current" /> {badge.label}
+                  <span>{badge.icon}</span> {badge.label}
                 </div>
 
                 {/* IMAGE & THUMBNAILS */}
@@ -257,7 +247,6 @@ export default function QuotationView() {
                     alt={q.hotel_name} 
                     className="w-full h-full object-cover" 
                   />
-                  
                   {imageArray.length > 1 && (
                     <div className="absolute bottom-3 left-3 flex gap-2">
                       {imageArray.slice(0, 5).map((url: string, i: number) => (
@@ -313,7 +302,7 @@ export default function QuotationView() {
                   </div>
                 </div>
 
-                                {/* WHY WE PICKED IT & MAP */}
+                {/* WHY WE PICKED IT & MAP LINK */}
                 <div className="bg-[#F8FAFC] rounded-xl p-4 md:p-5 border border-[#E2E8F0] mt-1 space-y-3">
                   <p className="text-xs font-bold uppercase tracking-wider text-[#64748B] mb-1">Why we picked it</p>
                   <p className="text-[#0F172A] leading-relaxed">
@@ -321,19 +310,20 @@ export default function QuotationView() {
                   </p>
                   <p className="text-xs text-[#64748B] mt-2">Best for: {badge.bestFor}</p>
 
-                {/* 🟢 CLICKABLE GOOGLE MAPS LINK (No API needed) */}
-                <div className="mt-2 pt-2 border-t border-[#E2E8F0]">
-                  <a 
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q.hotel_name + ', ' + (q.address || ''))}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-sm text-[#E11D48] hover:underline transition"
-                  >
-                    <span>📍 View on Google Maps</span>
-                  </a>
-                  <p className="text-xs text-[#64748B] mt-1">
-                    {q.address || 'No address listed'}
-                  </p>
+                  {/* 🟢 CLICKABLE GOOGLE MAPS LINK */}
+                  <div className="pt-2 border-t border-[#E2E8F0]">
+                    <a 
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q.hotel_name + ', ' + (q.address || ''))}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-sm text-[#E11D48] hover:underline transition"
+                    >
+                      <span>📍 View on Google Maps</span>
+                    </a>
+                    <p className="text-xs text-[#64748B] mt-1">
+                      {q.address || 'No address listed'}
+                    </p>
+                  </div>
                 </div>
 
                 {/* VIEW FACILITIES */}
