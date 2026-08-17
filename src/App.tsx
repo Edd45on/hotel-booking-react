@@ -62,7 +62,7 @@ export default function App() {
   };
 
   const destinationsR2 = [
-  <a 
+  
   href={`#search?destination=${city.name}`} 
   className="block relative rounded-2xl overflow-hidden aspect-[4/3] group cursor-pointer border border-[#E2E8F0] bg-slate-200">
     { name: "Metro Manila", region: "Luzon", image: "https://pub-520fe91b713446edb95e193ae19ef26f.r2.dev/images/metro-manila.jpg" },
