@@ -181,7 +181,7 @@ export default function AdminPanel() {
               .insert({
                 name: draft.hotelName,
                 room_type: draft.roomType,
-                price_per_night: parseInt(draft.pricePerNight) || 0,
+                price_per_night: parseFloat(draft.pricePerNight) || 0,
                 facilities: draft.facilities,
                 images: draft.imageUrl,
                 description: draft.customDescription,
@@ -389,6 +389,7 @@ export default function AdminPanel() {
                           placeholder="1389.99"
                         />
                       </div>
+                    </div>
 
                     <div className="grid grid-cols-3 gap-4">
                       <div>
@@ -496,8 +497,6 @@ export default function AdminPanel() {
                   <p className="font-bold text-[#0F172A] text-lg">
                     {chosen.hotel_name}
                   </p>
-                  
-                  {/* 🟢 ADDED ROOM TYPE AND PRICE */}
                   <div className="flex gap-4 mt-2 text-sm text-[#475569]">
                     <div>
                       <span className="text-[#64748B]">Room:</span>
@@ -508,7 +507,6 @@ export default function AdminPanel() {
                       <span className="font-medium text-[#E11D48] ml-1">₱{chosen.total_price}/night</span>
                     </div>
                   </div>
-
                   <button 
                     onClick={() => {
                       navigator.clipboard.writeText(
