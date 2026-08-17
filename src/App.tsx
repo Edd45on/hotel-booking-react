@@ -205,10 +205,10 @@ export default function App() {
           <h2 className="text-4xl font-bold text-[#0F172A] text-center mb-4">Where are you going?</h2>
           <p className="text-center text-[#475569] mb-12">Start by choosing your destination.</p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-             {destinationsR2.map((city) => (
+            {destinationsR2.map((city) => (
               <a
                 key={city.name}
-                href={ `#search?destination=${city.name}` }
+                href={'#search?destination=' + city.name}
                 className="block relative rounded-2xl overflow-hidden aspect-[4/3] group cursor-pointer border border-[#E2E8F0] bg-slate-200"
               >
                 <img
