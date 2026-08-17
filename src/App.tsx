@@ -155,13 +155,14 @@ export default function App() {
               className="text-4xl md:text-6xl font-black leading-tight mb-6 cursor-pointer select-none"
               onClick={handleSecretTap}
             >
-              Your Personal Hotel Booking Assistant
+              Find Hotels That Fit Your Trip
             </h1>
-            <p className="text-lg md:text-xl text-white/80 mb-8 max-w-lg">Tell us your destination, travel dates and budget. We'll help you find suitable hotel options in the Philippines.</p>
+			<h4 Your personal hotel booking assistant for stays across the Philippines.<h4>
+            <p className="text-lg md:text-xl text-white/80 mb-8 max-w-lg">Tell us where you're going, when you're traveling, your budget, and what matters to you. We'll find suitable hotel options and help you choose.</p>
             <a href="#search" className="inline-block bg-white text-[#E11D48] px-8 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition w-full md:w-auto text-center">FIND MY HOTEL</a>
           </div>
           <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/20 mt-4 lg:mt-0">
-            <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800&q=80" alt="Hotel" className="w-full h-64 md:h-96 object-cover" />
+            <img src="https://pub-520fe91b713446edb95e193ae19ef26f.r2.dev/images/hero-philippines.jpg" alt="Hotel" className="w-full h-64 md:h-96 object-cover" />
           </div>
         </div>
       </section>
@@ -169,7 +170,7 @@ export default function App() {
       {/* PARTNER HOTELS */}
       <section className="py-8 bg-white border-b border-[#E2E8F0]">
         <div className="max-w-6xl mx-auto px-4">
-          <h3 className="text-sm font-bold text-[#64748B] uppercase tracking-wider text-center mb-6">Featured Hotels</h3>
+          <h3 className="text-sm font-bold text-[#64748B] uppercase tracking-wider text-center mb-6">HOTEL PARTNERS</h3>
           <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6">
             {['reddoorz-logo', 'sans-hotel', 'urbanview-hotel', 'sunerra-hotels', 'koolkost'].map((logo, i) => (
               <div key={i} className="bg-[#F8FAFC] px-4 py-3 md:px-6 rounded-xl border border-[#E2E8F0] hover:border-[#E11D48] transition">
@@ -185,8 +186,8 @@ export default function App() {
       {/* POPULAR DESTINATIONS */}
       <section className="py-20 bg-[#F8FAFC]">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-4xl font-bold text-[#0F172A] text-center mb-4">Where to next?</h2>
-          <p className="text-center text-[#475569] mb-12">Pick a destination to get started</p>
+          <h2 className="text-4xl font-bold text-[#0F172A] text-center mb-4">Where are you going?</h2>
+          <p className="text-center text-[#475569] mb-12">Choose a destination or tell us where you need to stay.</p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {destinationsR2.map((city) => (
               <a
@@ -240,7 +241,7 @@ export default function App() {
           <div className="bg-white p-6 md:p-8 rounded-3xl shadow-lg border border-[#E2E8F0]">
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold text-[#0F172A]">Find your perfect stay</h2>
-              <p className="text-[#475569] mt-2">Fill in the details to get started</p>
+              <p className="text-[#475569] mt-2">Tell us your trip details and preferences. We'll find suitable options for you.</p>
             </div>
 
             <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
@@ -369,7 +370,7 @@ export default function App() {
       {/* FINAL CTA */}
       <section className="bg-[#0F172A] text-white py-20 px-4">
         <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-4xl font-bold mb-4">Ready to find your hotel?</h2>
+          <h2 className="text-4xl font-bold mb-4">Ready to Find the Right Hotel?</h2>
           <p className="text-[#94a3b8] mb-8">Tell us your destination, dates and budget.</p>
           <a href="#search" className="inline-block bg-[#E11D48] text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:bg-[#BE123C] transition">
             FIND MY HOTEL

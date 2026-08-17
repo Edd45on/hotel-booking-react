@@ -14,7 +14,7 @@ export default function HowItWorks() {
       <div className="max-w-6xl mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-[#0F172A] mb-4">How It Works</h2>
-          <p className="text-lg text-[#475569]">Simple, personal, and hassle-free.</p>
+          <p className="text-lg text-[#475569]">Tell us what you need. We handle the hotel search.</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {steps.map((step) => (
