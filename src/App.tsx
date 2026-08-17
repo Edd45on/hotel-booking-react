@@ -157,8 +157,7 @@ export default function App() {
             >
               Find Hotels That Fit Your Trip
             </h1>
-			<h4 Your personal hotel booking assistant for stays across the Philippines.<h4>
-            <p className="text-lg md:text-xl text-white/80 mb-8 max-w-lg">Tell us where you're going, when you're traveling, your budget, and what matters to you. We'll find suitable hotel options and help you choose.</p>
+            <p className="text-lg md:text-xl text-white/80 mb-8 max-w-lg">Tell us where you're going, when you're traveling, your budget, and what matters to you. We'll find suitable hotel accros the Philippines</p>
             <a href="#search" className="inline-block bg-white text-[#E11D48] px-8 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition w-full md:w-auto text-center">FIND MY HOTEL</a>
           </div>
           <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/20 mt-4 lg:mt-0">
