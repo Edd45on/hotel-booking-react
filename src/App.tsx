@@ -161,7 +161,7 @@ export default function App() {
             <a href="#search" className="inline-block bg-white text-[#E11D48] px-8 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition w-full md:w-auto text-center">FIND MY HOTEL</a>
           </div>
           <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/20 mt-4 lg:mt-0">
-            <img src="https://pub-520fe91b713446edb95e193ae19ef26f.r2.dev/images/hero-philippines.jpg" alt="Hotel" className="w-full h-64 md:h-96 object-cover" />
+            <img src="https://pub-520fe91b713446edb95e193ae19ef26f.r2.dev/images/Hero_image.png" alt="Hotel" className="w-full h-64 md:h-96 object-cover" />
           </div>
         </div>
       </section>
