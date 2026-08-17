@@ -207,7 +207,7 @@ export default function AdminPanel() {
         hotel_id: draft.hotelId || null,
         hotel_name: draft.hotelName,
         room_type: draft.roomType,
-        total_price: parseInt(draft.pricePerNight) || 0,
+        total_price: parseFloat(draft.pricePerNight) || 0,
         address: draft.address,
         is_customer_chosen: false,
         facilities: draft.facilities,
@@ -378,8 +378,17 @@ export default function AdminPanel() {
                           </div>
                         )}
                       </div>
-                      <div className="w-1/3"><label className="block text-xs font-semibold text-[#64748B] mb-1">Price / night *</label><input type="number" value={draft.pricePerNight} onChange={(e) => updateDraft(index, 'pricePerNight', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" placeholder="1389" /></div>
-                    </div>
+                      <div className="w-1/3">
+                        <label className="block text-xs font-semibold text-[#64748B] mb-1">Price / night *</label>
+                        <input 
+                          type="number" 
+                          step="0.01"
+                          value={draft.pricePerNight}
+                          onChange={(e) => updateDraft(index, 'pricePerNight', e.target.value)}
+                          className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
+                          placeholder="1389.99"
+                        />
+                      </div>
 
                     <div className="grid grid-cols-3 gap-4">
                       <div>
