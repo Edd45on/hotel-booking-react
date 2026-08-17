@@ -338,11 +338,17 @@ export default function AdminPanel() {
 
             <div className="space-y-8 max-h-[60vh] overflow-y-auto pr-2">
               {drafts.map((draft, index) => {
-                // 🟢 FILTER BY TYPED NAME + CUSTOMER DESTINATION
+                // 🟢 FLEXIBLE FILTER: Checks name AND city, but falls back to name only if address is missing
                 const filteredHotels = hotelDatabase ? hotelDatabase.filter(hotel => {
                   const nameMatch = hotel.name.toLowerCase().startsWith(draft.hotelName.toLowerCase());
-                  const cityMatch = hotel.address?.toLowerCase().includes(selectedInquiry.destination.toLowerCase());
-                  // Show if name matches AND the hotel is in the customer's destination city
+                  
+                  // If address is empty/null, skip city check and just rely on name
+                  if (!hotel.address || hotel.address.trim() === '') {
+                    return nameMatch;
+                  }
+
+                  // If address exists, check if it contains the destination
+                  const cityMatch = hotel.address.toLowerCase().includes(selectedInquiry.destination.toLowerCase());
                   return nameMatch && cityMatch;
                 }) : [];
 
