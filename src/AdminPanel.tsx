@@ -339,20 +339,43 @@ export default function AdminPanel() {
 
             <div className="space-y-8 max-h-[60vh] overflow-y-auto pr-2">
               {drafts.map((draft, index) => {
-                // 🟢 FLEXIBLE FILTER: Checks name AND city, but falls back to name only if address is missing
-                const filteredHotels = hotelDatabase ? hotelDatabase.filter(hotel => {
-                  const nameMatch = hotel.name.toLowerCase().startsWith(draft.hotelName.toLowerCase());
-                  
-                  // If address is empty/null, skip city check and just rely on name
-                  if (!hotel.address || hotel.address.trim() === '') {
-                    return nameMatch;
-                  }
+                // 🟢 DIRECT FETCH: Pull live data from Supabase every time the user types
+                const [filteredHotels, setFilteredHotels] = useState<any[]>([]);
 
-                  // If address exists, check if it contains the destination
-                  const cityMatch = hotel.address.toLowerCase().includes(selectedInquiry.destination.toLowerCase());
-                  return nameMatch && cityMatch;
-                }) : [];
+                useEffect(() => {
+                  const fetchHotelsForDropdown = async () => {
+                    if (!draft.hotelName || draft.hotelName.length < 1) {
+                      setFilteredHotels([]);
+                      return;
+                    }
 
+                    // Fetch hotels that match the typed name
+                    const { data } = await supabase
+                      .from('hotels')
+                      .select('*')
+                      .ilike('name', `%${draft.hotelName}%`);
+                    
+                    if (data) {
+                      // Filter the results by city to match the inquiry destination
+                      const filtered = data.filter(hotel => {
+                        const nameMatch = hotel.name.toLowerCase().startsWith(draft.hotelName.toLowerCase());
+                        if (!hotel.address || hotel.address.trim() === '') {
+                          return nameMatch;
+                        }
+                        const cityMatch = hotel.address.toLowerCase().includes(selectedInquiry.destination.toLowerCase());
+                        return nameMatch && cityMatch;
+                      });
+                      setFilteredHotels(filtered);
+                    }
+                  };
+
+                  // 🟢 Debounce the search so it doesn't hit Supabase on every single keystroke
+                  const timeoutId = setTimeout(() => {
+                    fetchHotelsForDropdown();
+                  }, 300);
+
+                  return () => clearTimeout(timeoutId);
+                }, [draft.hotelName]);
                 return (
                   <div key={index} className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4 space-y-4 relative">
                     <div className="flex justify-between items-center mb-2"><span className="text-sm font-bold uppercase tracking-wider text-[#64748B]">Option {index + 1}</span></div>
