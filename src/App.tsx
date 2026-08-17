@@ -234,35 +234,35 @@ export default function App() {
         </div>
       </section>
 
-      {/* DATE PICKER FORM */}
+      {/* 🟢 TAILWIND-FIRST FORM (No inline CSS styles) */}
       <section id="search" className="py-12 md:py-20 bg-[#F8FAFC] px-4">
-        <div className="container">
-          <div className="search-container">
-            <div className="search-header">
-              <h2>Find your perfect stay</h2>
-              <p>Fill in the details to get started</p>
+        <div className="max-w-2xl mx-auto">
+          <div className="bg-white p-6 md:p-8 rounded-3xl shadow-lg border border-[#E2E8F0]">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-[#0F172A]">Find your perfect stay</h2>
+              <p className="text-[#475569] mt-2">Fill in the details to get started</p>
             </div>
 
-            <form ref={formRef} onSubmit={handleSubmit} className="search-form">
-              <div className="form-group">
-                <label htmlFor="destination">Where are you going?</label>
-                <select id="destination" name="destination" className="form-select" required onChange={handleDestinationChange}>
+            <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <label htmlFor="destination" className="block font-semibold text-[#0F172A] text-sm">Where are you going?</label>
+                <select id="destination" name="destination" className="w-full p-3 border border-[#E2E8F0] rounded-xl bg-white text-sm focus:border-[#E11D48] focus:ring-1 focus:ring-[#E11D48] outline-none" required onChange={handleDestinationChange}>
                   <option value="" disabled selected>Select a destination</option>
                   {destinations.map((dest) => (
                     <option key={dest} value={dest}>{dest}</option>
                   ))}
                 </select>
                 {showOtherInput && (
-                  <div className="other-wrapper" style={{ marginTop: '0.75rem' }}>
-                    <label htmlFor="other-destination" className="other-label">Please specify your destination:</label>
-                    <input ref={otherInputRef} type="text" id="other-destination" name="other-destination" className="form-input" placeholder="Type your destination here..." required />
+                  <div className="mt-3 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <label htmlFor="other-destination" className="block text-sm font-medium text-[#64748B] mb-1">Please specify your destination:</label>
+                    <input ref={otherInputRef} type="text" id="other-destination" name="other-destination" className="w-full p-3 border border-[#E2E8F0] rounded-xl bg-white text-sm focus:border-[#E11D48] focus:ring-1 focus:ring-[#E11D48] outline-none" placeholder="Type your destination here..." required />
                   </div>
                 )}
               </div>
 
-              <div className="form-group date-group">
-                <label>When?</label>
-                <div className="date-inputs">
+              <div className="space-y-2">
+                <label className="block font-semibold text-[#0F172A] text-sm">When?</label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <DatePickerInput
                     label="Check-in"
                     selected={checkInDate}
@@ -294,50 +294,50 @@ export default function App() {
                 )}
               </div>
 
-              <div className="form-group">
-                <label>Who's traveling?</label>
-                <div className="guest-grid">
-                  <div className="guest-field">
-                    <label htmlFor="adults">Adults</label>
-                    <input type="number" id="adults" name="adults" min="1" max="10" defaultValue="2" className="form-input" />
+              <div className="space-y-2">
+                <label className="block font-semibold text-[#0F172A] text-sm">Who's traveling?</label>
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="space-y-1">
+                    <label htmlFor="adults" className="block text-xs text-[#64748B] font-medium">Adults</label>
+                    <input type="number" id="adults" name="adults" min="1" max="10" defaultValue="2" className="w-full p-3 border border-[#E2E8F0] rounded-xl bg-white text-sm focus:border-[#E11D48] focus:ring-1 focus:ring-[#E11D48] outline-none" />
                   </div>
-                  <div className="guest-field">
-                    <label htmlFor="children">Children</label>
-                    <input type="number" id="children" name="children" min="0" max="10" defaultValue="0" className="form-input" />
+                  <div className="space-y-1">
+                    <label htmlFor="children" className="block text-xs text-[#64748B] font-medium">Children</label>
+                    <input type="number" id="children" name="children" min="0" max="10" defaultValue="0" className="w-full p-3 border border-[#E2E8F0] rounded-xl bg-white text-sm focus:border-[#E11D48] focus:ring-1 focus:ring-[#E11D48] outline-none" />
                   </div>
-                  <div className="guest-field">
-                    <label htmlFor="rooms">Rooms</label>
-                    <input type="number" id="rooms" name="rooms" min="1" max="10" defaultValue="1" className="form-input" />
+                  <div className="space-y-1">
+                    <label htmlFor="rooms" className="block text-xs text-[#64748B] font-medium">Rooms</label>
+                    <input type="number" id="rooms" name="rooms" min="1" max="10" defaultValue="1" className="w-full p-3 border border-[#E2E8F0] rounded-xl bg-white text-sm focus:border-[#E11D48] focus:ring-1 focus:ring-[#E11D48] outline-none" />
                   </div>
                 </div>
               </div>
 
-              <div className="form-group">
-                <label>What's the purpose of your stay?</label>
-                <div className="button-group">
+              <div className="space-y-2">
+                <label className="block font-semibold text-[#0F172A] text-sm">What's the purpose of your stay?</label>
+                <div className="flex flex-wrap gap-2">
                   {purposes.map((purpose) => (
-                    <button key={purpose.label} type="button" className={`option-btn purpose-btn ${selectedPurpose === purpose.label ? 'active' : ''}`} onClick={() => setSelectedPurpose(purpose.label)}>
-                      <purpose.icon className="purpose-icon" size={16} strokeWidth={2} />
+                    <button key={purpose.label} type="button" className={`flex items-center gap-2 px-4 py-2 border-2 rounded-full text-sm font-medium transition-all ${selectedPurpose === purpose.label ? 'border-[#E11D48] bg-[#FFF1F2] text-[#E11D48]' : 'border-[#E2E8F0] hover:border-[#E11D48] text-[#475569]'}`} onClick={() => setSelectedPurpose(purpose.label)}>
+                      <purpose.icon size={16} />
                       <span>{purpose.label}</span>
                     </button>
                   ))}
                 </div>
               </div>
 
-              <div className="form-group">
-                <label>What's important?</label>
-                <div className="button-group">
+              <div className="space-y-2">
+                <label className="block font-semibold text-[#0F172A] text-sm">What's important?</label>
+                <div className="flex flex-wrap gap-2">
                   {priorities.map((priority) => (
-                    <button key={priority} type="button" className={`option-btn ${selectedPriority === priority ? 'active' : ''}`} onClick={() => setSelectedPriority(priority)}>
+                    <button key={priority} type="button" className={`px-4 py-2 border-2 rounded-full text-sm font-medium transition-all ${selectedPriority === priority ? 'border-[#E11D48] bg-[#FFF1F2] text-[#E11D48]' : 'border-[#E2E8F0] hover:border-[#E11D48] text-[#475569]'}`} onClick={() => setSelectedPriority(priority)}>
                       {priority}
                     </button>
                   ))}
                 </div>
               </div>
 
-              <div className="form-group">
-                <label htmlFor="budget">Budget?</label>
-                <select id="budget" name="budget" className="form-select">
+              <div className="space-y-2">
+                <label htmlFor="budget" className="block font-semibold text-[#0F172A] text-sm">Budget?</label>
+                <select id="budget" name="budget" className="w-full p-3 border border-[#E2E8F0] rounded-xl bg-white text-sm focus:border-[#E11D48] focus:ring-1 focus:ring-[#E11D48] outline-none">
                   <option value="" disabled selected>Select your budget range</option>
                   {budgets.map((budget) => (
                     <option key={budget.value} value={budget.value}>{budget.label}</option>
@@ -345,18 +345,18 @@ export default function App() {
                 </select>
               </div>
 
-              <div className="form-group">
-                <label htmlFor="special-request">Special request <span className="optional">(Optional)</span></label>
-                <textarea id="special-request" name="special-request" className="form-textarea" rows={3} placeholder="Any specific hotel, location, or amenity you're looking for?"></textarea>
+              <div className="space-y-2">
+                <label htmlFor="special-request" className="block font-semibold text-[#0F172A] text-sm">Special request <span className="font-normal text-[#94a3b8] text-xs">(Optional)</span></label>
+                <textarea id="special-request" name="special-request" className="w-full p-3 border border-[#E2E8F0] rounded-xl bg-white text-sm focus:border-[#E11D48] focus:ring-1 focus:ring-[#E11D48] outline-none resize-y" rows={3} placeholder="Any specific hotel, location, or amenity you're looking for?"></textarea>
               </div>
 
-              <div className="payment-badge">
-                <CreditCard className="payment-icon" size={18} />
+              <div className="bg-[#FFF1F2] border border-[#FECDD3] text-[#BE123C] p-3 rounded-xl text-center font-medium text-sm flex justify-center items-center gap-2">
+                <CreditCard size={18} />
                 <span>We book your room – You pay directly at the hotel</span>
               </div>
 
-              <button type="submit" className="btn-primary" disabled={loading}>
-                {loading ? '⏳ SENDING...' : <><Search className="btn-icon" size={20} /> FIND MY HOTEL</>}
+              <button type="submit" disabled={loading} className="w-full bg-[#E11D48] text-white py-4 rounded-xl font-bold text-lg shadow-md hover:bg-[#BE123C] hover:shadow-lg transition disabled:opacity-70 flex justify-center items-center gap-2">
+                {loading ? '⏳ SENDING...' : <><Search size={20} /> FIND MY HOTEL</>}
               </button>
             </form>
           </div>
