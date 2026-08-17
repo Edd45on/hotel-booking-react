@@ -211,7 +211,12 @@ export default function App() {
                 href={`#search?destination=${city.name}`}
                 className="block relative rounded-2xl overflow-hidden aspect-[4/3] group cursor-pointer border border-[#E2E8F0] bg-slate-200"
               >
-                <img src={city.image} alt={city.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                <img 
+                  src={city.image} 
+                  alt={city.name} 
+                  loading="lazy" 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none" />
                 <div className="absolute bottom-4 left-4 text-white">
                   <h3 className="font-bold text-lg">{city.name}</h3>
