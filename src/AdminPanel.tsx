@@ -338,9 +338,13 @@ export default function AdminPanel() {
 
             <div className="space-y-8 max-h-[60vh] overflow-y-auto pr-2">
               {drafts.map((draft, index) => {
-                const filteredHotels = hotelDatabase ? hotelDatabase.filter(hotel => 
-                  hotel.name.toLowerCase().startsWith(draft.hotelName.toLowerCase())
-                ) : [];
+                // 🟢 FILTER BY TYPED NAME + CUSTOMER DESTINATION
+                const filteredHotels = hotelDatabase ? hotelDatabase.filter(hotel => {
+                  const nameMatch = hotel.name.toLowerCase().startsWith(draft.hotelName.toLowerCase());
+                  const cityMatch = hotel.address?.toLowerCase().includes(selectedInquiry.destination.toLowerCase());
+                  // Show if name matches AND the hotel is in the customer's destination city
+                  return nameMatch && cityMatch;
+                }) : [];
 
                 return (
                   <div key={index} className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4 space-y-4 relative">
