@@ -10,7 +10,7 @@ export default function AdminPanel() {
   
   const [hotelDatabase, setHotelDatabase] = useState<any[]>([]);
 
-    // 🟢 Dynamic drafts state (starts with 1 empty form)
+  // 🟢 Dynamic drafts state (starts with 1 empty form)
   const [drafts, setDrafts] = useState<any[]>([
     { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '', showSuggestions: false }
   ]);
@@ -43,27 +43,9 @@ export default function AdminPanel() {
 
   const openDraftEditor = (inq: any) => {
     setSelectedInquiry(inq);
-    // Reset to 1 blank form
     setDrafts([
       { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '', showSuggestions: false }
     ]);
-    const futureDate = new Date();
-    futureDate.setDate(futureDate.getDate() + 7);
-    setValidUntil(futureDate.toISOString().split('T')[0]);
-  };
-
-  // 🟢 Add a new hotel form
-  const addHotelForm = () => {
-    if (drafts.length >= 3) return; // Max 3
-    setDrafts([...drafts, { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '', showSuggestions: false }]);
-  };
-
-  // 🟢 Remove a hotel form
-  const removeHotelForm = (index: number) => {
-    if (drafts.length <= 1) return; // Must keep at least 1
-    const newDrafts = drafts.filter((_, i) => i !== index);
-    setDrafts(newDrafts);
-  };
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + 7);
     setValidUntil(futureDate.toISOString().split('T')[0]);
@@ -92,6 +74,19 @@ export default function AdminPanel() {
       customBestFor: hotel.best_for || 'Couples / leisure',
       showSuggestions: false,
     };
+    setDrafts(newDrafts);
+  };
+
+  // 🟢 Add a new hotel form
+  const addHotelForm = () => {
+    if (drafts.length >= 3) return; // Max 3
+    setDrafts([...drafts, { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '', showSuggestions: false }]);
+  };
+
+  // 🟢 Remove a hotel form
+  const removeHotelForm = (index: number) => {
+    if (drafts.length <= 1) return; // Must keep at least 1
+    const newDrafts = drafts.filter((_, i) => i !== index);
     setDrafts(newDrafts);
   };
 
@@ -261,18 +256,18 @@ export default function AdminPanel() {
                 </div>
 
                 <div className="flex gap-2 w-full md:w-auto">
-                <button
-				onClick={() => setDetailsInquiry(inq)}
-					className="bg-[#F8FAFC] text-[#0F172A] px-4 py-2 rounded-xl font-semibold border border-[#E2E8F0] hover:bg-[#E2E8F0] transition flex-1 md:flex-none"
-					>
-					Details
-					</button>
-				<button
-				onClick={() => openDraftEditor(inq)}
-				className="bg-[#E11D48] text-white px-4 py-2 rounded-xl font-semibold hover:bg-[#BE123C] transition flex-1 md:flex-none"
-				>
-				{hasQuotation ? 'Resend Quote' : 'Generate Quotation'}
-				</button>
+                  <button
+                    onClick={() => setDetailsInquiry(inq)}
+                    className="bg-[#F8FAFC] text-[#0F172A] px-4 py-2 rounded-xl font-semibold border border-[#E2E8F0] hover:bg-[#E2E8F0] transition flex-1 md:flex-none"
+                  >
+                    Details
+                  </button>
+                  <button
+                    onClick={() => openDraftEditor(inq)}
+                    className="bg-[#E11D48] text-white px-4 py-2 rounded-xl font-semibold hover:bg-[#BE123C] transition flex-1 md:flex-none"
+                  >
+                    {hasQuotation ? 'Resend Quote' : 'Generate Quotation'}
+                  </button>
                 </div>
               </div>
             );
@@ -280,14 +275,14 @@ export default function AdminPanel() {
         </div>
       </div>
 
-      {/* DRAFT EDITOR MODAL WITH AUTO-SUGGEST */}
+      {/* DRAFT EDITOR MODAL WITH DYNAMIC FORMS */}
       {selectedInquiry && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-white max-w-3xl w-full rounded-3xl shadow-2xl p-6 relative">
             <button onClick={() => setSelectedInquiry(null)} className="absolute top-4 right-4 text-[#475569] hover:text-[#0F172A] transition"><X size={24} /></button>
             <div className="flex items-center gap-3 mb-6 border-b border-[#E2E8F0] pb-4">
               <button onClick={() => setSelectedInquiry(null)} className="flex items-center gap-1 text-[#64748B] hover:text-[#0F172A] transition text-sm font-medium"><ChevronLeft size={16} /> Back to Dashboard</button>
-              <h2 className="text-2xl font-bold flex-1 text-center">Create Draft Quotation (3 Options)</h2>
+              <h2 className="text-2xl font-bold flex-1 text-center">Create Draft Quotation</h2>
             </div>
 
             <div className="space-y-8 max-h-[60vh] overflow-y-auto pr-2">
@@ -295,27 +290,6 @@ export default function AdminPanel() {
                 const filteredHotels = hotelDatabase ? hotelDatabase.filter(hotel => 
                   hotel.name.toLowerCase().includes(draft.hotelName.toLowerCase())
                 ) : [];
-				
-				        {/* Dynamic Form Controls */}
-        <div className="flex justify-between items-center mt-4 mb-6 border-t border-[#E2E8F0] pt-4">
-          <div className="flex gap-2">
-            <button
-              onClick={addHotelForm}
-              disabled={drafts.length >= 3}
-              className="text-xs bg-[#F8FAFC] border border-[#E2E8F0] text-[#0F172A] px-3 py-2 rounded-lg hover:bg-white transition disabled:opacity-50"
-            >
-              + Add Option
-            </button>
-            {drafts.length > 1 && (
-              <button
-                onClick={() => removeHotelForm(drafts.length - 1)}
-                className="text-xs bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded-lg hover:bg-red-100 transition"
-              >
-                - Remove Last
-              </button>
-            )}
-          </div>
-        </div>
 
                 return (
                   <div key={index} className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4 space-y-4 relative">
@@ -375,6 +349,27 @@ export default function AdminPanel() {
               })}
             </div>
 
+            {/* Dynamic Form Controls */}
+            <div className="flex justify-between items-center mt-4 mb-6 border-t border-[#E2E8F0] pt-4">
+              <div className="flex gap-2">
+                <button
+                  onClick={addHotelForm}
+                  disabled={drafts.length >= 3}
+                  className="text-xs bg-[#F8FAFC] border border-[#E2E8F0] text-[#0F172A] px-3 py-2 rounded-lg hover:bg-white transition disabled:opacity-50"
+                >
+                  + Add Option
+                </button>
+                {drafts.length > 1 && (
+                  <button
+                    onClick={() => removeHotelForm(drafts.length - 1)}
+                    className="text-xs bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded-lg hover:bg-red-100 transition"
+                  >
+                    - Remove Last
+                  </button>
+                )}
+              </div>
+            </div>
+
             <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-[#E2E8F0]">
               <button onClick={() => setSelectedInquiry(null)} className="px-4 py-2 rounded-xl border border-[#E2E8F0] hover:bg-[#F8FAFC] transition">Cancel</button>
               <button onClick={generateQuotation} disabled={loading} className="px-4 py-2 rounded-xl bg-[#E11D48] text-white font-bold hover:bg-[#BE123C] transition disabled:opacity-70 flex items-center gap-2">{loading ? 'Saving...' : <><Save size={18} /> Generate Quotation</>}</button>
@@ -383,15 +378,13 @@ export default function AdminPanel() {
         </div>
       )}
 
-      {/* 🟢 UPDATED DETAILS MODAL */}
+      {/* DETAILS MODAL */}
       {detailsInquiry && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white max-w-lg w-full rounded-2xl p-6 shadow-2xl relative">
             <button onClick={() => setDetailsInquiry(null)} className="absolute top-4 right-4 text-[#475569] hover:text-[#0F172A] transition"><X size={24} /></button>
             <h2 className="text-2xl font-bold text-[#0F172A] mb-1">Booking Details</h2>
             <p className="text-sm text-[#64748B] mb-4">Review the customer's request.</p>
-            
-            {/* Customer Details */}
             <div className="bg-blue-50 border border-blue-100 p-4 rounded-xl mb-4">
               <p className="text-blue-700 font-bold text-sm mb-2">👤 Customer Details</p>
               <div className="grid grid-cols-2 gap-2 text-sm">
@@ -401,16 +394,12 @@ export default function AdminPanel() {
                 <div className="col-span-2"><span className="text-[#64748B]">Phone:</span> <span className="font-semibold text-[#0F172A] block">{detailsInquiry.phone || 'Not provided'}</span></div>
               </div>
             </div>
-
-            {/* Booking Request Details */}
             <div className="bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0] text-sm grid grid-cols-2 gap-2">
               <div><span className="text-[#64748B]">Destination:</span> <span className="font-semibold text-[#0F172A]">{detailsInquiry.destination}</span></div>
               <div><span className="text-[#64748B]">Guests:</span> <span className="font-semibold text-[#0F172A]">{detailsInquiry.adults} Adults · {detailsInquiry.rooms} Room(s)</span></div>
               <div><span className="text-[#64748B]">Check-in:</span> <span className="font-semibold text-[#0F172A]">{detailsInquiry.check_in}</span></div>
               <div><span className="text-[#64748B]">Check-out:</span> <span className="font-semibold text-[#0F172A]">{detailsInquiry.check_out}</span></div>
             </div>
-
-            {/* 🟢 CHOSEN HOTEL BLOCK (Restored) */}
             {(() => {
               const chosen = detailsInquiry.quotations?.find((q: any) => q.is_customer_chosen === true);
               if (!chosen) return null;
