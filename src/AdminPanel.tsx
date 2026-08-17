@@ -90,6 +90,7 @@ export default function AdminPanel() {
   };
 
   const openDraftEditor = (inq: any) => {
+    fetchHotels(); // 🟢 ADD THIS LINE TO REFRESH THE DROPDOWN DATA
     setSelectedInquiry(inq);
     setDrafts([
       { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '', showSuggestions: false },
