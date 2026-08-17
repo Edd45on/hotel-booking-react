@@ -414,10 +414,10 @@ export default function AdminPanel() {
                           placeholder="Hotel Street, City"
                         />
                       </div>
-                                            <div>
+                                                                  <div>
                         <label className="block text-xs font-semibold text-[#64748B] mb-1">Image URL</label>
                         
-                        {/* 🟢 DRAG & DROP ZONE + CLICK TO SELECT */}
+                        {/* Upload Box (Your existing code) */}
                         <div 
                           className="w-full p-4 border-2 border-dashed border-[#E2E8F0] rounded-lg bg-[#F8FAFC] hover:bg-white hover:border-[#E11D48] transition cursor-pointer text-center text-xs text-[#64748B]"
                           onClick={() => document.getElementById(`file-input-${index}`)?.click()}
@@ -447,7 +447,7 @@ export default function AdminPanel() {
                           <p>Drag & drop an image here, or click to select</p>
                           <p className="text-[10px] text-[#94a3b8] mt-1">PNG, JPG, WEBP supported</p>
                           
-                          {/* 🟢 HIDDEN FILE INPUT (Triggers file explorer) */}
+                          {/* Hidden File Input */}
                           <input 
                             type="file" 
                             id={`file-input-${index}`} 
@@ -484,8 +484,22 @@ export default function AdminPanel() {
                           className="w-full mt-2 p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
                           placeholder="Or paste URL manually here..."
                         />
+
+                        {/* 🟢 IMAGE PREVIEW (Added!) */}
+                        {draft.imageUrl && draft.imageUrl.trim() !== '' && (
+                          <div className="mt-2 w-full h-24 rounded-lg overflow-hidden border border-[#E2E8F0] bg-slate-100">
+                            <img 
+                              src={draft.imageUrl} 
+                              alt="Uploaded Preview" 
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                // If the image fails to load, hide the preview
+                                e.currentTarget.style.display = 'none';
+                              }}
+                            />
+                          </div>
+                        )}
                       </div>
-                    </div>
 
                     <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Why we picked it (Description)</label><input type="text" value={draft.customDescription} onChange={(e) => updateDraft(index, 'customDescription', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
                     <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Best For</label><input type="text" value={draft.customBestFor} onChange={(e) => updateDraft(index, 'customBestFor', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
