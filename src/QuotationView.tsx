@@ -42,6 +42,7 @@ export default function QuotationView() {
     const { data: inqData } = await supabase.from('inquiries').select('*').eq('id', inquiryId).single();
     setInquiry(inqData);
 
+    // 🟢 OPTIMIZED: Sorting happens inside Supabase before it leaves the server
     const { data: qData, error } = await supabase
       .from('quotations')
       .select(`
@@ -61,15 +62,12 @@ export default function QuotationView() {
         valid_until,
         address
       `)
-      .eq('inquiry_id', inquiryId);
+      .eq('inquiry_id', inquiryId)
+      .order('created_at', { ascending: false }); // 🟢 Moved sort here!
     
     if (error) console.error('Supabase Error:', error);
 
-    const sortedData = qData ? qData.sort((a: any, b: any) => 
-      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    ) : [];
-
-    setQuotations(sortedData.slice(0, 3));
+    setQuotations(qData ? qData.slice(0, 3) : []);
   };
 
   const openBookingModal = (quotationId: string) => {
@@ -125,7 +123,24 @@ export default function QuotationView() {
     }
   };
 
-  if (!inquiry) return <div className="text-center py-20">Loading your quotation...</div>;
+    if (!inquiry) return (
+    <div className="min-h-screen bg-[#F8FAFC] py-12 px-4 md:py-20">
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-12">
+          <div className="h-10 w-64 bg-[#E2E8F0] rounded-lg mx-auto mb-4 animate-pulse"></div>
+          <div className="h-6 w-48 bg-[#E2E8F0] rounded-lg mx-auto animate-pulse"></div>
+        </div>
+        <div className="grid grid-cols-1 gap-10 md:gap-12">
+          <div className="bg-white rounded-3xl shadow-lg border border-[#E2E8F0] p-6 md:p-8">
+            <div className="w-full h-64 bg-[#E2E8F0] rounded-2xl animate-pulse mb-6"></div>
+            <div className="h-8 w-3/4 bg-[#E2E8F0] rounded-lg animate-pulse mb-4"></div>
+            <div className="h-4 w-1/2 bg-[#E2E8F0] rounded-lg animate-pulse mb-4"></div>
+            <div className="h-20 bg-[#E2E8F0] rounded-xl animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
   const nights = getNights(inquiry.check_in, inquiry.check_out);
   const referenceId = `#STY-${String(inquiry.id).slice(-6).toUpperCase()}`;
@@ -246,6 +261,7 @@ export default function QuotationView() {
                     src={currentActiveImage} 
                     alt={q.hotel_name} 
                     className="w-full h-full object-cover" 
+					loading="lazy" 
                   />
                   {imageArray.length > 1 && (
                     <div className="absolute bottom-3 left-3 flex gap-2">
