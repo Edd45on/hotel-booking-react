@@ -339,7 +339,7 @@ export default function AdminPanel() {
             <div className="space-y-8 max-h-[60vh] overflow-y-auto pr-2">
               {drafts.map((draft, index) => {
                 const filteredHotels = hotelDatabase ? hotelDatabase.filter(hotel => 
-                  hotel.name.toLowerCase().includes(draft.hotelName.toLowerCase())
+                  hotel.name.toLowerCase().startsWith(draft.hotelName.toLowerCase())
                 ) : [];
 
                 return (
