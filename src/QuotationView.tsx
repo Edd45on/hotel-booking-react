@@ -321,20 +321,16 @@ export default function QuotationView() {
                   </p>
                   <p className="text-xs text-[#64748B] mt-2">Best for: {badge.bestFor}</p>
 
-                  {/* 🟢 MAP EMBED - Replaces the old address line */}
-                  <div className="mt-2 pt-2 border-t border-[#E2E8F0] w-full h-24 rounded-xl overflow-hidden">
-                    <iframe
-                      width="100%"
-                      height="100%"
-                      style={{ border: 0 }}
-                      loading="lazy"
-                      allowFullScreen
-                      referrerPolicy="no-referrer-when-downgrade"
-                      src={`https://www.google.com/maps/embed/v1/place?key=YOUR_GOOGLE_MAPS_API_KEY&q=${encodeURIComponent(q.hotel_name + ', ' + (q.address || ''))}`}
-                    ></iframe>
-                  </div>
-                  
-                  {/* 🟢 Address text right below the map */}
+                {/* 🟢 CLICKABLE GOOGLE MAPS LINK (No API needed) */}
+                <div className="mt-2 pt-2 border-t border-[#E2E8F0]">
+                  <a 
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q.hotel_name + ', ' + (q.address || ''))}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-sm text-[#E11D48] hover:underline transition"
+                  >
+                    <span>📍 View on Google Maps</span>
+                  </a>
                   <p className="text-xs text-[#64748B] mt-1">
                     {q.address || 'No address listed'}
                   </p>
