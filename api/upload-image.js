@@ -1,5 +1,6 @@
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-import formidable from "formidable";
+import { formidable } from "formidable";
+import fs from "fs";
 
 // Configure R2 Client using Vercel Environment Variables
 const s3 = new S3Client({
@@ -25,16 +26,10 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 🟢 Parse the incoming file using formidable
-    const form = new formidable.IncomingForm();
-    form.keepExtensions = true;
+    // 🟢 FIX: Use the modern `formidable` syntax
+    const form = formidable({});
 
-    const [fields, files] = await new Promise((resolve, reject) => {
-      form.parse(req, (err, fields, files) => {
-        if (err) reject(err);
-        resolve([fields, files]);
-      });
-    });
+    const [fields, files] = await form.parse(req);
 
     // Get the uploaded file
     const file = files.file?.[0] || files.file;
@@ -43,11 +38,11 @@ export default async function handler(req, res) {
     }
 
     // Read the file content
-    const fileContent = file.filepath ? require('fs').readFileSync(file.filepath) : file.data;
+    const fileContent = fs.readFileSync(file.filepath);
     const fileName = `hotels/${Date.now()}-${file.originalFilename || 'upload.jpg'}`;
     const bucketName = process.env.R2_BUCKET_NAME;
 
-    // 🟢 Upload to Cloudflare R2
+    // Upload to Cloudflare R2
     const command = new PutObjectCommand({
       Bucket: bucketName,
       Key: fileName,
