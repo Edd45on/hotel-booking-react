@@ -10,52 +10,9 @@ export default function AdminPanel() {
   
   const [hotelDatabase, setHotelDatabase] = useState<any[]>([]);
 
-  const [drafts, setDrafts] = useState([
-    {
-      hotelId: null,
-      hotelName: '',
-      roomType: '',
-      pricePerNight: '',
-      customRoomOnly: 'Room only',
-      customPayAtHotel: 'Pay at hotel',
-      customNonRefundable: 'Non-refundable',
-      customNoBreakfast: 'No breakfast',
-      customDescription: 'Best value for your budget.',
-      customBestFor: 'Couples / leisure',
-      facilities: 'Free WiFi, AC, Parking',
-      imageUrl: '',
-      showSuggestions: false,
-    },
-    {
-      hotelId: null,
-      hotelName: '',
-      roomType: '',
-      pricePerNight: '',
-      customRoomOnly: 'Room only',
-      customPayAtHotel: 'Pay at hotel',
-      customNonRefundable: 'Non-refundable',
-      customNoBreakfast: 'No breakfast',
-      customDescription: 'Best value for your budget.',
-      customBestFor: 'Couples / leisure',
-      facilities: 'Free WiFi, AC, Parking',
-      imageUrl: '',
-      showSuggestions: false,
-    },
-    {
-      hotelId: null,
-      hotelName: '',
-      roomType: '',
-      pricePerNight: '',
-      customRoomOnly: 'Room only',
-      customPayAtHotel: 'Pay at hotel',
-      customNonRefundable: 'Non-refundable',
-      customNoBreakfast: 'No breakfast',
-      customDescription: 'Best value for your budget.',
-      customBestFor: 'Couples / leisure',
-      facilities: 'Free WiFi, AC, Parking',
-      imageUrl: '',
-      showSuggestions: false,
-    },
+    // 🟢 Dynamic drafts state (starts with 1 empty form)
+  const [drafts, setDrafts] = useState<any[]>([
+    { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '', showSuggestions: false }
   ]);
   const [validUntil, setValidUntil] = useState('');
 
@@ -86,11 +43,27 @@ export default function AdminPanel() {
 
   const openDraftEditor = (inq: any) => {
     setSelectedInquiry(inq);
+    // Reset to 1 blank form
     setDrafts([
-      { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '', showSuggestions: false },
-      { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '', showSuggestions: false },
-      { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '', showSuggestions: false },
+      { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '', showSuggestions: false }
     ]);
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + 7);
+    setValidUntil(futureDate.toISOString().split('T')[0]);
+  };
+
+  // 🟢 Add a new hotel form
+  const addHotelForm = () => {
+    if (drafts.length >= 3) return; // Max 3
+    setDrafts([...drafts, { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '', showSuggestions: false }]);
+  };
+
+  // 🟢 Remove a hotel form
+  const removeHotelForm = (index: number) => {
+    if (drafts.length <= 1) return; // Must keep at least 1
+    const newDrafts = drafts.filter((_, i) => i !== index);
+    setDrafts(newDrafts);
+  };
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + 7);
     setValidUntil(futureDate.toISOString().split('T')[0]);
@@ -322,6 +295,27 @@ export default function AdminPanel() {
                 const filteredHotels = hotelDatabase ? hotelDatabase.filter(hotel => 
                   hotel.name.toLowerCase().includes(draft.hotelName.toLowerCase())
                 ) : [];
+				
+				        {/* Dynamic Form Controls */}
+        <div className="flex justify-between items-center mt-4 mb-6 border-t border-[#E2E8F0] pt-4">
+          <div className="flex gap-2">
+            <button
+              onClick={addHotelForm}
+              disabled={drafts.length >= 3}
+              className="text-xs bg-[#F8FAFC] border border-[#E2E8F0] text-[#0F172A] px-3 py-2 rounded-lg hover:bg-white transition disabled:opacity-50"
+            >
+              + Add Option
+            </button>
+            {drafts.length > 1 && (
+              <button
+                onClick={() => removeHotelForm(drafts.length - 1)}
+                className="text-xs bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded-lg hover:bg-red-100 transition"
+              >
+                - Remove Last
+              </button>
+            )}
+          </div>
+        </div>
 
                 return (
                   <div key={index} className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4 space-y-4 relative">
