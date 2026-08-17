@@ -414,14 +414,46 @@ export default function AdminPanel() {
                           placeholder="Hotel Street, City"
                         />
                       </div>
-                      <div>
+                                            <div>
                         <label className="block text-xs font-semibold text-[#64748B] mb-1">Image URL</label>
+                        
+                        {/* 🟢 DRAG & DROP ZONE */}
+                        <div 
+                          className="w-full p-4 border-2 border-dashed border-[#E2E8F0] rounded-lg bg-[#F8FAFC] hover:bg-white hover:border-[#E11D48] transition cursor-pointer text-center text-xs text-[#64748B]"
+                          onDragOver={(e) => e.preventDefault()}
+                          onDrop={async (e) => {
+                            e.preventDefault();
+                            const file = e.dataTransfer.files[0];
+                            if (!file) return;
+                            
+                            const formData = new FormData();
+                            formData.append('file', file);
+
+                            try {
+                              const res = await fetch('/api/upload-image', {
+                                method: 'POST',
+                                body: formData,
+                              });
+                              const data = await res.json();
+                              if (data.url) {
+                                updateDraft(index, 'imageUrl', data.url);
+                              }
+                            } catch (err) {
+                              alert('Upload failed. Please try again.');
+                            }
+                          }}
+                        >
+                          <p>Drag & drop an image here, or click to select</p>
+                          <p className="text-[10px] text-[#94a3b8] mt-1">PNG, JPG, WEBP supported</p>
+                        </div>
+
+                        {/* 🟢 MANUAL INPUT FALLBACK */}
                         <input 
                           type="text" 
                           value={draft.imageUrl}
                           onChange={(e) => updateDraft(index, 'imageUrl', e.target.value)}
-                          className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
-                          placeholder="https://..."
+                          className="w-full mt-2 p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
+                          placeholder="Or paste URL manually here..."
                         />
                       </div>
                     </div>
