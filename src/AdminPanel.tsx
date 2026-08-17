@@ -339,15 +339,10 @@ export default function AdminPanel() {
 
             <div className="space-y-8 max-h-[60vh] overflow-y-auto pr-2">
               {drafts.map((draft, index) => {
-                // 🟢 SAFE FILTER: Runs locally on pre-fetched data (No hooks inside map!)
-                const filteredHotels = hotelDatabase ? hotelDatabase.filter(hotel => {
-                  const nameMatch = hotel.name.toLowerCase().startsWith(draft.hotelName.toLowerCase());
-                  if (!hotel.address || hotel.address.trim() === '') {
-                    return nameMatch;
-                  }
-                  const cityMatch = hotel.address.toLowerCase().includes(selectedInquiry.destination.toLowerCase());
-                  return nameMatch && cityMatch;
-                }) : [];
+  // 🟢 SIMPLE NAME-ONLY FILTER (No city, no address required)
+                const filteredHotels = hotelDatabase ? hotelDatabase.filter(hotel => 
+                  hotel.name.toLowerCase().startsWith(draft.hotelName.toLowerCase())
+                ) : [];
 
                 return (
                   <div key={index} className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4 space-y-4 relative">
