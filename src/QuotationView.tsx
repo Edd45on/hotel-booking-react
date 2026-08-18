@@ -59,7 +59,6 @@ export default function QuotationView() {
         custom_pay_at_hotel,
         custom_non_refundable,
         custom_no_breakfast,
-        custom_description,
         hotel_name,
         image_url,
         valid_until,
@@ -445,9 +444,6 @@ export default function QuotationView() {
                   <p className="text-[#0F172A] leading-relaxed">
                     {/* 🟢 FIX: Use badge.description, and fallback to custom_description if the Admin typed something */}
                     {q.custom_description && q.custom_description.trim() !== '' ? q.custom_description : badge.description}
-                  </p>
-                  <p className="text-xs text-[#64748B] mt-2">
-                    Best for: {badge.bestFor}
                   </p>
 
                   {/* GOOGLE MAPS LINK */}

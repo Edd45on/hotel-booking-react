@@ -257,7 +257,6 @@ export default function AdminPanel() {
         custom_pay_at_hotel: draft.customPayAtHotel,
         custom_non_refundable: draft.customNonRefundable,
         custom_no_breakfast: draft.customNoBreakfast,
-        custom_best_for: draft.customBestFor, // 🟢 MAKE SURE THIS LINE IS HERE
         image_url: draft.imageUrls.join(','),
         valid_until: validUntilISO,
       }));
@@ -551,7 +550,6 @@ export default function AdminPanel() {
                       </div>
                     </div>
 
-                    <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Best For</label><input type="text" value={draft.customBestFor} onChange={(e) => updateDraft(index, 'customBestFor', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
                     <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Facilities (Comma separated)</label><textarea rows={2} value={draft.facilities} onChange={(e) => updateDraft(index, 'facilities', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48] resize-none" placeholder="Free WiFi, AC, Parking, Pool" /></div>
                     <div className="grid grid-cols-2 gap-3">
                       <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Line 1</label><input type="text" value={draft.customRoomOnly} onChange={(e) => updateDraft(index, 'customRoomOnly', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
