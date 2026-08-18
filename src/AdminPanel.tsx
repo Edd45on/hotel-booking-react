@@ -257,7 +257,7 @@ export default function AdminPanel() {
         custom_pay_at_hotel: draft.customPayAtHotel,
         custom_non_refundable: draft.customNonRefundable,
         custom_no_breakfast: draft.customNoBreakfast,
-        custom_best_for: draft.customBestFor,
+        custom_best_for: draft.customBestFor, // 🟢 MAKE SURE THIS LINE IS HERE
         image_url: draft.imageUrls.join(','),
         valid_until: validUntilISO,
       }));
