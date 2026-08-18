@@ -65,7 +65,7 @@ export default function QuotationView() {
         valid_until,
         address,
         room_type,
-        hotels ( price_per_night )  // 🟢 Add this line to fetch the original price from the hotels table
+        hotels ( price_per_night )
       `)
       .eq('inquiry_id', inquiryId);
     
@@ -93,7 +93,6 @@ export default function QuotationView() {
             const hours = Math.floor(diff / (1000 * 60 * 60));
             const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-            // 🟢 FIX: Replaced template literal with string concatenation for TypeScript
             newTimeLeft[q.id] = hours + 'h ' + minutes + 'm ' + seconds + 's';
           }
         }
@@ -102,12 +101,8 @@ export default function QuotationView() {
       setTimeLeft(newTimeLeft);
     };
 
-    // Run once immediately on load
     updateTimer();
-
-    // Then run every second
     const interval = setInterval(updateTimer, 1000);
-
     return () => clearInterval(interval);
   }, [quotations]);
 
@@ -207,11 +202,8 @@ export default function QuotationView() {
             const imageArray = q.image_url ? q.image_url.split(',').map((url: string) => url.trim()) : [];
             const currentActiveImage = activeImages[q.id] || (imageArray.length > 0 ? imageArray[0] : 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=600&q=80');
             const isOpen = openFacilitiesId === q.id;
-            const totalPrice = q.total_price * nights;
+            const totalPrice = q.new_price * nights;
 
-            const renderButton = () => {
-              const isAnyCardChosen = quotations.some(item => item.is_customer_chosen === true);
-              
             const renderButton = () => {
               const isAnyCardChosen = quotations.some(item => item.is_customer_chosen === true);
               
@@ -335,12 +327,8 @@ export default function QuotationView() {
                   <div className="text-left sm:text-right flex-shrink-0">
                     <div className="flex flex-col items-end sm:items-end gap-1">
                       <div className="flex items-center gap-2 sm:justify-end flex-wrap">
-                        {/* 🟢 FIXED: Use total_price if available, otherwise fallback to hotels.price_per_night */}
                         {(() => {
-                          // Determine the original price to cross out
                           const originalPrice = q.total_price > 0 ? q.total_price : q.hotels?.price_per_night || 0;
-                          
-                          // Only show strikethrough if the original price exists and is different from the new price
                           if (originalPrice > 0 && q.new_price > 0 && originalPrice !== q.new_price) {
                             return (
                               <span className="text-sm text-[#94a3b8] line-through decoration-2">
@@ -355,7 +343,7 @@ export default function QuotationView() {
                         </div>
                       </div>
                       <div className="text-[#64748B] text-sm">
-                        ₱{(q.new_price * nights).toLocaleString()} total · {nights} nights
+                        ₱{totalPrice.toLocaleString()} total · {nights} nights
                       </div>
                     </div>
                   </div>
@@ -447,8 +435,6 @@ export default function QuotationView() {
           <div className="pt-8 border-t border-[#E2E8F0] text-sm text-[#64748B]">
             <p className="font-semibold uppercase tracking-wider text-xs mb-2">IMPORTANT</p>
             <p>Rates and availability are subject to change until booking confirmation.</p>
-            
-            {/* 🟢 TIMER: Always show the countdown for the first quotation */}
             {quotations.length > 0 && quotations[0]?.valid_until && (
               <p className="mt-1 flex items-center justify-center gap-2">
                 <span>⏳</span>
@@ -459,7 +445,6 @@ export default function QuotationView() {
                 </span>
               </p>
             )}
-            
             {quotations[0]?.valid_until && (
               <p className="mt-1">
                 Quotation valid until: {new Date(quotations[0].valid_until).toLocaleDateString()} · {new Date(quotations[0].valid_until).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
