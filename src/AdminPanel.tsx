@@ -23,7 +23,6 @@ export default function AdminPanel() {
       customPayAtHotel: 'Pay at hotel',
       customNonRefundable: 'Non-refundable',
       customNoBreakfast: 'No breakfast',
-      customDescription: 'Best value for your budget.',
       customBestFor: 'Couples / leisure',
       facilities: 'Free WiFi, AC, Parking',
       imageUrls: [] as string[], // 🟢 Now an array
@@ -39,7 +38,6 @@ export default function AdminPanel() {
       customPayAtHotel: 'Pay at hotel',
       customNonRefundable: 'Non-refundable',
       customNoBreakfast: 'No breakfast',
-      customDescription: 'Best value for your budget.',
       customBestFor: 'Couples / leisure',
       facilities: 'Free WiFi, AC, Parking',
       imageUrls: [] as string[],
@@ -55,7 +53,6 @@ export default function AdminPanel() {
       customPayAtHotel: 'Pay at hotel',
       customNonRefundable: 'Non-refundable',
       customNoBreakfast: 'No breakfast',
-      customDescription: 'Best value for your budget.',
       customBestFor: 'Couples / leisure',
       facilities: 'Free WiFi, AC, Parking',
       imageUrls: [] as string[],
@@ -95,37 +92,41 @@ export default function AdminPanel() {
     fetchHotels();
     setSelectedInquiry(inq);
     
-    // 🟢 FETCH THE EXISTING QUOTATION DATA (if it exists)
     const { data: existingQuote } = await supabase
       .from('quotations')
       .select('*')
       .eq('inquiry_id', inq.id)
       .maybeSingle();
 
-    // If there is an existing quotation, pre-fill the form with its data
     if (existingQuote) {
       setDrafts([
         {
           hotelId: existingQuote.hotel_id || null,
           hotelName: existingQuote.hotel_name || '',
           roomType: existingQuote.room_type || '',
-          pricePerNight: existingQuote.new_price?.toString() || existingQuote.total_price?.toString() || '',
+          pricePerNight: existingQuote.new_price?.toString() || '',
           originalPrice: existingQuote.total_price?.toString() || '',
           address: existingQuote.address || '',
           customRoomOnly: existingQuote.custom_room_only || 'Room only',
           customPayAtHotel: existingQuote.custom_pay_at_hotel || 'Pay at hotel',
           customNonRefundable: existingQuote.custom_non_refundable || 'Non-refundable',
           customNoBreakfast: existingQuote.custom_no_breakfast || 'No breakfast',
-          customDescription: existingQuote.custom_description || 'Best value for your budget.',
+          // customDescription removed
           customBestFor: existingQuote.custom_best_for || 'Couples / leisure',
           facilities: existingQuote.facilities || 'Free WiFi, AC, Parking',
           imageUrls: existingQuote.image_url ? existingQuote.image_url.split(',').map((url: string) => url.trim()) : [],
           showSuggestions: false,
         },
-        // We reset the other two options to blank
-        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
-        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
+        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
+        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
       ]);
+    } else {
+      setDrafts([
+        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
+        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
+        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
+      ]);
+    }
     } else {
       // If no existing quote, reset to 3 blank forms
       setDrafts([
@@ -575,9 +576,7 @@ export default function AdminPanel() {
                           </div>
                         )}
                       </div>
-                    </div>
-
-                    <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Why we picked it (Description)</label><input type="text" value={draft.customDescription} onChange={(e) => updateDraft(index, 'customDescription', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
+                    </div>               
                     <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Best For</label><input type="text" value={draft.customBestFor} onChange={(e) => updateDraft(index, 'customBestFor', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
                     <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Facilities (Comma separated)</label><textarea rows={2} value={draft.facilities} onChange={(e) => updateDraft(index, 'facilities', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48] resize-none" placeholder="Free WiFi, AC, Parking, Pool" /></div>
                     <div className="grid grid-cols-2 gap-3">
