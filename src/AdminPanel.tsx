@@ -211,7 +211,7 @@ export default function AdminPanel() {
         hotel_name: draft.hotelName,
         room_type: draft.roomType,
         total_price: parseFloat(draft.pricePerNight) || 0,
-        original_price: parseFloat(draft.originalPrice) || 0, // 🟢 ADD THIS
+        original_price: draft.originalPrice && draft.originalPrice.trim() !== '' ? parseFloat(draft.originalPrice) : 0, // 🟢 FIXED
         address: draft.address,
         is_customer_chosen: false,
         facilities: draft.facilities,

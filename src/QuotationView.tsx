@@ -47,7 +47,25 @@ export default function QuotationView() {
 
     const { data: qData, error } = await supabase
       .from('quotations')
-      .select(`
+       .select(`
+        id,
+        total_price,
+        original_price,
+        is_customer_chosen,
+        inquiry_id,
+        created_at,
+        facilities,
+        custom_room_only,
+        custom_pay_at_hotel,
+        custom_non_refundable,
+        custom_no_breakfast,
+        custom_description,
+        hotel_name,
+        image_url,
+        valid_until,
+        address,
+        room_type
+      `)
         id,
         total_price,
 		original_price,
