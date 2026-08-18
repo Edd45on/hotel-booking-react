@@ -475,62 +475,83 @@ export default function QuotationView() {
                   </div>
                 </div>
 
-                {/* 🟢 ROOM AMENITIES (Categorized) */}
-                {q.facilities && q.facilities.trim() !== '' && (
-                  <div className="mt-4 bg-[#F8FAFC] rounded-xl p-4 border border-[#E2E8F0]">
-                    <p className="text-xs font-bold uppercase tracking-wider text-[#64748B] mb-3">Room Amenities</p>
-                    {(() => {
-                      const items = q.facilities.split(',').map(f => f.trim());
-                      const roomItems = items.filter(i => ['Chairs', 'Wardrobe', 'TV', 'AC', 'Iron', 'Bed', 'Mirror'].includes(i));
-                      const bathItems = items.filter(i => ['Towel', 'Hot Shower', 'Hair Dryer'].includes(i));
-                      const otherItems = items.filter(i => ![...roomItems, ...bathItems].includes(i));
+                {/* 🟢 ROOM AMENITIES (Categorized + Toggle) */}
+                <div className="mt-4">
+                  <button 
+                    onClick={() => setOpenFacilitiesId(isOpen ? null : q.id)}
+                    className="flex items-center gap-1 text-sm font-medium text-[#E11D48] hover:underline transition mb-2"
+                  >
+                    {isOpen ? 'HIDE' : 'VIEW'} Facilities
+                    {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  </button>
+                  
+                  {isOpen && (
+                    <div className="bg-[#F8FAFC] rounded-xl p-4 border border-[#E2E8F0]">
+                      <p className="text-xs font-bold uppercase tracking-wider text-[#64748B] mb-3">Room Amenities</p>
+                      {(() => {
+                        const items = q.facilities ? q.facilities.split(',').map((f: string) => f.trim()) : [];
+                        const roomItems = items.filter(i => ['Chairs', 'Wardrobe', 'TV', 'AC', 'Iron', 'Bed', 'Mirror'].includes(i));
+                        const bathItems = items.filter(i => ['Towel', 'Hot Shower', 'Hair Dryer'].includes(i));
+                        const otherItems = items.filter(i => ![...roomItems, ...bathItems].includes(i));
 
-                      return (
-                        <div className="space-y-3">
-                          {roomItems.length > 0 && (
-                            <div>
-                              <p className="text-xs font-semibold text-[#0F172A] mb-1">Room Facilities</p>
-                              <div className="grid grid-cols-2 gap-y-1 gap-x-4">
-                                {roomItems.map((item, i) => (
-                                  <div key={i} className="flex items-center gap-2 text-xs text-[#475569]">
-                                    <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
-                                    {item}
-                                  </div>
-                                ))}
+                        return (
+                          <div className="space-y-3">
+                            {roomItems.length > 0 && (
+                              <div>
+                                <p className="text-xs font-semibold text-[#0F172A] mb-1">Room Facilities</p>
+                                <div className="grid grid-cols-2 gap-y-1 gap-x-4">
+                                  {roomItems.map((item, i) => (
+                                    <div key={i} className="flex items-center gap-2 text-xs text-[#475569]">
+                                      <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
+                                      {item}
+                                    </div>
+                                  ))}
+                                </div>
                               </div>
-                            </div>
-                          )}
-                          
-                          {bathItems.length > 0 && (
-                            <div>
-                              <p className="text-xs font-semibold text-[#0F172A] mb-1">Bathroom Facilities</p>
-                              <div className="grid grid-cols-2 gap-y-1 gap-x-4">
-                                {bathItems.map((item, i) => (
-                                  <div key={i} className="flex items-center gap-2 text-xs text-[#475569]">
-                                    <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
-                                    {item}
-                                  </div>
-                                ))}
+                            )}
+                            
+                            {bathItems.length > 0 && (
+                              <div>
+                                <p className="text-xs font-semibold text-[#0F172A] mb-1">Bathroom Facilities</p>
+                                <div className="grid grid-cols-2 gap-y-1 gap-x-4">
+                                  {bathItems.map((item, i) => (
+                                    <div key={i} className="flex items-center gap-2 text-xs text-[#475569]">
+                                      <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
+                                      {item}
+                                    </div>
+                                  ))}
+                                </div>
                               </div>
-                            </div>
-                          )}
-                          
-                          {otherItems.length > 0 && (
-                            <div>
-                              <p className="text-xs font-semibold text-[#0F172A] mb-1">Others</p>
-                              <div className="grid grid-cols-2 gap-y-1 gap-x-4">
-                                {otherItems.map((item, i) => (
-                                  <div key={i} className="flex items-center gap-2 text-xs text-[#475569]">
-                                    <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
-                                    {item}
-                                  </div>
-                                ))}
+                            )}
+                            
+                            {otherItems.length > 0 && (
+                              <div>
+                                <p className="text-xs font-semibold text-[#0F172A] mb-1">Others</p>
+                                <div className="grid grid-cols-2 gap-y-1 gap-x-4">
+                                  {otherItems.map((item, i) => (
+                                    <div key={i} className="flex items-center gap-2 text-xs text-[#475569]">
+                                      <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
+                                      {item}
+                                    </div>
+                                  ))}
+                                </div>
                               </div>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })()}
+                            )}
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  )}
+                </div>
+
+                {/* 🟢 PROPERTY POLICIES (Always visible) */}
+                <div className="mt-2 text-sm text-[#475569] bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4">
+                  <p className="text-xs font-bold uppercase tracking-wider text-[#64748B] mb-1">Property Policies</p>
+                  <div className="space-y-1 text-xs">
+                    <p><span className="font-medium text-[#0F172A]">Check-in:</span> From 2:00 PM to 4:00 AM (next day)</p>
+                    <p><span className="font-medium text-[#0F172A]">Check-out:</span> Before 12:00 PM (noon)</p>
+                  </div>
+                </div>
                   </div>
                 )}
 
