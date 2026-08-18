@@ -91,14 +91,50 @@ export default function AdminPanel() {
     if (data) setHotelDatabase(data);
   };
 
-  const openDraftEditor = (inq: any) => {
+  const openDraftEditor = async (inq: any) => {
     fetchHotels();
     setSelectedInquiry(inq);
-    setDrafts([
-      { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
-      { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
-      { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
-    ]);
+    
+    // 🟢 FETCH THE EXISTING QUOTATION DATA (if it exists)
+    const { data: existingQuote } = await supabase
+      .from('quotations')
+      .select('*')
+      .eq('inquiry_id', inq.id)
+      .maybeSingle();
+
+    // If there is an existing quotation, pre-fill the form with its data
+    if (existingQuote) {
+      setDrafts([
+        {
+          hotelId: existingQuote.hotel_id || null,
+          hotelName: existingQuote.hotel_name || '',
+          roomType: existingQuote.room_type || '',
+          pricePerNight: existingQuote.new_price?.toString() || existingQuote.total_price?.toString() || '',
+          originalPrice: existingQuote.total_price?.toString() || '',
+          address: existingQuote.address || '',
+          customRoomOnly: existingQuote.custom_room_only || 'Room only',
+          customPayAtHotel: existingQuote.custom_pay_at_hotel || 'Pay at hotel',
+          customNonRefundable: existingQuote.custom_non_refundable || 'Non-refundable',
+          customNoBreakfast: existingQuote.custom_no_breakfast || 'No breakfast',
+          customDescription: existingQuote.custom_description || 'Best value for your budget.',
+          customBestFor: existingQuote.custom_best_for || 'Couples / leisure',
+          facilities: existingQuote.facilities || 'Free WiFi, AC, Parking',
+          imageUrls: existingQuote.image_url ? existingQuote.image_url.split(',').map((url: string) => url.trim()) : [],
+          showSuggestions: false,
+        },
+        // We reset the other two options to blank
+        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
+        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
+      ]);
+    } else {
+      // If no existing quote, reset to 3 blank forms
+      setDrafts([
+        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
+        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
+        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
+      ]);
+    }
+
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + 7);
     setValidUntil(futureDate.toISOString().split('T')[0]);
