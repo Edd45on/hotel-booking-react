@@ -183,7 +183,15 @@ export default function AdminPanel() {
 
     setLoading(true);
     try {
+      // 🟢 FIX: Fetch the existing quotation right here, inside the function
+      const { data: existingQuotation } = await supabase
+        .from('quotations')
+        .select('total_price, hotel_name')
+        .eq('inquiry_id', selectedInquiry.id)
+        .maybeSingle();
+
       await supabase.from('quotations').delete().eq('inquiry_id', selectedInquiry.id);
+      // ... rest of the function continues normally
 
       const today = new Date();
       const checkIn = new Date(selectedInquiry.check_in);
