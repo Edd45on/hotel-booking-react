@@ -50,6 +50,7 @@ export default function QuotationView() {
       .select(`
         id,
         total_price,
+		original_price,
         is_customer_chosen,
         inquiry_id,
         created_at,
@@ -72,8 +73,10 @@ export default function QuotationView() {
     setQuotations(qData ? qData.slice(0, 3) : []);
   };
 
-  // 🟢 GLOBAL TIMER
+  // 🟢 GLOBAL TIMER (Runs based on valid_until, even before selection)
   useEffect(() => {
+    if (!quotations || quotations.length === 0) return;
+
     const interval = setInterval(() => {
       const now = new Date();
       const newTimeLeft: Record<string, string> = {};
@@ -295,23 +298,22 @@ export default function QuotationView() {
                   )}
                 </div>
 
-                {/* TITLE & PRICE */}
-                <div className="flex flex-col sm:flex-row justify-between items-start gap-2 mt-1">
-                  <div className="flex-1">
-                    <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#0F172A] leading-tight">
-                      {q.hotel_name}
-                    </h2>
-                    <p className="text-sm text-[#64748B] mt-1">{q.room_type || 'Standard Room'}</p>
-                  </div>
                   <div className="text-left sm:text-right flex-shrink-0">
-                    <div className="text-[#E11D48] font-bold text-2xl md:text-3xl font-serif">
-                      ₱{q.total_price} <span className="text-sm font-normal text-[#64748B]">/ night</span>
+                    {/* 🟢 PRICE COMPARISON LOGIC */}
+                    <div className="flex flex-col items-end">
+                      {q.original_price && q.original_price > 0 && q.total_price !== q.original_price && (
+                        <span className="text-sm text-[#94a3b8] line-through decoration-2">
+                          ₱{q.original_price}
+                        </span>
+                      )}
+                      <div className="text-[#E11D48] font-bold text-2xl md:text-3xl font-serif">
+                        ₱{q.total_price} <span className="text-sm font-normal text-[#64748B]">/ night</span>
+                      </div>
                     </div>
                     <div className="text-[#64748B] text-sm">
                       ₱{totalPrice.toLocaleString()} total · {nights} nights
                     </div>
                   </div>
-                </div>
 
                 {/* CHECKMARKS */}
                 <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-[#475569] mt-1">

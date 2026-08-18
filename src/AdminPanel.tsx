@@ -17,6 +17,7 @@ export default function AdminPanel() {
       hotelName: '',
       roomType: '',
       pricePerNight: '',
+	  originalPrice: '',
       address: '',
       customRoomOnly: 'Room only',
       customPayAtHotel: 'Pay at hotel',
@@ -210,6 +211,7 @@ export default function AdminPanel() {
         hotel_name: draft.hotelName,
         room_type: draft.roomType,
         total_price: parseFloat(draft.pricePerNight) || 0,
+        original_price: parseFloat(draft.originalPrice) || 0, // 🟢 ADD THIS
         address: draft.address,
         is_customer_chosen: false,
         facilities: draft.facilities,
@@ -218,7 +220,7 @@ export default function AdminPanel() {
         custom_non_refundable: draft.customNonRefundable,
         custom_no_breakfast: draft.customNoBreakfast,
         custom_description: draft.customDescription,
-        image_url: draft.imageUrls.join(','), // 🟢 Join array back to string for DB
+        image_url: draft.imageUrls.join(','),
         valid_until: validUntilISO,
       }));
 
@@ -381,15 +383,16 @@ export default function AdminPanel() {
                         )}
                       </div>
                       <div className="w-1/3">
-                        <label className="block text-xs font-semibold text-[#64748B] mb-1">Price / night *</label>
+                        <label className="block text-xs font-semibold text-[#64748B] mb-1">Original Price (Optional)</label>
                         <input 
                           type="number" 
                           step="0.01"
-                          value={draft.pricePerNight}
-                          onChange={(e) => updateDraft(index, 'pricePerNight', e.target.value)}
+                          value={draft.originalPrice}
+                          onChange={(e) => updateDraft(index, 'originalPrice', e.target.value)}
                           className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
-                          placeholder="1389.99"
+                          placeholder="e.g. 1750.00"
                         />
+                        <p className="text-[10px] text-[#94a3b8] mt-1">Leave blank if no price change</p>
                       </div>
                     </div>
 
