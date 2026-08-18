@@ -218,9 +218,8 @@ export default function AdminPanel() {
         hotel_id: draft.hotelId || null,
         hotel_name: draft.hotelName,
         room_type: draft.roomType,
-        total_price: parseFloat(draft.pricePerNight) || 0,
-        // 🟢 STEP 3: If there was an old price, use it as original_price. Otherwise, 0.
-        original_price: existingQuotation ? parseFloat(existingQuotation.total_price) : 0,
+        total_price: existingQuotation ? parseFloat(existingQuotation.total_price) : 0, // 🟢 Original price (crossed out)
+        new_price: parseFloat(draft.pricePerNight) || 0, // 🟢 New price (bold)
         address: draft.address,
         is_customer_chosen: false,
         facilities: draft.facilities,
