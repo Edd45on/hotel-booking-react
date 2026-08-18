@@ -57,6 +57,7 @@ export default function QuotationView() {
 		is_redseller_booked,
         inquiry_id,
         created_at,
+		facilities,
         facilities,
         custom_room_only,
         custom_pay_at_hotel,
@@ -77,6 +78,7 @@ export default function QuotationView() {
     setQuotations(qData ? qData.slice(0, 3) : []);
   };
 
+console.log("🟢 Quotation Data:", qData); // 🟢 ADD THIS LINE
   // 🟢 LIVE COUNTDOWN TIMER
   useEffect(() => {
     if (!quotations || quotations.length === 0) return;

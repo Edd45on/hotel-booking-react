@@ -550,17 +550,91 @@ export default function AdminPanel() {
                     </div>
 
                     <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Best For</label><input type="text" value={draft.customBestFor} onChange={(e) => updateDraft(index, 'customBestFor', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
-                    <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Facilities (Comma separated)</label><textarea rows={2} value={draft.facilities} onChange={(e) => updateDraft(index, 'facilities', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48] resize-none" placeholder="Free WiFi, AC, Parking, Pool" /></div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Line 1</label><input type="text" value={draft.customRoomOnly} onChange={(e) => updateDraft(index, 'customRoomOnly', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
-                      <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Line 2</label><input type="text" value={draft.customPayAtHotel} onChange={(e) => updateDraft(index, 'customPayAtHotel', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
-                      <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Line 3</label><input type="text" value={draft.customNonRefundable} onChange={(e) => updateDraft(index, 'customNonRefundable', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
-                      <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Line 4</label><input type="text" value={draft.customNoBreakfast} onChange={(e) => updateDraft(index, 'customNoBreakfast', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
+                    {/* 🟢 ADVANCED FACILITIES CHECKBOXES */}
+                    <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4">
+                      <label className="block text-xs font-bold text-[#64748B] mb-2">Facilities</label>
+                      
+                      {/* Room Facilities */}
+                      <div className="mb-4">
+                        <p className="text-xs font-semibold text-[#0F172A] mb-2">Room Facilities</p>
+                        <div className="grid grid-cols-2 gap-2">
+                          {['Chairs', 'Wardrobe', 'TV', 'AC', 'Iron', 'Bed', 'Mirror'].map((item) => (
+                            <label key={item} className="flex items-center gap-2 text-xs text-[#475569] cursor-pointer">
+                              <input 
+                                type="checkbox"
+                                className="w-4 h-4 rounded border-[#E2E8F0] text-[#E11D48] focus:ring-[#E11D48]"
+                                checked={draft.facilities.split(',').map(f => f.trim()).includes(item)}
+                                onChange={(e) => {
+                                  const currentList = draft.facilities.split(',').map(f => f.trim()).filter(f => f !== '');
+                                  let newList;
+                                  if (e.target.checked) {
+                                    newList = [...currentList, item];
+                                  } else {
+                                    newList = currentList.filter(f => f !== item);
+                                  }
+                                  updateDraft(index, 'facilities', newList.join(','));
+                                }}
+                              />
+                              {item}
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Bathroom Facilities */}
+                      <div className="mb-4">
+                        <p className="text-xs font-semibold text-[#0F172A] mb-2">Bathroom Facilities</p>
+                        <div className="grid grid-cols-2 gap-2">
+                          {['Towel', 'Hot Shower', 'Hair Dryer'].map((item) => (
+                            <label key={item} className="flex items-center gap-2 text-xs text-[#475569] cursor-pointer">
+                              <input 
+                                type="checkbox"
+                                className="w-4 h-4 rounded border-[#E2E8F0] text-[#E11D48] focus:ring-[#E11D48]"
+                                checked={draft.facilities.split(',').map(f => f.trim()).includes(item)}
+                                onChange={(e) => {
+                                  const currentList = draft.facilities.split(',').map(f => f.trim()).filter(f => f !== '');
+                                  let newList;
+                                  if (e.target.checked) {
+                                    newList = [...currentList, item];
+                                  } else {
+                                    newList = currentList.filter(f => f !== item);
+                                  }
+                                  updateDraft(index, 'facilities', newList.join(','));
+                                }}
+                              />
+                              {item}
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Others */}
+                      <div>
+                        <p className="text-xs font-semibold text-[#0F172A] mb-2">Others</p>
+                        <div className="grid grid-cols-2 gap-2">
+                          {['Phone', 'Free WiFi'].map((item) => (
+                            <label key={item} className="flex items-center gap-2 text-xs text-[#475569] cursor-pointer">
+                              <input 
+                                type="checkbox"
+                                className="w-4 h-4 rounded border-[#E2E8F0] text-[#E11D48] focus:ring-[#E11D48]"
+                                checked={draft.facilities.split(',').map(f => f.trim()).includes(item)}
+                                onChange={(e) => {
+                                  const currentList = draft.facilities.split(',').map(f => f.trim()).filter(f => f !== '');
+                                  let newList;
+                                  if (e.target.checked) {
+                                    newList = [...currentList, item];
+                                  } else {
+                                    newList = currentList.filter(f => f !== item);
+                                  }
+                                  updateDraft(index, 'facilities', newList.join(','));
+                                }}
+                              />
+                              {item}
+                            </label>
+                          ))}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
 
             <div className="flex justify-between items-center mt-4 mb-6 border-t border-[#E2E8F0] pt-4">
               <div className="flex gap-2">
