@@ -73,11 +73,12 @@ export default function QuotationView() {
     setQuotations(qData ? qData.slice(0, 3) : []);
   };
 
-  // 🟢 GLOBAL TIMER (Runs based on valid_until, even before selection)
+  // 🟢 LIVE COUNTDOWN TIMER
   useEffect(() => {
     if (!quotations || quotations.length === 0) return;
 
-    const interval = setInterval(() => {
+    // Initialize the timer immediately
+    const updateTimer = () => {
       const now = new Date();
       const newTimeLeft: Record<string, string> = {};
 
@@ -98,7 +99,13 @@ export default function QuotationView() {
       });
 
       setTimeLeft(newTimeLeft);
-    }, 1000);
+    };
+
+    // Run once immediately on load
+    updateTimer();
+
+    // Then run every second
+    const interval = setInterval(updateTimer, 1000);
 
     return () => clearInterval(interval);
   }, [quotations]);
@@ -299,19 +306,21 @@ export default function QuotationView() {
                 </div>
 
                   <div className="text-left sm:text-right flex-shrink-0">
-                    {/* 🟢 PRICE COMPARISON LOGIC */}
-                    <div className="flex flex-col items-end">
-                      {q.original_price && q.original_price > 0 && q.total_price !== q.original_price && (
-                        <span className="text-sm text-[#94a3b8] line-through decoration-2">
-                          ₱{q.original_price}
-                        </span>
-                      )}
-                      <div className="text-[#E11D48] font-bold text-2xl md:text-3xl font-serif">
-                        ₱{q.total_price} <span className="text-sm font-normal text-[#64748B]">/ night</span>
+                    {/* 🟢 SIDE-BY-SIDE PRICE COMPARISON */}
+                    <div className="flex flex-col items-end sm:items-end gap-1">
+                      <div className="flex items-center gap-2 sm:justify-end flex-wrap">
+                        {q.original_price && q.original_price > 0 && q.total_price !== q.original_price && (
+                          <span className="text-sm text-[#94a3b8] line-through decoration-2">
+                            ₱{q.original_price}
+                          </span>
+                        )}
+                        <div className="text-[#E11D48] font-bold text-2xl md:text-3xl font-serif">
+                          ₱{q.total_price} <span className="text-sm font-normal text-[#64748B]">/ night</span>
+                        </div>
                       </div>
-                    </div>
-                    <div className="text-[#64748B] text-sm">
-                      ₱{totalPrice.toLocaleString()} total · {nights} nights
+                      <div className="text-[#64748B] text-sm">
+                        ₱{totalPrice.toLocaleString()} total · {nights} nights
+                      </div>
                     </div>
                   </div>
 
