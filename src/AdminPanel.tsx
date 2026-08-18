@@ -77,7 +77,8 @@ export default function AdminPanel() {
           hotel_name,
           room_type,
           new_price,
-          is_customer_chosen
+          is_customer_chosen,
+          is_admin_confirmed
         )
       `)
       .order('created_at', { ascending: false });
@@ -99,7 +100,6 @@ export default function AdminPanel() {
       .eq('inquiry_id', inq.id)
       .maybeSingle();
 
-    // 🟢 FIX: Properly balanced brackets
     if (existingQuote) {
       setDrafts([
         {
@@ -122,7 +122,6 @@ export default function AdminPanel() {
         { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
       ]);
     } else {
-      // If no existing quote, reset to 3 blank forms
       setDrafts([
         { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
         { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
@@ -183,7 +182,6 @@ export default function AdminPanel() {
 
     setLoading(true);
     try {
-      // 🟢 FIX: Fetch the existing quotation right here, inside the function
       const { data: existingQuotation } = await supabase
         .from('quotations')
         .select('total_price, hotel_name')
@@ -191,7 +189,6 @@ export default function AdminPanel() {
         .maybeSingle();
 
       await supabase.from('quotations').delete().eq('inquiry_id', selectedInquiry.id);
-      // ... rest of the function continues normally
 
       const today = new Date();
       const checkIn = new Date(selectedInquiry.check_in);
@@ -252,11 +249,13 @@ export default function AdminPanel() {
         new_price: parseFloat(draft.pricePerNight) || 0,
         address: draft.address,
         is_customer_chosen: false,
+        is_admin_confirmed: false,
         facilities: draft.facilities,
         custom_room_only: draft.customRoomOnly,
         custom_pay_at_hotel: draft.customPayAtHotel,
         custom_non_refundable: draft.customNonRefundable,
         custom_no_breakfast: draft.customNoBreakfast,
+        custom_best_for: draft.customBestFor,
         image_url: draft.imageUrls.join(','),
         valid_until: validUntilISO,
       }));
@@ -550,6 +549,7 @@ export default function AdminPanel() {
                       </div>
                     </div>
 
+                    <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Best For</label><input type="text" value={draft.customBestFor} onChange={(e) => updateDraft(index, 'customBestFor', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
                     <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Facilities (Comma separated)</label><textarea rows={2} value={draft.facilities} onChange={(e) => updateDraft(index, 'facilities', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48] resize-none" placeholder="Free WiFi, AC, Parking, Pool" /></div>
                     <div className="grid grid-cols-2 gap-3">
                       <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Line 1</label><input type="text" value={draft.customRoomOnly} onChange={(e) => updateDraft(index, 'customRoomOnly', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
@@ -627,12 +627,11 @@ export default function AdminPanel() {
                       <span className="font-medium text-[#0F172A] ml-1">{chosen.room_type || 'Standard Room'}</span>
                     </div>
                     <div>
-                    <div>
                       <span className="text-[#64748B]">Price:</span>
                       <span className="font-medium text-[#E11D48] ml-1">₱{chosen.new_price}/night</span>
                     </div>
+                  </div>
 
-                  {/* 🟢 REDSELLER CONFIRMATION BUTTONS */}
                   <div className="flex flex-col gap-2 mt-3">
                     <button 
                       onClick={() => {
@@ -644,7 +643,7 @@ export default function AdminPanel() {
                           `Rooms: ${detailsInquiry.rooms}\n` +
                           `Hotel: ${chosen.hotel_name}\n` +
                           `Room Type: ${chosen.room_type || 'Standard Room'}\n` +
-                          `Price: ₱${chosen.total_price}/night`
+                          `Price: ₱${chosen.new_price}/night`
                         );
                         alert('📋 Full booking details copied to clipboard!');
                       }}
@@ -653,10 +652,8 @@ export default function AdminPanel() {
                       Copy to Clipboard for RedSeller
                     </button>
 
-                    {/* 🟢 THE "TRIGGER BACK TO CLIENT" BUTTON */}
                     <button 
                       onClick={async () => {
-                        // Update the database to mark it as confirmed by admin
                         const { error } = await supabase
                           .from('quotations')
                           .update({ is_admin_confirmed: true })
@@ -666,8 +663,8 @@ export default function AdminPanel() {
                           alert('❌ Error confirming booking: ' + error.message);
                         } else {
                           alert('✅ Booking marked as confirmed! The client will now see the Green confirmation state.');
-                          setDetailsInquiry(null); // Close the modal
-                          fetchInquiries(); // Refresh the dashboard
+                          setDetailsInquiry(null);
+                          fetchInquiries();
                         }
                       }}
                       className="w-full bg-[#E11D48] text-white py-2 rounded-xl font-bold hover:bg-[#BE123C] transition"
