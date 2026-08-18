@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from './utils/supabase';
-import { ChevronDown, ChevronUp, Star, X, MessageCircle } from 'lucide-react';
+import { ChevronDown, ChevronUp, Star, X, MessageCircle, Gem, Plane, Users, Briefcase, Wallet, Award, Flame } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function QuotationView() {
@@ -170,38 +170,38 @@ export default function QuotationView() {
     const highestPrice = sorted[sorted.length - 1];
     const midPrice = sorted.length > 2 ? sorted[1] : lowestPrice;
 
-    // 1. PREMIUM OPTION (If price is significantly higher than the rest)
+    // 1. PREMIUM OPTION
     if (price >= highestPrice && (highestPrice - midPrice) > 500) {
-      return { label: 'PREMIUM OPTION', color: 'bg-purple-500 text-white', icon: '💎', description: 'Top-tier comfort and premium amenities.' };
+      return { label: 'PREMIUM OPTION', color: 'bg-purple-500 text-white', icon: Gem, description: 'Top-tier comfort and premium amenities.' };
     }
 
-    // 2. NEAR DESTINATION (If purpose is 'Airport / Flight')
+    // 2. NEAR DESTINATION
     if (purpose?.toLowerCase().includes('airport') || purpose?.toLowerCase().includes('flight')) {
-      return { label: 'NEAR DESTINATION', color: 'bg-sky-500 text-white', icon: '✈️', description: 'Conveniently located near your destination.' };
+      return { label: 'NEAR DESTINATION', color: 'bg-sky-500 text-white', icon: Plane, description: 'Conveniently located near your destination.' };
     }
 
-    // 3. FAMILY PICK (If purpose is 'Family')
+    // 3. FAMILY PICK
     if (purpose?.toLowerCase().includes('family')) {
-      return { label: 'FAMILY PICK', color: 'bg-emerald-500 text-white', icon: '👨‍👩‍👧‍👦', description: 'Perfect setup for families and kids.' };
+      return { label: 'FAMILY PICK', color: 'bg-emerald-500 text-white', icon: Users, description: 'Perfect setup for families and kids.' };
     }
 
-    // 4. BUSINESS PICK (If purpose is 'Business')
+    // 4. BUSINESS PICK
     if (purpose?.toLowerCase().includes('business')) {
-      return { label: 'BUSINESS PICK', color: 'bg-indigo-500 text-white', icon: '💼', description: 'Fast Wi-Fi and quiet workspace guaranteed.' };
+      return { label: 'BUSINESS PICK', color: 'bg-indigo-500 text-white', icon: Briefcase, description: 'Fast Wi-Fi and quiet workspace guaranteed.' };
     }
 
-    // 5. BUDGET OPTION (If it is the cheapest price)
+    // 5. BUDGET OPTION
     if (price === lowestPrice) {
-      return { label: 'BUDGET OPTION', color: 'bg-blue-500 text-white', icon: '💰', description: 'The most affordable choice for your budget.' };
+      return { label: 'BUDGET OPTION', color: 'bg-blue-500 text-white', icon: Wallet, description: 'The most affordable choice for your budget.' };
     }
 
-    // 6. BEST VALUE (If it is the middle/balanced price)
+    // 6. BEST VALUE
     if (price === midPrice) {
-      return { label: 'BEST VALUE', color: 'bg-yellow-400 text-[#0F172A]', icon: '⭐', description: 'Best balance of price, location, and comfort.' };
+      return { label: 'BEST VALUE', color: 'bg-yellow-400 text-[#0F172A]', icon: Award, description: 'Best balance of price, location, and comfort.' };
     }
 
-    // 7. POPULAR CHOICE (Default fallback if no other badge applies)
-    return { label: 'POPULAR CHOICE', color: 'bg-rose-500 text-white', icon: '🔥', description: 'One of the most frequently booked options.' };
+    // 7. POPULAR CHOICE
+    return { label: 'POPULAR CHOICE', color: 'bg-rose-500 text-white', icon: Flame, description: 'One of the most frequently booked options.' };
   };
 
   return (
@@ -314,7 +314,9 @@ export default function QuotationView() {
               <div key={q.id} className="bg-white rounded-3xl shadow-lg border border-[#E2E8F0] overflow-hidden p-6 md:p-8 relative flex flex-col gap-5">
                 
                 <div className={`absolute top-4 left-4 ${badge.color} text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-sm z-10 flex items-center gap-1`}>
-                  <span>{badge.icon}</span> {badge.label}
+                  {/* 🟢 RENDER THE ICON INSTEAD OF A STRING */}
+                  <badge.icon size={14} className="fill-current" />
+                  {badge.label}
                 </div>
 
                 {/* IMAGE & THUMBNAILS */}
