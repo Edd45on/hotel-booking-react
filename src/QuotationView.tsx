@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from './utils/supabase';
-import { ChevronDown, ChevronUp, Star, X, MessageCircle, Gem, Plane, Users, Briefcase, Wallet, Award, Flame } from 'lucide-react';
+import { ChevronDown, ChevronUp, Star, X, MessageCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function QuotationView() {
@@ -47,17 +47,15 @@ export default function QuotationView() {
 
     const { data: qData, error } = await supabase
       .from('quotations')
-
       .select(`
         id,
         total_price,
         new_price,
         is_customer_chosen,
         is_admin_confirmed,
-		is_redseller_booked,
+        is_redseller_booked,
         inquiry_id,
         created_at,
-		facilities,
         facilities,
         custom_room_only,
         custom_pay_at_hotel,
@@ -78,7 +76,6 @@ export default function QuotationView() {
     setQuotations(qData ? qData.slice(0, 3) : []);
   };
 
-console.log("🟢 Quotation Data:", qData); // 🟢 ADD THIS LINE
   // 🟢 LIVE COUNTDOWN TIMER
   useEffect(() => {
     if (!quotations || quotations.length === 0) return;
@@ -169,86 +166,31 @@ console.log("🟢 Quotation Data:", qData); // 🟢 ADD THIS LINE
   const nights = getNights(inquiry.check_in, inquiry.check_out);
   const referenceId = `#STY-${String(inquiry.id).slice(-6).toUpperCase()}`;
 
-  const getDynamicBadge = (price: number, allPrices: number[], purpose: string) => {
+  const getBadgeByPrice = (price: number, allPrices: number[], purpose: string) => {
     const sorted = [...allPrices].sort((a, b) => a - b);
     const lowestPrice = sorted[0];
     const highestPrice = sorted[sorted.length - 1];
     const midPrice = sorted.length > 2 ? sorted[1] : lowestPrice;
 
-    // 1. PREMIUM OPTION
     if (price >= highestPrice && (highestPrice - midPrice) > 500) {
-      return {
-        label: 'PREMIUM OPTION',
-        color: 'bg-purple-500 text-white',
-        icon: Gem,
-        description: 'A more elevated stay with added comfort and convenience.',
-        bestFor: 'Travelers who prefer a more comfortable experience.'
-      };
+      return { label: 'PREMIUM OPTION', color: 'bg-purple-500 text-white', icon: '💎', description: 'A more elevated stay with added comfort and convenience.', bestFor: 'Travelers who prefer a more comfortable experience.' };
     }
-
-    // 2. NEAR DESTINATION
     if (purpose?.toLowerCase().includes('airport') || purpose?.toLowerCase().includes('flight')) {
-      return {
-        label: 'NEAR DESTINATION',
-        color: 'bg-sky-500 text-white',
-        icon: Plane,
-        description: 'Conveniently located near the area you requested, so you can spend less time traveling.',
-        bestFor: 'Travelers who prioritize location.'
-      };
+      return { label: 'NEAR DESTINATION', color: 'bg-sky-500 text-white', icon: '✈️', description: 'Conveniently located near the area you requested, so you can spend less time traveling.', bestFor: 'Travelers who prioritize location.' };
     }
-
-    // 3. FAMILY PICK
     if (purpose?.toLowerCase().includes('family')) {
-      return {
-        label: 'FAMILY PICK',
-        color: 'bg-emerald-500 text-white',
-        icon: Users,
-        description: 'A practical choice designed around a more comfortable family stay.',
-        bestFor: 'Families traveling together.'
-      };
+      return { label: 'FAMILY PICK', color: 'bg-emerald-500 text-white', icon: '👨‍👩‍👧‍👦', description: 'A practical choice designed around a more comfortable family stay.', bestFor: 'Families traveling together.' };
     }
-
-    // 4. BUSINESS PICK
     if (purpose?.toLowerCase().includes('business')) {
-      return {
-        label: 'BUSINESS PICK',
-        color: 'bg-indigo-500 text-white',
-        icon: Briefcase,
-        description: 'A convenient choice for work trips where location and a hassle-free stay matter.',
-        bestFor: 'Business travelers.'
-      };
+      return { label: 'BUSINESS PICK', color: 'bg-indigo-500 text-white', icon: '💼', description: 'A convenient choice for work trips where location and a hassle-free stay matter.', bestFor: 'Business travelers.' };
     }
-
-    // 5. BUDGET OPTION
     if (price === lowestPrice) {
-      return {
-        label: 'BUDGET OPTION',
-        color: 'bg-blue-500 text-white',
-        icon: Wallet,
-        description: 'One of the most affordable suitable options within your budget.',
-        bestFor: 'Budget-conscious travelers.'
-      };
+      return { label: 'BUDGET OPTION', color: 'bg-blue-500 text-white', icon: '💰', description: 'One of the most affordable suitable options within your budget.', bestFor: 'Budget-conscious travelers.' };
     }
-
-    // 6. BEST VALUE
     if (price === midPrice) {
-      return {
-        label: 'BEST VALUE',
-        color: 'bg-yellow-400 text-[#0F172A]',
-        icon: Award,
-        description: 'A smart balance of price, location, and comfort.',
-        bestFor: 'Travelers looking for great value.'
-      };
+      return { label: 'BEST VALUE', color: 'bg-yellow-400 text-[#0F172A]', icon: '⭐', description: 'A smart balance of price, location, and comfort.', bestFor: 'Travelers looking for great value.' };
     }
-
-    // 7. POPULAR CHOICE
-    return {
-      label: 'POPULAR CHOICE',
-      color: 'bg-rose-500 text-white',
-      icon: Flame,
-      description: 'A well-liked option with a dependable mix of comfort, location, and value.',
-      bestFor: 'Travelers who prefer a popular choice.'
-    };
+    return { label: 'POPULAR CHOICE', color: 'bg-rose-500 text-white', icon: '🔥', description: 'A well-liked option with a dependable mix of comfort, location, and value.', bestFor: 'Travelers who prefer a popular choice.' };
   };
 
   return (
@@ -261,16 +203,16 @@ console.log("🟢 Quotation Data:", qData); // 🟢 ADD THIS LINE
             YOUR HOTEL QUOTATION
           </h1>
           <p className="text-lg md:text-xl text-[#0F172A] font-semibold mt-2 uppercase tracking-wide">
-            {/* 🟢 IMPROVED DESTINATION FORMAT */}
             {inquiry.destination}, Philippines
           </p>
           <p className="text-md text-[#64748B] mt-1">
-            {/* 🟢 UPDATED DATE RANGE WITH WEEKDAYS */}
             {formatDateRange(inquiry.check_in, inquiry.check_out)} · {inquiry.adults} Adults · {inquiry.rooms} Room
           </p>
           <p className="text-sm text-[#64748B] mt-1">{quotations.length} options found</p>
           <p className="text-xs font-mono text-[#94a3b8] mt-4 tracking-widest">{referenceId}</p>
-                 {/* 🟢 NEXT STEP INDICATOR */}
+        </div>
+
+        {/* 🟢 NEXT STEP INDICATOR */}
         <div className="max-w-2xl mx-auto mb-8">
           <div className="flex justify-between items-center w-full px-2">
             <div className="flex flex-col items-center flex-1">
@@ -287,7 +229,7 @@ console.log("🟢 Quotation Data:", qData); // 🟢 ADD THIS LINE
               </div>
               <span className="text-[10px] text-[#64748B] mt-1 text-center leading-tight">Options<br />Selected</span>
             </div>
-            <div className="h-[2px] flex-1 bg-[#E2E8F0] mx-1"></div>
+            <div className="h-[2px] flex-1 bg-green-200 mx-1"></div>
 
             <div className="flex flex-col items-center flex-1">
               <div className={`flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-500 ${
@@ -319,35 +261,36 @@ console.log("🟢 Quotation Data:", qData); // 🟢 ADD THIS LINE
             </div>
           </div>
         </div>
-		
-		</div>
 
         {/* QUOTATION CARDS */}
         <div className="grid grid-cols-1 gap-10 md:gap-12">
           {quotations.map((q: any) => {
             const allPrices = quotations.map(item => item.total_price);
-                        const badge = getDynamicBadge(q.total_price, allPrices, inquiry.purpose);
+            const badge = getBadgeByPrice(q.total_price, allPrices, inquiry.purpose);
             const imageArray = q.image_url ? q.image_url.split(',').map((url: string) => url.trim()) : [];
             const currentActiveImage = activeImages[q.id] || (imageArray.length > 0 ? imageArray[0] : 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=600&q=80');
             const isOpen = openFacilitiesId === q.id;
             const totalPrice = q.new_price * nights;
 
-                  const renderButton = () => {
+            const renderButton = () => {
               const isAnyCardChosen = quotations.some(item => item.is_customer_chosen === true);
               
-              // 🟢 NEW: Check if Admin has confirmed the booking
+              // 🟢 Admin Confirmed state
               if (q.is_admin_confirmed) {
                 return (
-                  <div className="w-full bg-green-100 border border-green-300 text-green-700 py-3 rounded-xl text-center mt-2 flex flex-col items-center justify-center gap-2">
-                    <span className="font-bold text-lg">✅ BOOKING CONFIRMED</span>
-                    <span className="text-xs text-green-600 font-medium">
-                      Your room is reserved. We will send you the confirmation details shortly.
+                  <div className="w-full bg-yellow-50 border border-yellow-200 text-yellow-800 py-3 rounded-xl text-center mt-2 flex flex-col items-center justify-center gap-2">
+                    <span className="font-bold text-lg">⏳ OPTION SELECTED</span>
+                    <span className="text-xs text-yellow-700 font-medium">
+                      We're checking the latest availability and rate before confirming your booking.
+                    </span>
+                    <span className="text-[10px] text-yellow-600 font-medium mt-1">
+                      Booking is not confirmed yet.
                     </span>
                   </div>
                 );
               } 
               
-              // ✅ If THIS specific card is chosen (but not yet confirmed)
+              // ✅ Customer chosen, waiting for Admin
               else if (q.is_customer_chosen && !q.is_admin_confirmed) {
                 return (
                   <div className="w-full bg-yellow-50 border border-yellow-200 text-yellow-800 py-3 rounded-xl text-center mt-2 flex flex-col items-center justify-center gap-2">
@@ -425,9 +368,7 @@ console.log("🟢 Quotation Data:", qData); // 🟢 ADD THIS LINE
               <div key={q.id} className="bg-white rounded-3xl shadow-lg border border-[#E2E8F0] overflow-hidden p-6 md:p-8 relative flex flex-col gap-5">
                 
                 <div className={`absolute top-4 left-4 ${badge.color} text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-sm z-10 flex items-center gap-1`}>
-                  {/* 🟢 RENDER THE ICON INSTEAD OF A STRING */}
-                  <badge.icon size={14} className="fill-current" />
-                  {badge.label}
+                  <span>{badge.icon}</span> {badge.label}
                 </div>
 
                 {/* IMAGE & THUMBNAILS */}
@@ -514,8 +455,6 @@ console.log("🟢 Quotation Data:", qData); // 🟢 ADD THIS LINE
                   <p className="text-[#0F172A] leading-relaxed">
                     {q.custom_description && q.custom_description.trim() !== '' ? q.custom_description : badge.description}
                   </p>
-                  
-                  {/* 🟢 RE-ENABLED HARDCODED BEST FOR TEXT */}
                   <p className="text-xs text-[#64748B] mt-2">
                     Best for: {badge.bestFor}
                   </p>
@@ -536,8 +475,67 @@ console.log("🟢 Quotation Data:", qData); // 🟢 ADD THIS LINE
                   </div>
                 </div>
 
+                {/* 🟢 ROOM AMENITIES (Categorized) */}
+                {q.facilities && q.facilities.trim() !== '' && (
+                  <div className="mt-4 bg-[#F8FAFC] rounded-xl p-4 border border-[#E2E8F0]">
+                    <p className="text-xs font-bold uppercase tracking-wider text-[#64748B] mb-3">Room Amenities</p>
+                    {(() => {
+                      const items = q.facilities.split(',').map(f => f.trim());
+                      const roomItems = items.filter(i => ['Chairs', 'Wardrobe', 'TV', 'AC', 'Iron', 'Bed', 'Mirror'].includes(i));
+                      const bathItems = items.filter(i => ['Towel', 'Hot Shower', 'Hair Dryer'].includes(i));
+                      const otherItems = items.filter(i => ![...roomItems, ...bathItems].includes(i));
+
+                      return (
+                        <div className="space-y-3">
+                          {roomItems.length > 0 && (
+                            <div>
+                              <p className="text-xs font-semibold text-[#0F172A] mb-1">Room Facilities</p>
+                              <div className="grid grid-cols-2 gap-y-1 gap-x-4">
+                                {roomItems.map((item, i) => (
+                                  <div key={i} className="flex items-center gap-2 text-xs text-[#475569]">
+                                    <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
+                                    {item}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          
+                          {bathItems.length > 0 && (
+                            <div>
+                              <p className="text-xs font-semibold text-[#0F172A] mb-1">Bathroom Facilities</p>
+                              <div className="grid grid-cols-2 gap-y-1 gap-x-4">
+                                {bathItems.map((item, i) => (
+                                  <div key={i} className="flex items-center gap-2 text-xs text-[#475569]">
+                                    <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
+                                    {item}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          
+                          {otherItems.length > 0 && (
+                            <div>
+                              <p className="text-xs font-semibold text-[#0F172A] mb-1">Others</p>
+                              <div className="grid grid-cols-2 gap-y-1 gap-x-4">
+                                {otherItems.map((item, i) => (
+                                  <div key={i} className="flex items-center gap-2 text-xs text-[#475569]">
+                                    <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
+                                    {item}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
+                  </div>
+                )}
+
                 {/* VIEW FACILITIES */}
-                <div className="mt-1">
+                <div className="mt-3">
                   <button 
                     onClick={() => setOpenFacilitiesId(isOpen ? null : q.id)}
                     className="flex items-center gap-1 text-sm font-medium text-[#E11D48] hover:underline transition"
