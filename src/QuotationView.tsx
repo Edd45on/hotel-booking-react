@@ -47,7 +47,7 @@ export default function QuotationView() {
 
     const { data: qData, error } = await supabase
       .from('quotations')
-      .select(`
+
       .select(`
         id,
         total_price,
