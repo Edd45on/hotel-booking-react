@@ -152,14 +152,14 @@ export default function AdminPanel() {
 
     setLoading(true);
     try {
-      // 🟢 STEP 1: Fetch the currently existing quotation (to get the old price)
+      // Fetch existing price for strikethrough logic
       const { data: existingQuotation } = await supabase
         .from('quotations')
         .select('total_price, hotel_name')
         .eq('inquiry_id', selectedInquiry.id)
         .maybeSingle();
 
-      // 🟢 STEP 2: Delete the old row (so we can insert the updated one)
+      // Delete old rows
       await supabase.from('quotations').delete().eq('inquiry_id', selectedInquiry.id);
 
       const today = new Date();
@@ -213,24 +213,38 @@ export default function AdminPanel() {
         };
       }));
 
-      const inserts = finalDrafts.map((draft) => ({
-        inquiry_id: selectedInquiry.id,
-        hotel_id: draft.hotelId || null,
-        hotel_name: draft.hotelName,
-        room_type: draft.roomType,
-        total_price: existingQuotation ? parseFloat(existingQuotation.total_price) : 0,
-        new_price: parseFloat(draft.pricePerNight) || parseFloat(draft.totalPrice) || 0,
-        address: draft.address,
-        is_customer_chosen: false,
-        facilities: draft.facilities,
-        custom_room_only: draft.customRoomOnly,
-        custom_pay_at_hotel: draft.customPayAtHotel,
-        custom_non_refundable: draft.customNonRefundable,
-        custom_no_breakfast: draft.customNoBreakfast,
-        custom_description: draft.customDescription,
-        image_url: draft.imageUrls.join(','),
-        valid_until: validUntilISO,
-      }));
+      // 🟢 FIX: Ensures the price is actually saved, using a strict fallback chain
+      const inserts = finalDrafts.map((draft) => {
+        // Try to get the price from the draft state first. 
+        // If it's empty or 0, try to get it from the DOM input value.
+        let priceToUse = parseFloat(draft.pricePerNight);
+        if (isNaN(priceToUse) || priceToUse === 0) {
+          // Attempt to grab the input value directly from the browser DOM
+          const inputEl = document.getElementById(`price-input-${finalDrafts.indexOf(draft)}`) as HTMLInputElement;
+          if (inputEl) {
+            priceToUse = parseFloat(inputEl.value);
+          }
+        }
+        
+        return {
+          inquiry_id: selectedInquiry.id,
+          hotel_id: draft.hotelId || null,
+          hotel_name: draft.hotelName,
+          room_type: draft.roomType,
+          total_price: existingQuotation ? parseFloat(existingQuotation.total_price) : 0,
+          new_price: priceToUse || 0,
+          address: draft.address,
+          is_customer_chosen: false,
+          facilities: draft.facilities,
+          custom_room_only: draft.customRoomOnly,
+          custom_pay_at_hotel: draft.customPayAtHotel,
+          custom_non_refundable: draft.customNonRefundable,
+          custom_no_breakfast: draft.customNoBreakfast,
+          custom_description: draft.customDescription,
+          image_url: draft.imageUrls.join(','),
+          valid_until: validUntilISO,
+        };
+      });
 
       const { error } = await supabase.from('quotations').insert(inserts);
       if (error) throw error;
@@ -395,10 +409,11 @@ export default function AdminPanel() {
                         <input 
                           type="number" 
                           step="0.01"
-                          value={draft.originalPrice}
-                          onChange={(e) => updateDraft(index, 'originalPrice', e.target.value)}
+                          id={`price-input-${index}`} // 🟢 ADD THIS ID
+                          value={draft.pricePerNight}
+                          onChange={(e) => updateDraft(index, 'pricePerNight', e.target.value)}
                           className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
-                          placeholder="e.g. 1750.00"
+                          placeholder="1389.99"
                         />
                         <p className="text-[10px] text-[#94a3b8] mt-1">Leave blank if no price change</p>
                       </div>
