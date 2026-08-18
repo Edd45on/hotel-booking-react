@@ -265,7 +265,7 @@ export default function QuotationView() {
                           position: 'top-center',
                         });
                       }}
-                      className="mt-2 text-xs bg-white border border-yellow-200 text-yellow-700 px-3 py-1 rounded-full hover:bg-yellow-50 transition"
+                      className="mt-2 text-xs bg-white border border-yellow-200 text-yellow-700 px-3 py-1 rounded-full hover:bg-yellow-50 focus:outline-none transition"
                     >
                       Change
                     </button>
