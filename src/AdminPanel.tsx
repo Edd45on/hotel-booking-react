@@ -651,6 +651,26 @@ export default function AdminPanel() {
                     >
                       Copy to Clipboard for RedSeller
                     </button>
+					
+                    <button 
+                      onClick={async () => {
+                        const { error } = await supabase
+                          .from('quotations')
+                          .update({ is_admin_confirmed: true })
+                          .eq('id', chosen.id);
+
+                        if (error) {
+                          alert('❌ Error confirming booking: ' + error.message);
+                        } else {
+                          alert('✅ Booking marked as confirmed! The client will now see the Green confirmation state.');
+                          setDetailsInquiry(null);
+                          fetchInquiries();
+                        }
+                      }}
+                      className="w-full bg-[#E11D48] text-white py-2 rounded-xl font-bold hover:bg-[#BE123C] transition"
+                    >
+                      Confirm Booking & Notify Client
+                    </button>
 					                  <div className="flex flex-col gap-2 mt-3">
                     {/* ... Copy to Clipboard button ... */}
                     {/* ... Confirm Booking & Notify Client button ... */}
@@ -676,25 +696,6 @@ export default function AdminPanel() {
                       Finalize Booking (RedSeller App Done)
                     </button>
                   </div>
-                    <button 
-                      onClick={async () => {
-                        const { error } = await supabase
-                          .from('quotations')
-                          .update({ is_admin_confirmed: true })
-                          .eq('id', chosen.id);
-
-                        if (error) {
-                          alert('❌ Error confirming booking: ' + error.message);
-                        } else {
-                          alert('✅ Booking marked as confirmed! The client will now see the Green confirmation state.');
-                          setDetailsInquiry(null);
-                          fetchInquiries();
-                        }
-                      }}
-                      className="w-full bg-[#E11D48] text-white py-2 rounded-xl font-bold hover:bg-[#BE123C] transition"
-                    >
-                      Confirm Booking & Notify Client
-                    </button>
                   </div>
                 </div>
               );
