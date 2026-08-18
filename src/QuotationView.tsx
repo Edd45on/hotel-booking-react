@@ -54,6 +54,7 @@ export default function QuotationView() {
         new_price,
         is_customer_chosen,
         is_admin_confirmed,
+		is_redseller_booked,
         inquiry_id,
         created_at,
         facilities,
@@ -306,11 +307,11 @@ export default function QuotationView() {
 
             <div className="flex flex-col items-center flex-1">
               <div className={`flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-500 ${
-                quotations.some(q => q.is_admin_confirmed) 
+                quotations.some(q => q.is_redseller_booked) 
                   ? 'bg-green-100 text-green-600 border-green-200' 
                   : 'border-[#E2E8F0] bg-white text-[#94a3b8]'
               }`}>
-                {quotations.some(q => q.is_admin_confirmed) ? '✓' : '○'}
+                {quotations.some(q => q.is_redseller_booked) ? '✓' : '○'}
               </div>
               <span className="text-[10px] text-[#64748B] mt-1 text-center leading-tight">Booking<br />Confirmation</span>
             </div>

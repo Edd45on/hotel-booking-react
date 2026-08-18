@@ -651,7 +651,31 @@ export default function AdminPanel() {
                     >
                       Copy to Clipboard for RedSeller
                     </button>
+					                  <div className="flex flex-col gap-2 mt-3">
+                    {/* ... Copy to Clipboard button ... */}
+                    {/* ... Confirm Booking & Notify Client button ... */}
 
+                    {/* 🟢 NEW: FINALIZE BOOKING BUTTON */}
+                    <button 
+                      onClick={async () => {
+                        const { error } = await supabase
+                          .from('quotations')
+                          .update({ is_redseller_booked: true })
+                          .eq('id', chosen.id);
+
+                        if (error) {
+                          alert('❌ Error finalizing booking: ' + error.message);
+                        } else {
+                          alert('✅ Booking finalized! The client will now see the full Green Confirmation state.');
+                          setDetailsInquiry(null);
+                          fetchInquiries();
+                        }
+                      }}
+                      className="w-full bg-[#0F172A] text-white py-2 rounded-xl font-bold hover:bg-[#1E293B] transition"
+                    >
+                      Finalize Booking (RedSeller App Done)
+                    </button>
+                  </div>
                     <button 
                       onClick={async () => {
                         const { error } = await supabase
