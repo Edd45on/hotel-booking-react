@@ -50,7 +50,7 @@ export default function QuotationView() {
       .select(`
         id,
         total_price,
-        original_price,
+        new_price,
         is_customer_chosen,
         inquiry_id,
         created_at,
@@ -316,13 +316,12 @@ export default function QuotationView() {
                   <div className="text-left sm:text-right flex-shrink-0">
                     <div className="flex flex-col items-end sm:items-end gap-1">
                       <div className="flex items-center gap-2 sm:justify-end flex-wrap">
-                        {/* 🟢 NEW LOGIC: total_price is now the original price (crossed out) */}
+                        {/* 🟢 Compare total_price vs new_price */}
                         {q.total_price > 0 && q.new_price > 0 && q.total_price !== q.new_price && (
                           <span className="text-sm text-[#94a3b8] line-through decoration-2">
                             ₱{q.total_price}
                           </span>
                         )}
-                        {/* 🟢 NEW LOGIC: new_price is the bold current price */}
                         <div className="text-[#E11D48] font-bold text-2xl md:text-3xl font-serif">
                           ₱{q.new_price} <span className="text-sm font-normal text-[#64748B]">/ night</span>
                         </div>
