@@ -72,7 +72,7 @@ export default function QuotationView() {
     setQuotations(qData ? qData.slice(0, 3) : []);
   };
 
-  // 🟢 GLOBAL TIMER (Runs outside the map loop)
+  // 🟢 GLOBAL TIMER
   useEffect(() => {
     const interval = setInterval(() => {
       const now = new Date();
@@ -208,9 +208,6 @@ export default function QuotationView() {
                     <span className="text-xs text-green-600 font-medium">
                       We're checking the latest availability and rate before processing your booking.
                     </span>
-                    <div className="flex items-center justify-center gap-4 mt-1 text-xs">
-                      <span className="text-[#64748B]">⏳ Valid for: <span className="font-bold text-[#0F172A]">{timeLeft[q.id] || 'Loading...'}</span></span>
-                    </div>
                     <button 
                       onClick={() => {
                         toast((t) => (
@@ -399,9 +396,23 @@ export default function QuotationView() {
             </button>
           </div>
 
+          {/* 🟢 MOVED TIMER TO IMPORTANT SECTION */}
           <div className="pt-8 border-t border-[#E2E8F0] text-sm text-[#64748B]">
             <p className="font-semibold uppercase tracking-wider text-xs mb-2">IMPORTANT</p>
             <p>Rates and availability are subject to change until booking confirmation.</p>
+            
+            {/* Get the chosen quotation to display its timer */}
+            {quotations.find(q => q.is_customer_chosen) && (
+              <p className="mt-1 flex items-center justify-center gap-2">
+                <span>⏳</span>
+                <span>
+                  Quotation valid for: <span className="font-bold text-[#0F172A]">
+                    {timeLeft[quotations.find(q => q.is_customer_chosen)?.id || ''] || 'Loading...'}
+                  </span>
+                </span>
+              </p>
+            )}
+            
             {quotations[0]?.valid_until && (
               <p className="mt-1">
                 Quotation valid until: {new Date(quotations[0].valid_until).toLocaleDateString()} · {new Date(quotations[0].valid_until).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
