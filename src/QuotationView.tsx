@@ -212,10 +212,10 @@ export default function QuotationView() {
             const renderButton = () => {
               const isAnyCardChosen = quotations.some(item => item.is_customer_chosen === true);
               
-              if (q.is_customer_chosen) {
-                // ✅ STAGE 3: THANK YOU (Removes the Green "Confirmed" text)
+              } else if (isAnyCardChosen && !q.is_customer_chosen) { // 🟢 ADDED THIS CONDITION
+                // 🟡 STAGE 2: OPTION SELECTED (Pending/Yellow State)
                 return (
-                  <div className="w-full bg-white border border-[#E2E8F0] py-3 rounded-xl text-center mt-2 flex flex-col items-center justify-center gap-2 shadow-sm">
+                  <div className="w-full bg-yellow-50 border border-yellow-200 text-yellow-800 py-3 rounded-xl text-center mt-2 flex flex-col items-center justify-center gap-2">
                     <span className="font-bold text-lg text-[#0F172A]">🎉 Thank you!</span>
                     <span className="text-xs text-[#64748B] font-medium">
                       Your selection has been received. We will contact you shortly to finalize your booking.
