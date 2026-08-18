@@ -23,7 +23,7 @@ export default function AdminPanel() {
       customNonRefundable: 'Non-refundable',
       customNoBreakfast: 'No breakfast',
       customBestFor: 'Couples / leisure',
-      facilities: 'Free WiFi, AC, Parking',
+      facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi',
       imageUrls: [] as string[],
       showSuggestions: false,
     },
@@ -39,7 +39,7 @@ export default function AdminPanel() {
       customNonRefundable: 'Non-refundable',
       customNoBreakfast: 'No breakfast',
       customBestFor: 'Couples / leisure',
-      facilities: 'Free WiFi, AC, Parking',
+      facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi',
       imageUrls: [] as string[],
       showSuggestions: false,
     },
@@ -55,7 +55,7 @@ export default function AdminPanel() {
       customNonRefundable: 'Non-refundable',
       customNoBreakfast: 'No breakfast',
       customBestFor: 'Couples / leisure',
-      facilities: 'Free WiFi, AC, Parking',
+      facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi',
       imageUrls: [] as string[],
       showSuggestions: false,
     },
@@ -114,18 +114,18 @@ export default function AdminPanel() {
           customNonRefundable: existingQuote.custom_non_refundable || 'Non-refundable',
           customNoBreakfast: existingQuote.custom_no_breakfast || 'No breakfast',
           customBestFor: existingQuote.custom_best_for || 'Couples / leisure',
-          facilities: existingQuote.facilities || 'Free WiFi, AC, Parking',
+          facilities: existingQuote.facilities || 'Chairs, TV, AC, Bed, Towel, Free WiFi',
           imageUrls: existingQuote.image_url ? existingQuote.image_url.split(',').map((url: string) => url.trim()) : [],
           showSuggestions: false,
         },
-        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
-        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
+        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi', imageUrls: [], showSuggestions: false },
+        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi', imageUrls: [], showSuggestions: false },
       ]);
     } else {
       setDrafts([
-        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
-        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
-        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
+        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi', imageUrls: [], showSuggestions: false },
+        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi', imageUrls: [], showSuggestions: false },
+        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi', imageUrls: [], showSuggestions: false },
       ]);
     }
 
@@ -163,7 +163,7 @@ export default function AdminPanel() {
 
   const addHotelForm = () => {
     if (drafts.length >= 3) return;
-    setDrafts([...drafts, { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false }]);
+    setDrafts([...drafts, { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi', imageUrls: [], showSuggestions: false }]);
   };
 
   const removeHotelForm = (index: number) => {
@@ -366,7 +366,7 @@ export default function AdminPanel() {
         </div>
       </div>
 
-      {/* DRAFT EDITOR MODAL */}
+      {/* DRAFT EDITOR MODAL WITH CHECKBOX FACILITIES */}
       {selectedInquiry && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-white max-w-3xl w-full rounded-3xl shadow-2xl p-6 relative">
@@ -549,9 +549,8 @@ export default function AdminPanel() {
                       </div>
                     </div>
 
-                    <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Best For</label><input type="text" value={draft.customBestFor} onChange={(e) => updateDraft(index, 'customBestFor', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
                     {/* 🟢 ADVANCED FACILITIES CHECKBOXES */}
-                    <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4">
+                    <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4 mt-2">
                       <label className="block text-xs font-bold text-[#64748B] mb-2">Facilities</label>
                       
                       {/* Room Facilities */}
@@ -635,6 +634,18 @@ export default function AdminPanel() {
                         </div>
                       </div>
                     </div>
+
+                    <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Best For</label><input type="text" value={draft.customBestFor} onChange={(e) => updateDraft(index, 'customBestFor', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Line 1</label><input type="text" value={draft.customRoomOnly} onChange={(e) => updateDraft(index, 'customRoomOnly', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
+                      <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Line 2</label><input type="text" value={draft.customPayAtHotel} onChange={(e) => updateDraft(index, 'customPayAtHotel', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
+                      <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Line 3</label><input type="text" value={draft.customNonRefundable} onChange={(e) => updateDraft(index, 'customNonRefundable', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
+                      <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Line 4</label><input type="text" value={draft.customNoBreakfast} onChange={(e) => updateDraft(index, 'customNoBreakfast', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
 
             <div className="flex justify-between items-center mt-4 mb-6 border-t border-[#E2E8F0] pt-4">
               <div className="flex gap-2">
@@ -725,7 +736,7 @@ export default function AdminPanel() {
                     >
                       Copy to Clipboard for RedSeller
                     </button>
-					
+
                     <button 
                       onClick={async () => {
                         const { error } = await supabase
@@ -745,31 +756,6 @@ export default function AdminPanel() {
                     >
                       Confirm Booking & Notify Client
                     </button>
-					                  <div className="flex flex-col gap-2 mt-3">
-                    {/* ... Copy to Clipboard button ... */}
-                    {/* ... Confirm Booking & Notify Client button ... */}
-
-                    {/* 🟢 NEW: FINALIZE BOOKING BUTTON */}
-                    <button 
-                      onClick={async () => {
-                        const { error } = await supabase
-                          .from('quotations')
-                          .update({ is_redseller_booked: true })
-                          .eq('id', chosen.id);
-
-                        if (error) {
-                          alert('❌ Error finalizing booking: ' + error.message);
-                        } else {
-                          alert('✅ Booking finalized! The client will now see the full Green Confirmation state.');
-                          setDetailsInquiry(null);
-                          fetchInquiries();
-                        }
-                      }}
-                      className="w-full bg-[#0F172A] text-white py-2 rounded-xl font-bold hover:bg-[#1E293B] transition"
-                    >
-                      Finalize Booking (RedSeller App Done)
-                    </button>
-                  </div>
                   </div>
                 </div>
               );
