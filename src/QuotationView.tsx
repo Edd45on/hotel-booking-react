@@ -164,15 +164,44 @@ export default function QuotationView() {
   const nights = getNights(inquiry.check_in, inquiry.check_out);
   const referenceId = `#STY-${String(inquiry.id).slice(-6).toUpperCase()}`;
 
-  const getBadgeByPrice = (price: number, allPrices: number[]) => {
+  const getDynamicBadge = (price: number, allPrices: number[], purpose: string) => {
     const sorted = [...allPrices].sort((a, b) => a - b);
-    if (price === sorted[0]) {
-      return { label: 'BUDGET OPTION', color: 'bg-blue-500 text-white', icon: '💰', text: 'The most affordable choice.', bestFor: 'Budget-conscious travelers' };
+    const lowestPrice = sorted[0];
+    const highestPrice = sorted[sorted.length - 1];
+    const midPrice = sorted.length > 2 ? sorted[1] : lowestPrice;
+
+    // 1. PREMIUM OPTION (If price is significantly higher than the rest)
+    if (price >= highestPrice && (highestPrice - midPrice) > 500) {
+      return { label: 'PREMIUM OPTION', color: 'bg-purple-500 text-white', icon: '💎', description: 'Top-tier comfort and premium amenities.' };
     }
-    if (price === sorted[sorted.length - 1]) {
-      return { label: 'PREMIUM OPTION', color: 'bg-purple-500 text-white', icon: '★', text: 'Top-tier comfort and amenities.', bestFor: 'Luxury & business travelers' };
+
+    // 2. NEAR DESTINATION (If purpose is 'Airport / Flight')
+    if (purpose?.toLowerCase().includes('airport') || purpose?.toLowerCase().includes('flight')) {
+      return { label: 'NEAR DESTINATION', color: 'bg-sky-500 text-white', icon: '✈️', description: 'Conveniently located near your destination.' };
     }
-    return { label: 'BEST VALUE', color: 'bg-yellow-400 text-[#0F172A]', icon: '⭐', text: 'Best balance of price, location and comfort.', bestFor: 'Couples / leisure' };
+
+    // 3. FAMILY PICK (If purpose is 'Family')
+    if (purpose?.toLowerCase().includes('family')) {
+      return { label: 'FAMILY PICK', color: 'bg-emerald-500 text-white', icon: '👨‍👩‍👧‍👦', description: 'Perfect setup for families and kids.' };
+    }
+
+    // 4. BUSINESS PICK (If purpose is 'Business')
+    if (purpose?.toLowerCase().includes('business')) {
+      return { label: 'BUSINESS PICK', color: 'bg-indigo-500 text-white', icon: '💼', description: 'Fast Wi-Fi and quiet workspace guaranteed.' };
+    }
+
+    // 5. BUDGET OPTION (If it is the cheapest price)
+    if (price === lowestPrice) {
+      return { label: 'BUDGET OPTION', color: 'bg-blue-500 text-white', icon: '💰', description: 'The most affordable choice for your budget.' };
+    }
+
+    // 6. BEST VALUE (If it is the middle/balanced price)
+    if (price === midPrice) {
+      return { label: 'BEST VALUE', color: 'bg-yellow-400 text-[#0F172A]', icon: '⭐', description: 'Best balance of price, location, and comfort.' };
+    }
+
+    // 7. POPULAR CHOICE (Default fallback if no other badge applies)
+    return { label: 'POPULAR CHOICE', color: 'bg-rose-500 text-white', icon: '🔥', description: 'One of the most frequently booked options.' };
   };
 
   return (
@@ -198,7 +227,7 @@ export default function QuotationView() {
         <div className="grid grid-cols-1 gap-10 md:gap-12">
           {quotations.map((q: any) => {
             const allPrices = quotations.map(item => item.total_price);
-            const badge = getBadgeByPrice(q.total_price, allPrices);
+                        const badge = getDynamicBadge(q.total_price, allPrices, inquiry.purpose);
             const imageArray = q.image_url ? q.image_url.split(',').map((url: string) => url.trim()) : [];
             const currentActiveImage = activeImages[q.id] || (imageArray.length > 0 ? imageArray[0] : 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=600&q=80');
             const isOpen = openFacilitiesId === q.id;
