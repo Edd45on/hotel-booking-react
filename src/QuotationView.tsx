@@ -327,7 +327,7 @@ export default function QuotationView() {
                         </div>
                       </div>
                       <div className="text-[#64748B] text-sm">
-                        ₱{totalPrice.toLocaleString()} total · {nights} nights
+                        ₱{(q.new_price * nights).toLocaleString()} total · {nights} nights
                       </div>
                     </div>
                   </div>
