@@ -60,7 +60,8 @@ export default function QuotationView() {
         hotel_name,
         image_url,
         valid_until,
-        address
+        address,
+		room_type
       `)
       .eq('inquiry_id', inquiryId)
       .order('created_at', { ascending: false }); // 🟢 Moved sort here!
