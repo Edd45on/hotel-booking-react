@@ -48,11 +48,12 @@ export default function QuotationView() {
     const { data: qData, error } = await supabase
       .from('quotations')
       .select(`
+      .select(`
         id,
         total_price,
         new_price,
         is_customer_chosen,
-		 is_admin_confirmed, // 🟢 ADDED
+        is_admin_confirmed,
         inquiry_id,
         created_at,
         facilities,
@@ -60,6 +61,7 @@ export default function QuotationView() {
         custom_pay_at_hotel,
         custom_non_refundable,
         custom_no_breakfast,
+        custom_description,
         hotel_name,
         image_url,
         valid_until,
