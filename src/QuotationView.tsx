@@ -64,7 +64,8 @@ export default function QuotationView() {
         image_url,
         valid_until,
         address,
-        room_type
+        room_type,
+        hotels ( price_per_night )  // 🟢 Add this line to fetch the original price from the hotels table
       `)
       .eq('inquiry_id', inquiryId);
     
@@ -316,12 +317,21 @@ export default function QuotationView() {
                   <div className="text-left sm:text-right flex-shrink-0">
                     <div className="flex flex-col items-end sm:items-end gap-1">
                       <div className="flex items-center gap-2 sm:justify-end flex-wrap">
-                        {/* 🟢 Compare total_price vs new_price */}
-                        {q.total_price > 0 && q.new_price > 0 && q.total_price !== q.new_price && (
-                          <span className="text-sm text-[#94a3b8] line-through decoration-2">
-                            ₱{q.total_price}
-                          </span>
-                        )}
+                        {/* 🟢 FIXED: Use total_price if available, otherwise fallback to hotels.price_per_night */}
+                        {(() => {
+                          // Determine the original price to cross out
+                          const originalPrice = q.total_price > 0 ? q.total_price : q.hotels?.price_per_night || 0;
+                          
+                          // Only show strikethrough if the original price exists and is different from the new price
+                          if (originalPrice > 0 && q.new_price > 0 && originalPrice !== q.new_price) {
+                            return (
+                              <span className="text-sm text-[#94a3b8] line-through decoration-2">
+                                ₱{originalPrice}
+                              </span>
+                            );
+                          }
+                          return null;
+                        })()}
                         <div className="text-[#E11D48] font-bold text-2xl md:text-3xl font-serif">
                           ₱{q.new_price} <span className="text-sm font-normal text-[#64748B]">/ night</span>
                         </div>
