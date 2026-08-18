@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from './utils/supabase';
-import { X, Save, ChevronLeft, Copy, ExternalLink, Trash2 } from 'lucide-react';
+import { X, Save, ChevronLeft, Copy, ExternalLink } from 'lucide-react';
 
 export default function AdminPanel() {
   const [inquiries, setInquiries] = useState<any[]>([]);
@@ -10,29 +10,13 @@ export default function AdminPanel() {
   
   const [hotelDatabase, setHotelDatabase] = useState<any[]>([]);
 
-  // 🟢 CHANGED: imageUrl is now an array imageUrls
   const [drafts, setDrafts] = useState([
     {
       hotelId: null,
       hotelName: '',
       roomType: '',
       pricePerNight: '',
-	  originalPrice: '',
-      address: '',
-      customRoomOnly: 'Room only',
-      customPayAtHotel: 'Pay at hotel',
-      customNonRefundable: 'Non-refundable',
-      customNoBreakfast: 'No breakfast',
-      customBestFor: 'Couples / leisure',
-      facilities: 'Free WiFi, AC, Parking',
-      imageUrls: [] as string[], // 🟢 Now an array
-      showSuggestions: false,
-    },
-    {
-      hotelId: null,
-      hotelName: '',
-      roomType: '',
-      pricePerNight: '',
+      originalPrice: '',
       address: '',
       customRoomOnly: 'Room only',
       customPayAtHotel: 'Pay at hotel',
@@ -48,6 +32,23 @@ export default function AdminPanel() {
       hotelName: '',
       roomType: '',
       pricePerNight: '',
+      originalPrice: '',
+      address: '',
+      customRoomOnly: 'Room only',
+      customPayAtHotel: 'Pay at hotel',
+      customNonRefundable: 'Non-refundable',
+      customNoBreakfast: 'No breakfast',
+      customBestFor: 'Couples / leisure',
+      facilities: 'Free WiFi, AC, Parking',
+      imageUrls: [] as string[],
+      showSuggestions: false,
+    },
+    {
+      hotelId: null,
+      hotelName: '',
+      roomType: '',
+      pricePerNight: '',
+      originalPrice: '',
       address: '',
       customRoomOnly: 'Room only',
       customPayAtHotel: 'Pay at hotel',
@@ -98,6 +99,7 @@ export default function AdminPanel() {
       .eq('inquiry_id', inq.id)
       .maybeSingle();
 
+    // 🟢 FIX: Properly balanced brackets
     if (existingQuote) {
       setDrafts([
         {
@@ -111,7 +113,6 @@ export default function AdminPanel() {
           customPayAtHotel: existingQuote.custom_pay_at_hotel || 'Pay at hotel',
           customNonRefundable: existingQuote.custom_non_refundable || 'Non-refundable',
           customNoBreakfast: existingQuote.custom_no_breakfast || 'No breakfast',
-          // customDescription removed
           customBestFor: existingQuote.custom_best_for || 'Couples / leisure',
           facilities: existingQuote.facilities || 'Free WiFi, AC, Parking',
           imageUrls: existingQuote.image_url ? existingQuote.image_url.split(',').map((url: string) => url.trim()) : [],
@@ -121,18 +122,11 @@ export default function AdminPanel() {
         { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
       ]);
     } else {
-      setDrafts([
-        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
-        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
-        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
-      ]);
-    }
-    } else {
       // If no existing quote, reset to 3 blank forms
       setDrafts([
-        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
-        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
-        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
+        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
+        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
+        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
       ]);
     }
 
@@ -158,10 +152,10 @@ export default function AdminPanel() {
       hotelName: hotel.name,
       roomType: hotel.room_type || '',
       pricePerNight: hotel.price_per_night || '',
+      originalPrice: hotel.original_price || '',
       address: hotel.address || '',
       imageUrls: hotel.images ? hotel.images.split(',').map((url: string) => url.trim()) : [],
       facilities: hotel.facilities || '',
-      customDescription: hotel.description || 'Best value for your budget.',
       customBestFor: hotel.best_for || 'Couples / leisure',
       showSuggestions: false,
     };
@@ -170,7 +164,7 @@ export default function AdminPanel() {
 
   const addHotelForm = () => {
     if (drafts.length >= 3) return;
-    setDrafts([...drafts, { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false }]);
+    setDrafts([...drafts, { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false }]);
   };
 
   const removeHotelForm = (index: number) => {
@@ -189,14 +183,6 @@ export default function AdminPanel() {
 
     setLoading(true);
     try {
-      // Fetch existing price for strikethrough logic
-      const { data: existingQuotation } = await supabase
-        .from('quotations')
-        .select('total_price, hotel_name')
-        .eq('inquiry_id', selectedInquiry.id)
-        .maybeSingle();
-
-      // Delete old rows
       await supabase.from('quotations').delete().eq('inquiry_id', selectedInquiry.id);
 
       const today = new Date();
@@ -232,7 +218,6 @@ export default function AdminPanel() {
                 price_per_night: parseFloat(draft.pricePerNight) || 0,
                 facilities: draft.facilities,
                 images: draft.imageUrls.join(','),
-                description: draft.customDescription,
                 best_for: draft.customBestFor,
                 address: draft.address,
               })
@@ -250,38 +235,24 @@ export default function AdminPanel() {
         };
       }));
 
-      // 🟢 FIX: Ensures the price is actually saved, using a strict fallback chain
-      const inserts = finalDrafts.map((draft) => {
-        // Try to get the price from the draft state first. 
-        // If it's empty or 0, try to get it from the DOM input value.
-        let priceToUse = parseFloat(draft.pricePerNight);
-        if (isNaN(priceToUse) || priceToUse === 0) {
-          // Attempt to grab the input value directly from the browser DOM
-          const inputEl = document.getElementById(`price-input-${finalDrafts.indexOf(draft)}`) as HTMLInputElement;
-          if (inputEl) {
-            priceToUse = parseFloat(inputEl.value);
-          }
-        }
-        
-        return {
-          inquiry_id: selectedInquiry.id,
-          hotel_id: draft.hotelId || null,
-          hotel_name: draft.hotelName,
-          room_type: draft.roomType,
-          total_price: existingQuotation ? parseFloat(existingQuotation.total_price) : 0,
-          new_price: priceToUse || 0,
-          address: draft.address,
-          is_customer_chosen: false,
-          facilities: draft.facilities,
-          custom_room_only: draft.customRoomOnly,
-          custom_pay_at_hotel: draft.customPayAtHotel,
-          custom_non_refundable: draft.customNonRefundable,
-          custom_no_breakfast: draft.customNoBreakfast,
-          custom_description: draft.customDescription,
-          image_url: draft.imageUrls.join(','),
-          valid_until: validUntilISO,
-        };
-      });
+      const inserts = finalDrafts.map((draft) => ({
+        inquiry_id: selectedInquiry.id,
+        hotel_id: draft.hotelId || null,
+        hotel_name: draft.hotelName,
+        room_type: draft.roomType,
+        total_price: existingQuotation ? parseFloat(existingQuotation.total_price) : 0,
+        new_price: parseFloat(draft.pricePerNight) || 0,
+        address: draft.address,
+        is_customer_chosen: false,
+        facilities: draft.facilities,
+        custom_room_only: draft.customRoomOnly,
+        custom_pay_at_hotel: draft.customPayAtHotel,
+        custom_non_refundable: draft.customNonRefundable,
+        custom_no_breakfast: draft.customNoBreakfast,
+        custom_best_for: draft.customBestFor,
+        image_url: draft.imageUrls.join(','),
+        valid_until: validUntilISO,
+      }));
 
       const { error } = await supabase.from('quotations').insert(inserts);
       if (error) throw error;
@@ -331,7 +302,7 @@ export default function AdminPanel() {
                     {chosenQuotation ? (
                       <div className="flex flex-wrap items-center gap-1">
                         <span className="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold border border-green-200">
-                          ✅ Chosen Option
+                          ✅ Booked
                         </span>
                         <span className="text-xs text-green-700 font-medium ml-1">
                           {chosenQuotation.hotel_name}
@@ -389,7 +360,7 @@ export default function AdminPanel() {
         </div>
       </div>
 
-      {/* DRAFT EDITOR MODAL WITH MULTI-IMAGE UPLOAD */}
+      {/* DRAFT EDITOR MODAL */}
       {selectedInquiry && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-white max-w-3xl w-full rounded-3xl shadow-2xl p-6 relative">
@@ -442,17 +413,15 @@ export default function AdminPanel() {
                         )}
                       </div>
                       <div className="w-1/3">
-                        <label className="block text-xs font-semibold text-[#64748B] mb-1">Original Price (Optional)</label>
+                        <label className="block text-xs font-semibold text-[#64748B] mb-1">Price / night *</label>
                         <input 
                           type="number" 
                           step="0.01"
-                          id={`price-input-${index}`} // 🟢 ADD THIS ID
                           value={draft.pricePerNight}
                           onChange={(e) => updateDraft(index, 'pricePerNight', e.target.value)}
                           className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
                           placeholder="1389.99"
                         />
-                        <p className="text-[10px] text-[#94a3b8] mt-1">Leave blank if no price change</p>
                       </div>
                     </div>
 
@@ -479,8 +448,6 @@ export default function AdminPanel() {
                       </div>
                       <div>
                         <label className="block text-xs font-semibold text-[#64748B] mb-1">Image URLs</label>
-                        
-                        {/* 🟢 MULTI-IMAGE DRAG & DROP ZONE */}
                         <div 
                           className="w-full p-4 border-2 border-dashed border-[#E2E8F0] rounded-lg bg-[#F8FAFC] hover:bg-white hover:border-[#E11D48] transition cursor-pointer text-center text-xs text-[#64748B]"
                           onClick={() => document.getElementById(`file-input-${index}`)?.click()}
@@ -518,7 +485,7 @@ export default function AdminPanel() {
                             type="file" 
                             id={`file-input-${index}`} 
                             className="hidden" 
-                            multiple // 🟢 ALLOW MULTIPLE FILES
+                            multiple
                             accept="image/png,image/jpeg,image/webp"
                             onChange={async (e) => {
                               const files = Array.from(e.target.files || []);
@@ -547,7 +514,6 @@ export default function AdminPanel() {
                           />
                         </div>
 
-                        {/* 🟢 MULTI-IMAGE PREVIEW GALLERY */}
                         {draft.imageUrls.length > 0 && (
                           <div className="mt-2 flex flex-wrap gap-2">
                             {draft.imageUrls.map((url, i) => (
@@ -560,7 +526,6 @@ export default function AdminPanel() {
                                     e.currentTarget.style.display = 'none';
                                   }}
                                 />
-                                {/* 🟢 REMOVE BUTTON */}
                                 <button
                                   onClick={() => {
                                     const newDrafts = [...drafts];
@@ -576,7 +541,8 @@ export default function AdminPanel() {
                           </div>
                         )}
                       </div>
-                    </div>               
+                    </div>
+
                     <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Best For</label><input type="text" value={draft.customBestFor} onChange={(e) => updateDraft(index, 'customBestFor', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]" /></div>
                     <div><label className="block text-xs font-semibold text-[#64748B] mb-1">Facilities (Comma separated)</label><textarea rows={2} value={draft.facilities} onChange={(e) => updateDraft(index, 'facilities', e.target.value)} className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48] resize-none" placeholder="Free WiFi, AC, Parking, Pool" /></div>
                     <div className="grid grid-cols-2 gap-3">
