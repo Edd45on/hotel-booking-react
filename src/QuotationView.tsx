@@ -213,14 +213,13 @@ export default function QuotationView() {
               const isAnyCardChosen = quotations.some(item => item.is_customer_chosen === true);
               
               if (q.is_customer_chosen) {
-                // ✅ STAGE 3: BOOKING CONFIRMED (Actual Green State)
+                // ✅ STAGE 3: THANK YOU (Removes the Green "Confirmed" text)
                 return (
-                  <div className="w-full bg-green-100 border border-green-300 text-green-700 py-3 rounded-xl text-center mt-2 flex flex-col items-center justify-center gap-2">
-                    <span className="font-bold text-lg">✅ BOOKING CONFIRMED</span>
-                    <span className="text-xs text-green-600 font-medium">
-                      Your room is reserved. We will send you the confirmation details shortly.
+                  <div className="w-full bg-white border border-[#E2E8F0] py-3 rounded-xl text-center mt-2 flex flex-col items-center justify-center gap-2 shadow-sm">
+                    <span className="font-bold text-lg text-[#0F172A]">🎉 Thank you!</span>
+                    <span className="text-xs text-[#64748B] font-medium">
+                      Your selection has been received. We will contact you shortly to finalize your booking.
                     </span>
-                    {/* "Change" button is now hidden on confirmed state to avoid accidental reverts */}
                   </div>
                 );
               } else if (isAnyCardChosen) {
