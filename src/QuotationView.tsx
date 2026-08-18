@@ -485,7 +485,7 @@ export default function QuotationView() {
                     {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                   </button>
                   
-                  {isOpen && (
+				                  {isOpen && (
                     <div className="bg-[#F8FAFC] rounded-xl p-4 border border-[#E2E8F0]">
                       <p className="text-xs font-bold uppercase tracking-wider text-[#64748B] mb-3">Room Amenities</p>
                       {(() => {
@@ -544,17 +544,6 @@ export default function QuotationView() {
                   )}
                 </div>
 
-                {/* 🟢 PROPERTY POLICIES (Always visible) */}
-                <div className="mt-2 text-sm text-[#475569] bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4">
-                  <p className="text-xs font-bold uppercase tracking-wider text-[#64748B] mb-1">Property Policies</p>
-                  <div className="space-y-1 text-xs">
-                    <p><span className="font-medium text-[#0F172A]">Check-in:</span> From 2:00 PM to 4:00 AM (next day)</p>
-                    <p><span className="font-medium text-[#0F172A]">Check-out:</span> Before 12:00 PM (noon)</p>
-                  </div>
-                </div>
-                  </div>
-                )}
-
                 {/* VIEW FACILITIES */}
                 <div className="mt-3">
                   <button 
@@ -564,6 +553,8 @@ export default function QuotationView() {
                     {isOpen ? 'HIDE' : 'VIEW'} Facilities
                     {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                   </button>
+                  {/* ... rest of the button ... */}
+                </div>	
                   {isOpen && (
                     <div className="mt-3 p-3 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0]">
                       <div className="flex flex-wrap gap-2">
