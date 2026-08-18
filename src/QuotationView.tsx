@@ -430,13 +430,13 @@ export default function QuotationView() {
             <p className="font-semibold uppercase tracking-wider text-xs mb-2">IMPORTANT</p>
             <p>Rates and availability are subject to change until booking confirmation.</p>
             
-            {/* Get the chosen quotation to display its timer */}
-            {quotations.find(q => q.is_customer_chosen) && (
+            {/* 🟢 TIMER: Always show the countdown for the first quotation */}
+            {quotations.length > 0 && quotations[0]?.valid_until && (
               <p className="mt-1 flex items-center justify-center gap-2">
                 <span>⏳</span>
                 <span>
                   Quotation valid for: <span className="font-bold text-[#0F172A]">
-                    {timeLeft[quotations.find(q => q.is_customer_chosen)?.id || ''] || 'Loading...'}
+                    {timeLeft[quotations[0].id] || 'Loading...'}
                   </span>
                 </span>
               </p>
