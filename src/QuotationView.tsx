@@ -16,7 +16,7 @@ export default function QuotationView() {
   const [phone, setPhone] = useState('');
 
   // 🟢 EXPIRATION TIMER STATE
-  const [timeLeft, setTimeLeft] = useState<string>('');
+  const [timeLeft, setTimeLeft] = useState<Record<string, string>>({});
 
   // Helper: Format dates
   const formatDateRange = (checkIn: string, checkOut: string) => {
@@ -71,6 +71,34 @@ export default function QuotationView() {
 
     setQuotations(qData ? qData.slice(0, 3) : []);
   };
+
+  // 🟢 GLOBAL TIMER (Runs outside the map loop)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+      const newTimeLeft: Record<string, string> = {};
+
+      quotations.forEach((q) => {
+        if (q.valid_until) {
+          const expiry = new Date(q.valid_until);
+          const diff = expiry.getTime() - now.getTime();
+
+          if (diff <= 0) {
+            newTimeLeft[q.id] = 'Expired';
+          } else {
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            newTimeLeft[q.id] = `${hours}h ${minutes}m ${seconds}s`;
+          }
+        }
+      });
+
+      setTimeLeft(newTimeLeft);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [quotations]);
 
   const openBookingModal = (quotationId: string) => {
     setSelectedQuotationId(quotationId);
@@ -170,28 +198,6 @@ export default function QuotationView() {
             const isOpen = openFacilitiesId === q.id;
             const totalPrice = q.total_price * nights;
 
-            // 🟢 EXPIRATION COUNTDOWN TIMER
-            useEffect(() => {
-              if (q.valid_until) {
-                const interval = setInterval(() => {
-                  const now = new Date();
-                  const expiry = new Date(q.valid_until);
-                  const diff = expiry.getTime() - now.getTime();
-
-                  if (diff <= 0) {
-                    setTimeLeft('Expired');
-                    clearInterval(interval);
-                  } else {
-                    const hours = Math.floor(diff / (1000 * 60 * 60));
-                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-                    setTimeLeft(`${hours}h ${minutes}m ${seconds}s`);
-                  }
-                }, 1000);
-                return () => clearInterval(interval);
-              }
-            }, [q.valid_until]);
-
             const renderButton = () => {
               const isAnyCardChosen = quotations.some(item => item.is_customer_chosen === true);
               
@@ -203,7 +209,7 @@ export default function QuotationView() {
                       We're checking the latest availability and rate before processing your booking.
                     </span>
                     <div className="flex items-center justify-center gap-4 mt-1 text-xs">
-                      <span className="text-[#64748B]">⏳ Valid for: <span className="font-bold text-[#0F172A]">{timeLeft || 'Loading...'}</span></span>
+                      <span className="text-[#64748B]">⏳ Valid for: <span className="font-bold text-[#0F172A]">{timeLeft[q.id] || 'Loading...'}</span></span>
                     </div>
                     <button 
                       onClick={() => {
