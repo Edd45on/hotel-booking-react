@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from './utils/supabase';
-import { X, Save, ChevronLeft, Copy, ExternalLink } from 'lucide-react';
+import { X, Save, ChevronLeft, Copy, ExternalLink, Trash2 } from 'lucide-react';
 
 export default function AdminPanel() {
   const [inquiries, setInquiries] = useState<any[]>([]);
@@ -10,6 +10,7 @@ export default function AdminPanel() {
   
   const [hotelDatabase, setHotelDatabase] = useState<any[]>([]);
 
+  // 🟢 CHANGED: imageUrl is now an array imageUrls
   const [drafts, setDrafts] = useState([
     {
       hotelId: null,
@@ -24,7 +25,7 @@ export default function AdminPanel() {
       customDescription: 'Best value for your budget.',
       customBestFor: 'Couples / leisure',
       facilities: 'Free WiFi, AC, Parking',
-      imageUrl: '',
+      imageUrls: [] as string[], // 🟢 Now an array
       showSuggestions: false,
     },
     {
@@ -40,7 +41,7 @@ export default function AdminPanel() {
       customDescription: 'Best value for your budget.',
       customBestFor: 'Couples / leisure',
       facilities: 'Free WiFi, AC, Parking',
-      imageUrl: '',
+      imageUrls: [] as string[],
       showSuggestions: false,
     },
     {
@@ -56,7 +57,7 @@ export default function AdminPanel() {
       customDescription: 'Best value for your budget.',
       customBestFor: 'Couples / leisure',
       facilities: 'Free WiFi, AC, Parking',
-      imageUrl: '',
+      imageUrls: [] as string[],
       showSuggestions: false,
     },
   ]);
@@ -93,9 +94,9 @@ export default function AdminPanel() {
     fetchHotels();
     setSelectedInquiry(inq);
     setDrafts([
-      { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '', showSuggestions: false },
-      { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '', showSuggestions: false },
-      { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '', showSuggestions: false },
+      { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
+      { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
+      { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false },
     ]);
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + 7);
@@ -120,7 +121,7 @@ export default function AdminPanel() {
       roomType: hotel.room_type || '',
       pricePerNight: hotel.price_per_night || '',
       address: hotel.address || '',
-      imageUrl: hotel.images ? hotel.images.split(',')[0].trim() : '',
+      imageUrls: hotel.images ? hotel.images.split(',').map((url: string) => url.trim()) : [],
       facilities: hotel.facilities || '',
       customDescription: hotel.description || 'Best value for your budget.',
       customBestFor: hotel.best_for || 'Couples / leisure',
@@ -131,7 +132,7 @@ export default function AdminPanel() {
 
   const addHotelForm = () => {
     if (drafts.length >= 3) return;
-    setDrafts([...drafts, { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrl: '', showSuggestions: false }]);
+    setDrafts([...drafts, { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customDescription: 'Best value for your budget.', customBestFor: 'Couples / leisure', facilities: 'Free WiFi, AC, Parking', imageUrls: [], showSuggestions: false }]);
   };
 
   const removeHotelForm = (index: number) => {
@@ -184,7 +185,7 @@ export default function AdminPanel() {
                 room_type: draft.roomType,
                 price_per_night: parseFloat(draft.pricePerNight) || 0,
                 facilities: draft.facilities,
-                images: draft.imageUrl,
+                images: draft.imageUrls.join(','), // 🟢 Join array back to string for DB
                 description: draft.customDescription,
                 best_for: draft.customBestFor,
                 address: draft.address,
@@ -217,7 +218,7 @@ export default function AdminPanel() {
         custom_non_refundable: draft.customNonRefundable,
         custom_no_breakfast: draft.customNoBreakfast,
         custom_description: draft.customDescription,
-        image_url: draft.imageUrl,
+        image_url: draft.imageUrls.join(','), // 🟢 Join array back to string for DB
         valid_until: validUntilISO,
       }));
 
@@ -327,7 +328,7 @@ export default function AdminPanel() {
         </div>
       </div>
 
-      {/* DRAFT EDITOR MODAL WITH IMAGE PREVIEW */}
+      {/* DRAFT EDITOR MODAL WITH MULTI-IMAGE UPLOAD */}
       {selectedInquiry && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-white max-w-3xl w-full rounded-3xl shadow-2xl p-6 relative">
@@ -414,47 +415,19 @@ export default function AdminPanel() {
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-semibold text-[#64748B] mb-1">Image URL</label>
+                        <label className="block text-xs font-semibold text-[#64748B] mb-1">Image URLs</label>
                         
-                        {/* DRAG & DROP ZONE */}
+                        {/* 🟢 MULTI-IMAGE DRAG & DROP ZONE */}
                         <div 
                           className="w-full p-4 border-2 border-dashed border-[#E2E8F0] rounded-lg bg-[#F8FAFC] hover:bg-white hover:border-[#E11D48] transition cursor-pointer text-center text-xs text-[#64748B]"
                           onClick={() => document.getElementById(`file-input-${index}`)?.click()}
                           onDragOver={(e) => e.preventDefault()}
                           onDrop={async (e) => {
                             e.preventDefault();
-                            const file = e.dataTransfer.files[0];
-                            if (!file) return;
+                            const files = Array.from(e.dataTransfer.files);
+                            if (!files.length) return;
                             
-                            const formData = new FormData();
-                            formData.append('file', file);
-
-                            try {
-                              const res = await fetch('/api/upload-image', {
-                                method: 'POST',
-                                body: formData,
-                              });
-                              const data = await res.json();
-                              if (data.url) {
-                                updateDraft(index, 'imageUrl', data.url);
-                              }
-                            } catch (err) {
-                              alert('Upload failed. Please try again.');
-                            }
-                          }}
-                        >
-                          <p>Drag & drop an image here, or click to select</p>
-                          <p className="text-[10px] text-[#94a3b8] mt-1">PNG, JPG, WEBP supported</p>
-                          
-                          <input 
-                            type="file" 
-                            id={`file-input-${index}`} 
-                            className="hidden" 
-                            accept="image/png,image/jpeg,image/webp"
-                            onChange={async (e) => {
-                              const file = e.target.files?.[0];
-                              if (!file) return;
-
+                            for (const file of files) {
                               const formData = new FormData();
                               formData.append('file', file);
 
@@ -465,35 +438,78 @@ export default function AdminPanel() {
                                 });
                                 const data = await res.json();
                                 if (data.url) {
-                                  updateDraft(index, 'imageUrl', data.url);
+                                  const newDrafts = [...drafts];
+                                  newDrafts[index].imageUrls.push(data.url);
+                                  setDrafts(newDrafts);
                                 }
                               } catch (err) {
                                 alert('Upload failed. Please try again.');
+                              }
+                            }
+                          }}
+                        >
+                          <p>Drag & drop images here, or click to select</p>
+                          <p className="text-[10px] text-[#94a3b8] mt-1">PNG, JPG, WEBP supported</p>
+                          
+                          <input 
+                            type="file" 
+                            id={`file-input-${index}`} 
+                            className="hidden" 
+                            multiple // 🟢 ALLOW MULTIPLE FILES
+                            accept="image/png,image/jpeg,image/webp"
+                            onChange={async (e) => {
+                              const files = Array.from(e.target.files || []);
+                              if (!files.length) return;
+
+                              for (const file of files) {
+                                const formData = new FormData();
+                                formData.append('file', file);
+
+                                try {
+                                  const res = await fetch('/api/upload-image', {
+                                    method: 'POST',
+                                    body: formData,
+                                  });
+                                  const data = await res.json();
+                                  if (data.url) {
+                                    const newDrafts = [...drafts];
+                                    newDrafts[index].imageUrls.push(data.url);
+                                    setDrafts(newDrafts);
+                                  }
+                                } catch (err) {
+                                  alert('Upload failed. Please try again.');
+                                }
                               }
                             }}
                           />
                         </div>
 
-                        {/* MANUAL INPUT FALLBACK */}
-                        <input 
-                          type="text" 
-                          value={draft.imageUrl}
-                          onChange={(e) => updateDraft(index, 'imageUrl', e.target.value)}
-                          className="w-full mt-2 p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
-                          placeholder="Or paste URL manually here..."
-                        />
-
-                        {/* 🟢 IMAGE PREVIEW */}
-                        {draft.imageUrl && draft.imageUrl.trim() !== '' && (
-                          <div className="mt-2 w-full h-24 rounded-lg overflow-hidden border border-[#E2E8F0] bg-slate-100">
-                            <img 
-                              src={draft.imageUrl} 
-                              alt="Uploaded Preview" 
-                              className="w-full h-full object-cover"
-                              onError={(e) => {
-                                e.currentTarget.style.display = 'none';
-                              }}
-                            />
+                        {/* 🟢 MULTI-IMAGE PREVIEW GALLERY */}
+                        {draft.imageUrls.length > 0 && (
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            {draft.imageUrls.map((url, i) => (
+                              <div key={i} className="relative w-20 h-20 rounded-lg overflow-hidden border border-[#E2E8F0] bg-slate-100 group">
+                                <img 
+                                  src={url} 
+                                  alt={`Uploaded ${i+1}`} 
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                  }}
+                                />
+                                {/* 🟢 REMOVE BUTTON */}
+                                <button
+                                  onClick={() => {
+                                    const newDrafts = [...drafts];
+                                    newDrafts[index].imageUrls.splice(i, 1);
+                                    setDrafts(newDrafts);
+                                  }}
+                                  className="absolute top-0 right-0 bg-red-500 text-white p-1 rounded-bl-lg hover:bg-red-600 transition"
+                                >
+                                  <Trash2 size={12} />
+                                </button>
+                              </div>
+                            ))}
                           </div>
                         )}
                       </div>
@@ -513,7 +529,6 @@ export default function AdminPanel() {
               })}
             </div>
 
-            {/* 🟢 ACTION BUTTONS (FULLY VERIFIED) */}
             <div className="flex justify-between items-center mt-4 mb-6 border-t border-[#E2E8F0] pt-4">
               <div className="flex gap-2">
                 <button
