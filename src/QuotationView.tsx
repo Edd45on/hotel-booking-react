@@ -15,6 +15,9 @@ export default function QuotationView() {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
 
+  // 🟢 EXPIRATION TIMER STATE
+  const [timeLeft, setTimeLeft] = useState<string>('');
+
   // Helper: Format dates
   const formatDateRange = (checkIn: string, checkOut: string) => {
     const start = new Date(checkIn);
@@ -42,7 +45,6 @@ export default function QuotationView() {
     const { data: inqData } = await supabase.from('inquiries').select('*').eq('id', inquiryId).single();
     setInquiry(inqData);
 
-    // 🟢 OPTIMIZED: Sorting happens inside Supabase before it leaves the server
     const { data: qData, error } = await supabase
       .from('quotations')
       .select(`
@@ -61,10 +63,9 @@ export default function QuotationView() {
         image_url,
         valid_until,
         address,
-		room_type
+        room_type
       `)
-      .eq('inquiry_id', inquiryId)
-      .order('created_at', { ascending: false }); // 🟢 Moved sort here!
+      .eq('inquiry_id', inquiryId);
     
     if (error) console.error('Supabase Error:', error);
 
@@ -112,10 +113,10 @@ export default function QuotationView() {
       if (quoteError) throw quoteError;
 
       closeBookingModal();
-      toast.success('Booking confirmed! We will process your reservation.', {
-        duration: 5000,
+      toast.success('OPTION SELECTED! Checking latest availability...', {
+        duration: 3000,
         style: { background: '#10B981', color: '#ffffff', fontWeight: 'bold' },
-        icon: '✅',
+        icon: '⏳',
       });
 
       fetchQuotation(inquiry.id);
@@ -124,24 +125,7 @@ export default function QuotationView() {
     }
   };
 
-    if (!inquiry) return (
-    <div className="min-h-screen bg-[#F8FAFC] py-12 px-4 md:py-20">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-12">
-          <div className="h-10 w-64 bg-[#E2E8F0] rounded-lg mx-auto mb-4 animate-pulse"></div>
-          <div className="h-6 w-48 bg-[#E2E8F0] rounded-lg mx-auto animate-pulse"></div>
-        </div>
-        <div className="grid grid-cols-1 gap-10 md:gap-12">
-          <div className="bg-white rounded-3xl shadow-lg border border-[#E2E8F0] p-6 md:p-8">
-            <div className="w-full h-64 bg-[#E2E8F0] rounded-2xl animate-pulse mb-6"></div>
-            <div className="h-8 w-3/4 bg-[#E2E8F0] rounded-lg animate-pulse mb-4"></div>
-            <div className="h-4 w-1/2 bg-[#E2E8F0] rounded-lg animate-pulse mb-4"></div>
-            <div className="h-20 bg-[#E2E8F0] rounded-xl animate-pulse"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  if (!inquiry) return <div className="text-center py-20">Loading your quotation...</div>;
 
   const nights = getNights(inquiry.check_in, inquiry.check_out);
   const referenceId = `#STY-${String(inquiry.id).slice(-6).toUpperCase()}`;
@@ -186,13 +170,41 @@ export default function QuotationView() {
             const isOpen = openFacilitiesId === q.id;
             const totalPrice = q.total_price * nights;
 
+            // 🟢 EXPIRATION COUNTDOWN TIMER
+            useEffect(() => {
+              if (q.valid_until) {
+                const interval = setInterval(() => {
+                  const now = new Date();
+                  const expiry = new Date(q.valid_until);
+                  const diff = expiry.getTime() - now.getTime();
+
+                  if (diff <= 0) {
+                    setTimeLeft('Expired');
+                    clearInterval(interval);
+                  } else {
+                    const hours = Math.floor(diff / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                    setTimeLeft(`${hours}h ${minutes}m ${seconds}s`);
+                  }
+                }, 1000);
+                return () => clearInterval(interval);
+              }
+            }, [q.valid_until]);
+
             const renderButton = () => {
               const isAnyCardChosen = quotations.some(item => item.is_customer_chosen === true);
               
               if (q.is_customer_chosen) {
                 return (
-                  <div className="w-full bg-green-100 border border-green-300 text-green-700 py-3 rounded-xl font-bold text-center mt-2 flex items-center justify-center gap-3">
-                    <span>✅ Booking Confirmed</span>
+                  <div className="w-full bg-green-100 border border-green-300 text-green-700 py-3 rounded-xl text-center mt-2 flex flex-col items-center justify-center gap-2">
+                    <span className="font-bold text-lg">✅ OPTION SELECTED</span>
+                    <span className="text-xs text-green-600 font-medium">
+                      We're checking the latest availability and rate before processing your booking.
+                    </span>
+                    <div className="flex items-center justify-center gap-4 mt-1 text-xs">
+                      <span className="text-[#64748B]">⏳ Valid for: <span className="font-bold text-[#0F172A]">{timeLeft || 'Loading...'}</span></span>
+                    </div>
                     <button 
                       onClick={() => {
                         toast((t) => (
@@ -262,7 +274,6 @@ export default function QuotationView() {
                     src={currentActiveImage} 
                     alt={q.hotel_name} 
                     className="w-full h-full object-cover" 
-					loading="lazy" 
                   />
                   {imageArray.length > 1 && (
                     <div className="absolute bottom-3 left-3 flex gap-2">
@@ -327,7 +338,7 @@ export default function QuotationView() {
                   </p>
                   <p className="text-xs text-[#64748B] mt-2">Best for: {badge.bestFor}</p>
 
-                  {/* 🟢 CLICKABLE GOOGLE MAPS LINK */}
+                  {/* GOOGLE MAPS LINK */}
                   <div className="pt-2 border-t border-[#E2E8F0]">
                     <a 
                       href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q.hotel_name + ', ' + (q.address || ''))}`}
