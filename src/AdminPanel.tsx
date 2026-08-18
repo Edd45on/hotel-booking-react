@@ -152,6 +152,14 @@ export default function AdminPanel() {
 
     setLoading(true);
     try {
+      // 🟢 STEP 1: Fetch the currently existing quotation (to get the old price)
+      const { data: existingQuotation } = await supabase
+        .from('quotations')
+        .select('total_price, hotel_name')
+        .eq('inquiry_id', selectedInquiry.id)
+        .maybeSingle();
+
+      // 🟢 STEP 2: Delete the old row (so we can insert the updated one)
       await supabase.from('quotations').delete().eq('inquiry_id', selectedInquiry.id);
 
       const today = new Date();
@@ -186,7 +194,7 @@ export default function AdminPanel() {
                 room_type: draft.roomType,
                 price_per_night: parseFloat(draft.pricePerNight) || 0,
                 facilities: draft.facilities,
-                images: draft.imageUrls.join(','), // 🟢 Join array back to string for DB
+                images: draft.imageUrls.join(','),
                 description: draft.customDescription,
                 best_for: draft.customBestFor,
                 address: draft.address,
@@ -211,7 +219,8 @@ export default function AdminPanel() {
         hotel_name: draft.hotelName,
         room_type: draft.roomType,
         total_price: parseFloat(draft.pricePerNight) || 0,
-        original_price: draft.originalPrice && draft.originalPrice.trim() !== '' ? parseFloat(draft.originalPrice) : 0, // 🟢 FIXED
+        // 🟢 STEP 3: If there was an old price, use it as original_price. Otherwise, 0.
+        original_price: existingQuotation ? parseFloat(existingQuotation.total_price) : 0,
         address: draft.address,
         is_customer_chosen: false,
         facilities: draft.facilities,
