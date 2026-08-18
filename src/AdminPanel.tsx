@@ -631,24 +631,50 @@ export default function AdminPanel() {
                       <span className="font-medium text-[#E11D48] ml-1">₱{chosen.total_price}/night</span>
                     </div>
                   </div>
-                  <button 
-                    onClick={() => {
-                      navigator.clipboard.writeText(
-                        `Customer: ${detailsInquiry.first_name || 'N/A'} ${detailsInquiry.last_name || 'N/A'}\n` +
-                        `Email: ${detailsInquiry.email || 'N/A'}\n` +
-                        `Phone: ${detailsInquiry.phone || 'N/A'}\n` +
-                        `Destination: ${detailsInquiry.destination}\n` +
-                        `Rooms: ${detailsInquiry.rooms}\n` +
-                        `Hotel: ${chosen.hotel_name}\n` +
-                        `Room Type: ${chosen.room_type || 'Standard Room'}\n` +
-                        `Price: ₱${chosen.total_price}/night`
-                      );
-                      alert('📋 Full booking details copied to clipboard!');
-                    }}
-                    className="w-full mt-3 bg-white border border-green-200 text-green-700 py-2 rounded-xl font-semibold hover:bg-green-50 transition"
-                  >
-                    Copy to Clipboard for RedSeller
-                  </button>
+
+                  {/* 🟢 REDSELLER CONFIRMATION BUTTONS */}
+                  <div className="flex flex-col gap-2 mt-3">
+                    <button 
+                      onClick={() => {
+                        navigator.clipboard.writeText(
+                          `Customer: ${detailsInquiry.first_name || 'N/A'} ${detailsInquiry.last_name || 'N/A'}\n` +
+                          `Email: ${detailsInquiry.email || 'N/A'}\n` +
+                          `Phone: ${detailsInquiry.phone || 'N/A'}\n` +
+                          `Destination: ${detailsInquiry.destination}\n` +
+                          `Rooms: ${detailsInquiry.rooms}\n` +
+                          `Hotel: ${chosen.hotel_name}\n` +
+                          `Room Type: ${chosen.room_type || 'Standard Room'}\n` +
+                          `Price: ₱${chosen.total_price}/night`
+                        );
+                        alert('📋 Full booking details copied to clipboard!');
+                      }}
+                      className="w-full bg-white border border-green-200 text-green-700 py-2 rounded-xl font-semibold hover:bg-green-50 transition"
+                    >
+                      Copy to Clipboard for RedSeller
+                    </button>
+
+                    {/* 🟢 THE "TRIGGER BACK TO CLIENT" BUTTON */}
+                    <button 
+                      onClick={async () => {
+                        // Update the database to mark it as confirmed by admin
+                        const { error } = await supabase
+                          .from('quotations')
+                          .update({ is_admin_confirmed: true })
+                          .eq('id', chosen.id);
+
+                        if (error) {
+                          alert('❌ Error confirming booking: ' + error.message);
+                        } else {
+                          alert('✅ Booking marked as confirmed! The client will now see the Green confirmation state.');
+                          setDetailsInquiry(null); // Close the modal
+                          fetchInquiries(); // Refresh the dashboard
+                        }
+                      }}
+                      className="w-full bg-[#E11D48] text-white py-2 rounded-xl font-bold hover:bg-[#BE123C] transition"
+                    >
+                      Confirm Booking & Notify Client
+                    </button>
+                  </div>
                 </div>
               );
             })()}
