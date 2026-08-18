@@ -212,10 +212,12 @@ export default function QuotationView() {
             const renderButton = () => {
               const isAnyCardChosen = quotations.some(item => item.is_customer_chosen === true);
               
-              } else if (isAnyCardChosen && !q.is_customer_chosen) { // 🟢 ADDED THIS CONDITION
-                // 🟡 STAGE 2: OPTION SELECTED (Pending/Yellow State)
+            const renderButton = () => {
+              const isAnyCardChosen = quotations.some(item => item.is_customer_chosen === true);
+              
+              // ✅ If THIS specific card is chosen
+              if (q.is_customer_chosen) {
                 return (
-                  <div className="w-full bg-yellow-50 border border-yellow-200 text-yellow-800 py-3 rounded-xl text-center mt-2 flex flex-col items-center justify-center gap-2">
                   <div className="w-full bg-white border border-[#E2E8F0] py-3 rounded-xl text-center mt-2 flex flex-col items-center justify-center gap-2 shadow-sm">
                     <span className="font-bold text-lg text-[#0F172A]">🎉 Thank you!</span>
                     <span className="text-xs text-[#64748B] font-medium">
@@ -223,8 +225,10 @@ export default function QuotationView() {
                     </span>
                   </div>
                 );
-              } else if (isAnyCardChosen) {
-                // 🟡 STAGE 2: OPTION SELECTED (Pending/Yellow State)
+              } 
+              
+              // 🟡 If a DIFFERENT card is chosen, show the Yellow pending state on this one
+              else if (isAnyCardChosen && !q.is_customer_chosen) {
                 return (
                   <div className="w-full bg-yellow-50 border border-yellow-200 text-yellow-800 py-3 rounded-xl text-center mt-2 flex flex-col items-center justify-center gap-2">
                     <span className="font-bold text-lg">⏳ OPTION SELECTED</span>
@@ -251,9 +255,7 @@ export default function QuotationView() {
                               <button 
                                 onClick={async () => {
                                   toast.dismiss(t.id);
-                                  // 🟢 FIX: Use async/await to ensure the DB update completes before fetching
                                   await supabase.from('quotations').update({ is_customer_chosen: false }).eq('id', q.id);
-                                  // 🟢 FIX: Refresh the quotation data immediately
                                   if (inquiry) {
                                     fetchQuotation(inquiry.id);
                                   }
@@ -275,8 +277,10 @@ export default function QuotationView() {
                     </button>
                   </div>
                 );
-              } else {
-                // 🔵 STAGE 1: NEUTRAL (Initial State)
+              } 
+              
+              // 🔵 If NO card is chosen yet, show the red Select button
+              else {
                 return (
                   <button 
                     onClick={() => openBookingModal(q.id)}
