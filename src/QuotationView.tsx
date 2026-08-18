@@ -401,9 +401,13 @@ export default function QuotationView() {
                 <div className="bg-[#F8FAFC] rounded-xl p-4 md:p-5 border border-[#E2E8F0] mt-1 space-y-3">
                   <p className="text-xs font-bold uppercase tracking-wider text-[#64748B] mb-1">Why we picked it</p>
                   <p className="text-[#0F172A] leading-relaxed">
-                    {q.custom_description && q.custom_description.trim() !== '' ? q.custom_description : badge.text}
+                    {/* 🟢 FIX: Use badge.description, and fallback to custom_description if the Admin typed something */}
+                    {q.custom_description && q.custom_description.trim() !== '' ? q.custom_description : badge.description}
                   </p>
-                  <p className="text-xs text-[#64748B] mt-2">Best for: {badge.bestFor}</p>
+                  <p className="text-xs text-[#64748B] mt-2">
+                    {/* 🟢 FIX: Show the Badge name as the "Best for" tag */}
+                    Best for: {badge.label}
+                  </p>
 
                   {/* GOOGLE MAPS LINK */}
                   <div className="pt-2 border-t border-[#E2E8F0]">
