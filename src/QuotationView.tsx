@@ -15,7 +15,6 @@ export default function QuotationView() {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
 
-  // 🟢 EXPIRATION TIMER STATE
   const [timeLeft, setTimeLeft] = useState<Record<string, string>>({});
 
   // Helper: Format dates
@@ -212,7 +211,6 @@ export default function QuotationView() {
           <p className="text-xs font-mono text-[#94a3b8] mt-4 tracking-widest">{referenceId}</p>
         </div>
 
-        {/* 🟢 NEXT STEP INDICATOR */}
         <div className="max-w-2xl mx-auto mb-8">
           <div className="flex justify-between items-center w-full px-2">
             <div className="flex flex-col items-center flex-1">
@@ -275,7 +273,6 @@ export default function QuotationView() {
             const renderButton = () => {
               const isAnyCardChosen = quotations.some(item => item.is_customer_chosen === true);
               
-              // 🟢 Admin Confirmed state
               if (q.is_admin_confirmed) {
                 return (
                   <div className="w-full bg-yellow-50 border border-yellow-200 text-yellow-800 py-3 rounded-xl text-center mt-2 flex flex-col items-center justify-center gap-2">
@@ -289,8 +286,6 @@ export default function QuotationView() {
                   </div>
                 );
               } 
-              
-              // ✅ Customer chosen, waiting for Admin
               else if (q.is_customer_chosen && !q.is_admin_confirmed) {
                 return (
                   <div className="w-full bg-yellow-50 border border-yellow-200 text-yellow-800 py-3 rounded-xl text-center mt-2 flex flex-col items-center justify-center gap-2">
@@ -341,8 +336,6 @@ export default function QuotationView() {
                   </div>
                 );
               } 
-              
-              // ⚠️ If a DIFFERENT card is chosen, show "Option Unavailable"
               else if (isAnyCardChosen && !q.is_customer_chosen) {
                 return (
                   <div className="w-full bg-[#E2E8F0] text-[#94a3b8] py-3 rounded-xl font-bold text-center mt-2 cursor-not-allowed">
@@ -350,8 +343,6 @@ export default function QuotationView() {
                   </div>
                 );
               } 
-              
-              // 🔴 If NO card is chosen yet, show the red Select button
               else {
                 return (
                   <button 
@@ -371,7 +362,6 @@ export default function QuotationView() {
                   <span>{badge.icon}</span> {badge.label}
                 </div>
 
-                {/* IMAGE & THUMBNAILS */}
                 <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-slate-100 w-full">
                   <img 
                     key={currentActiveImage}
@@ -396,7 +386,6 @@ export default function QuotationView() {
                   )}
                 </div>
 
-                {/* TITLE & PRICE */}
                 <div className="flex flex-col sm:flex-row justify-between items-start gap-2 mt-1">
                   <div className="flex-1">
                     <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#0F172A] leading-tight">
@@ -429,7 +418,6 @@ export default function QuotationView() {
                   </div>
                 </div>
 
-                {/* CHECKMARKS */}
                 <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-[#475569] mt-1">
                   <div className="flex items-center gap-2">
                     <span className="text-[#E11D48] text-xs font-bold">✓</span> 
@@ -449,7 +437,6 @@ export default function QuotationView() {
                   </div>
                 </div>
 
-                {/* WHY WE PICKED IT & MAP LINK */}
                 <div className="bg-[#F8FAFC] rounded-xl p-4 md:p-5 border border-[#E2E8F0] mt-1 space-y-3">
                   <p className="text-xs font-bold uppercase tracking-wider text-[#64748B] mb-1">Why we picked it</p>
                   <p className="text-[#0F172A] leading-relaxed">
@@ -459,7 +446,6 @@ export default function QuotationView() {
                     Best for: {badge.bestFor}
                   </p>
 
-                  {/* GOOGLE MAPS LINK */}
                   <div className="pt-2 border-t border-[#E2E8F0]">
                     <a 
                       href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q.hotel_name + ', ' + (q.address || ''))}`}
@@ -475,7 +461,7 @@ export default function QuotationView() {
                   </div>
                 </div>
 
-                {/* 🟢 ROOM AMENITIES (Categorized + Toggle) */}
+                {/* ROOM AMENITIES */}
                 <div className="mt-4">
                   <button 
                     onClick={() => setOpenFacilitiesId(isOpen ? null : q.id)}
@@ -485,7 +471,7 @@ export default function QuotationView() {
                     {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                   </button>
                   
-				                  {isOpen && (
+                  {isOpen && (
                     <div className="bg-[#F8FAFC] rounded-xl p-4 border border-[#E2E8F0]">
                       <p className="text-xs font-bold uppercase tracking-wider text-[#64748B] mb-3">Room Amenities</p>
                       {(() => {
@@ -544,26 +530,13 @@ export default function QuotationView() {
                   )}
                 </div>
 
-                {/* VIEW FACILITIES */}
-                <div className="mt-3">
-                  <button 
-                    onClick={() => setOpenFacilitiesId(isOpen ? null : q.id)}
-                    className="flex items-center gap-1 text-sm font-medium text-[#E11D48] hover:underline transition"
-                  >
-                    {isOpen ? 'HIDE' : 'VIEW'} Facilities
-                    {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                  </button>
-                  {/* ... rest of the button ... */}
-                </div>	
-                  {isOpen && (
-                    <div className="mt-3 p-3 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0]">
-                      <div className="flex flex-wrap gap-2">
-                        {q.facilities ? q.facilities.split(',').map((fac: string, i: number) => (
-                          <span key={i} className="px-3 py-1 bg-white border border-[#E2E8F0] rounded-full text-xs text-[#475569]">{fac.trim()}</span>
-                        )) : (<p className="text-xs text-[#94a3b8]">No facilities listed</p>)}
-                      </div>
-                    </div>
-                  )}
+                {/* PROPERTY POLICIES */}
+                <div className="mt-2 text-sm text-[#475569] bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4">
+                  <p className="text-xs font-bold uppercase tracking-wider text-[#64748B] mb-1">Property Policies</p>
+                  <div className="space-y-1 text-xs">
+                    <p><span className="font-medium text-[#0F172A]">Check-in:</span> From 2:00 PM to 4:00 AM (next day)</p>
+                    <p><span className="font-medium text-[#0F172A]">Check-out:</span> Before 12:00 PM (noon)</p>
+                  </div>
                 </div>
 
                 {renderButton()}
@@ -572,7 +545,6 @@ export default function QuotationView() {
           })}
         </div>
 
-        {/* CHAT WITH US & IMPORTANT SECTION */}
         <div className="mt-16 text-center max-w-2xl mx-auto">
           <div className="mb-8">
             <p className="text-[#0F172A] font-medium text-lg mb-3">Need help choosing?</p>
@@ -607,11 +579,9 @@ export default function QuotationView() {
         </div>
       </div>
 
-      {/* CUSTOMER DETAILS MODAL */}
-      {selectedQuotationId && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+        {selectedQuotationId && (
           <div className="bg-white max-w-md w-full rounded-2xl p-6 shadow-2xl relative">
-            
             <button 
               onClick={closeBookingModal}
               className="absolute top-4 right-4 text-[#475569] hover:text-[#0F172A] transition"
@@ -674,8 +644,8 @@ export default function QuotationView() {
               </button>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </main>
   );
 }
