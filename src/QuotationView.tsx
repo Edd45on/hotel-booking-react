@@ -264,7 +264,51 @@ export default function QuotationView() {
           </p>
           <p className="text-sm text-[#64748B] mt-1">{quotations.length} options found</p>
           <p className="text-xs font-mono text-[#94a3b8] mt-4 tracking-widest">{referenceId}</p>
+                 {/* 🟢 NEXT STEP INDICATOR */}
+        <div className="max-w-2xl mx-auto mb-8">
+          <div className="flex justify-between items-center w-full px-2">
+            <div className="flex flex-col items-center flex-1">
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-green-100 text-green-600 border border-green-200">
+                ✓
+              </div>
+              <span className="text-[10px] text-[#64748B] mt-1 text-center leading-tight">Request<br />Received</span>
+            </div>
+            <div className="h-[2px] flex-1 bg-green-200 mx-1"></div>
+
+            <div className="flex flex-col items-center flex-1">
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-green-100 text-green-600 border border-green-200">
+                ✓
+              </div>
+              <span className="text-[10px] text-[#64748B] mt-1 text-center leading-tight">Options<br />Selected</span>
+            </div>
+            <div className="h-[2px] flex-1 bg-[#E2E8F0] mx-1"></div>
+
+            <div className="flex flex-col items-center flex-1">
+              <div className={`flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-500 ${
+                quotations.some(q => q.is_customer_chosen) 
+                  ? 'border-yellow-400 bg-yellow-50 text-yellow-600 animate-pulse' 
+                  : 'border-[#E2E8F0] bg-white text-[#94a3b8]'
+              }`}>
+                {quotations.some(q => q.is_customer_chosen) ? '●' : '○'}
+              </div>
+              <span className="text-[10px] text-[#64748B] mt-1 text-center leading-tight">Availability<br />Check</span>
+            </div>
+            <div className="h-[2px] flex-1 bg-[#E2E8F0] mx-1"></div>
+
+            <div className="flex flex-col items-center flex-1">
+              <div className={`flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-500 ${
+                quotations.some(q => q.is_customer_chosen) 
+                  ? 'border-[#E2E8F0] bg-white text-[#94a3b8]' 
+                  : 'border-[#E2E8F0] bg-white text-[#94a3b8]'
+              }`}>
+                ○
+              </div>
+              <span className="text-[10px] text-[#64748B] mt-1 text-center leading-tight">Booking<br />Confirmation</span>
+            </div>
+          </div>
         </div>
+		
+		</div>
 
         {/* QUOTATION CARDS */}
         <div className="grid grid-cols-1 gap-10 md:gap-12">
