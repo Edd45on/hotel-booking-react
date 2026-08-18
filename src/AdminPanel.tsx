@@ -270,7 +270,7 @@ export default function AdminPanel() {
                     {chosenQuotation ? (
                       <div className="flex flex-wrap items-center gap-1">
                         <span className="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold border border-green-200">
-                          ✅ Booked
+                          ✅ Chosen Option
                         </span>
                         <span className="text-xs text-green-700 font-medium ml-1">
                           {chosenQuotation.hotel_name}
