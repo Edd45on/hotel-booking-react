@@ -47,28 +47,10 @@ export default function QuotationView() {
 
     const { data: qData, error } = await supabase
       .from('quotations')
-       .select(`
+      .select(`
         id,
         total_price,
         original_price,
-        is_customer_chosen,
-        inquiry_id,
-        created_at,
-        facilities,
-        custom_room_only,
-        custom_pay_at_hotel,
-        custom_non_refundable,
-        custom_no_breakfast,
-        custom_description,
-        hotel_name,
-        image_url,
-        valid_until,
-        address,
-        room_type
-      `)
-        id,
-        total_price,
-		original_price,
         is_customer_chosen,
         inquiry_id,
         created_at,
@@ -95,7 +77,6 @@ export default function QuotationView() {
   useEffect(() => {
     if (!quotations || quotations.length === 0) return;
 
-    // Initialize the timer immediately
     const updateTimer = () => {
       const now = new Date();
       const newTimeLeft: Record<string, string> = {};
@@ -111,7 +92,8 @@ export default function QuotationView() {
             const hours = Math.floor(diff / (1000 * 60 * 60));
             const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-            newTimeLeft[q.id] = `${hours}h ${minutes}m ${seconds}s`;
+            // 🟢 FIX: Replaced template literal with string concatenation for TypeScript
+            newTimeLeft[q.id] = hours + 'h ' + minutes + 'm ' + seconds + 's';
           }
         }
       });
@@ -323,8 +305,15 @@ export default function QuotationView() {
                   )}
                 </div>
 
+                {/* TITLE & PRICE */}
+                <div className="flex flex-col sm:flex-row justify-between items-start gap-2 mt-1">
+                  <div className="flex-1">
+                    <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#0F172A] leading-tight">
+                      {q.hotel_name}
+                    </h2>
+                    <p className="text-sm text-[#64748B] mt-1">{q.room_type || 'Standard Room'}</p>
+                  </div>
                   <div className="text-left sm:text-right flex-shrink-0">
-                    {/* 🟢 SIDE-BY-SIDE PRICE COMPARISON */}
                     <div className="flex flex-col items-end sm:items-end gap-1">
                       <div className="flex items-center gap-2 sm:justify-end flex-wrap">
                         {q.original_price && q.original_price > 0 && q.total_price !== q.original_price && (
@@ -341,6 +330,7 @@ export default function QuotationView() {
                       </div>
                     </div>
                   </div>
+                </div>
 
                 {/* CHECKMARKS */}
                 <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-[#475569] mt-1">
@@ -425,7 +415,6 @@ export default function QuotationView() {
             </button>
           </div>
 
-          {/* 🟢 MOVED TIMER TO IMPORTANT SECTION */}
           <div className="pt-8 border-t border-[#E2E8F0] text-sm text-[#64748B]">
             <p className="font-semibold uppercase tracking-wider text-xs mb-2">IMPORTANT</p>
             <p>Rates and availability are subject to change until booking confirmation.</p>
