@@ -248,10 +248,14 @@ export default function QuotationView() {
                                 Cancel
                               </button>
                               <button 
-                                onClick={() => {
+                                onClick={async () => {
                                   toast.dismiss(t.id);
-                                  supabase.from('quotations').update({ is_customer_chosen: false }).eq('id', q.id)
-                                    .then(() => fetchQuotation(inquiry.id));
+                                  // 🟢 FIX: Use async/await to ensure the DB update completes before fetching
+                                  await supabase.from('quotations').update({ is_customer_chosen: false }).eq('id', q.id);
+                                  // 🟢 FIX: Refresh the quotation data immediately
+                                  if (inquiry) {
+                                    fetchQuotation(inquiry.id);
+                                  }
                                 }}
                                 className="px-3 py-1 bg-[#E11D48] text-white rounded-lg text-sm font-semibold hover:bg-[#BE123C] transition"
                               >
