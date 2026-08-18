@@ -213,11 +213,26 @@ export default function QuotationView() {
               const isAnyCardChosen = quotations.some(item => item.is_customer_chosen === true);
               
               if (q.is_customer_chosen) {
+                // ✅ STAGE 3: BOOKING CONFIRMED (Actual Green State)
                 return (
                   <div className="w-full bg-green-100 border border-green-300 text-green-700 py-3 rounded-xl text-center mt-2 flex flex-col items-center justify-center gap-2">
-                    <span className="font-bold text-lg">✅ OPTION SELECTED</span>
+                    <span className="font-bold text-lg">✅ BOOKING CONFIRMED</span>
                     <span className="text-xs text-green-600 font-medium">
-                      We're checking the latest availability and rate before processing your booking.
+                      Your room is reserved. We will send you the confirmation details shortly.
+                    </span>
+                    {/* "Change" button is now hidden on confirmed state to avoid accidental reverts */}
+                  </div>
+                );
+              } else if (isAnyCardChosen) {
+                // 🟡 STAGE 2: OPTION SELECTED (Pending/Yellow State)
+                return (
+                  <div className="w-full bg-yellow-50 border border-yellow-200 text-yellow-800 py-3 rounded-xl text-center mt-2 flex flex-col items-center justify-center gap-2">
+                    <span className="font-bold text-lg">⏳ OPTION SELECTED</span>
+                    <span className="text-xs text-yellow-700 font-medium">
+                      We're checking the latest availability and rate before confirming your booking.
+                    </span>
+                    <span className="text-[10px] text-yellow-600 font-medium mt-1">
+                      Booking is not confirmed yet.
                     </span>
                     <button 
                       onClick={() => {
@@ -250,19 +265,14 @@ export default function QuotationView() {
                           position: 'top-center',
                         });
                       }}
-                      className="text-xs bg-white border border-green-300 text-green-700 px-3 py-1 rounded-full hover:bg-green-50 transition"
+                      className="mt-2 text-xs bg-white border border-yellow-200 text-yellow-700 px-3 py-1 rounded-full hover:bg-yellow-50 transition"
                     >
                       Change
                     </button>
                   </div>
                 );
-              } else if (isAnyCardChosen) {
-                return (
-                  <div className="w-full bg-[#E2E8F0] text-[#94a3b8] py-3 rounded-xl font-bold text-center mt-2 cursor-not-allowed">
-                    Option Unavailable
-                  </div>
-                );
               } else {
+                // 🔵 STAGE 1: NEUTRAL (Initial State)
                 return (
                   <button 
                     onClick={() => openBookingModal(q.id)}
