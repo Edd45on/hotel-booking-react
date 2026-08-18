@@ -22,9 +22,9 @@ export default function QuotationView() {
   const formatDateRange = (checkIn: string, checkOut: string) => {
     const start = new Date(checkIn);
     const end = new Date(checkOut);
-    const startStr = start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    const endStr = end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    return `${startStr}–${endStr}`;
+    const startStr = start.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    const endStr = end.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+    return `${startStr} – ${endStr}`;
   };
 
   // Helper: Calculate number of nights
@@ -255,9 +255,11 @@ export default function QuotationView() {
             YOUR HOTEL QUOTATION
           </h1>
           <p className="text-lg md:text-xl text-[#0F172A] font-semibold mt-2 uppercase tracking-wide">
-            {inquiry.destination}
+            {/* 🟢 IMPROVED DESTINATION FORMAT */}
+            {inquiry.destination}, Philippines
           </p>
           <p className="text-md text-[#64748B] mt-1">
+            {/* 🟢 UPDATED DATE RANGE WITH WEEKDAYS */}
             {formatDateRange(inquiry.check_in, inquiry.check_out)} · {inquiry.adults} Adults · {inquiry.rooms} Room
           </p>
           <p className="text-sm text-[#64748B] mt-1">{quotations.length} options found</p>
