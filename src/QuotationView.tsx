@@ -172,36 +172,78 @@ export default function QuotationView() {
 
     // 1. PREMIUM OPTION
     if (price >= highestPrice && (highestPrice - midPrice) > 500) {
-      return { label: 'PREMIUM OPTION', color: 'bg-purple-500 text-white', icon: Gem, description: 'Top-tier comfort and premium amenities.' };
+      return {
+        label: 'PREMIUM OPTION',
+        color: 'bg-purple-500 text-white',
+        icon: Gem,
+        description: 'A more elevated stay with added comfort and convenience.',
+        bestFor: 'Travelers who prefer a more comfortable experience.'
+      };
     }
 
     // 2. NEAR DESTINATION
     if (purpose?.toLowerCase().includes('airport') || purpose?.toLowerCase().includes('flight')) {
-      return { label: 'NEAR DESTINATION', color: 'bg-sky-500 text-white', icon: Plane, description: 'Conveniently located near your destination.' };
+      return {
+        label: 'NEAR DESTINATION',
+        color: 'bg-sky-500 text-white',
+        icon: Plane,
+        description: 'Conveniently located near the area you requested, so you can spend less time traveling.',
+        bestFor: 'Travelers who prioritize location.'
+      };
     }
 
     // 3. FAMILY PICK
     if (purpose?.toLowerCase().includes('family')) {
-      return { label: 'FAMILY PICK', color: 'bg-emerald-500 text-white', icon: Users, description: 'Perfect setup for families and kids.' };
+      return {
+        label: 'FAMILY PICK',
+        color: 'bg-emerald-500 text-white',
+        icon: Users,
+        description: 'A practical choice designed around a more comfortable family stay.',
+        bestFor: 'Families traveling together.'
+      };
     }
 
     // 4. BUSINESS PICK
     if (purpose?.toLowerCase().includes('business')) {
-      return { label: 'BUSINESS PICK', color: 'bg-indigo-500 text-white', icon: Briefcase, description: 'Fast Wi-Fi and quiet workspace guaranteed.' };
+      return {
+        label: 'BUSINESS PICK',
+        color: 'bg-indigo-500 text-white',
+        icon: Briefcase,
+        description: 'A convenient choice for work trips where location and a hassle-free stay matter.',
+        bestFor: 'Business travelers.'
+      };
     }
 
     // 5. BUDGET OPTION
     if (price === lowestPrice) {
-      return { label: 'BUDGET OPTION', color: 'bg-blue-500 text-white', icon: Wallet, description: 'The most affordable choice for your budget.' };
+      return {
+        label: 'BUDGET OPTION',
+        color: 'bg-blue-500 text-white',
+        icon: Wallet,
+        description: 'One of the most affordable suitable options within your budget.',
+        bestFor: 'Budget-conscious travelers.'
+      };
     }
 
     // 6. BEST VALUE
     if (price === midPrice) {
-      return { label: 'BEST VALUE', color: 'bg-yellow-400 text-[#0F172A]', icon: Award, description: 'Best balance of price, location, and comfort.' };
+      return {
+        label: 'BEST VALUE',
+        color: 'bg-yellow-400 text-[#0F172A]',
+        icon: Award,
+        description: 'A smart balance of price, location, and comfort.',
+        bestFor: 'Travelers looking for great value.'
+      };
     }
 
     // 7. POPULAR CHOICE
-    return { label: 'POPULAR CHOICE', color: 'bg-rose-500 text-white', icon: Flame, description: 'One of the most frequently booked options.' };
+    return {
+      label: 'POPULAR CHOICE',
+      color: 'bg-rose-500 text-white',
+      icon: Flame,
+      description: 'A well-liked option with a dependable mix of comfort, location, and value.',
+      bestFor: 'Travelers who prefer a popular choice.'
+    };
   };
 
   return (
@@ -405,8 +447,7 @@ export default function QuotationView() {
                     {q.custom_description && q.custom_description.trim() !== '' ? q.custom_description : badge.description}
                   </p>
                   <p className="text-xs text-[#64748B] mt-2">
-                    {/* 🟢 FIX: Show the Badge name as the "Best for" tag */}
-                    Best for: {badge.label}
+                    Best for: {badge.bestFor}
                   </p>
 
                   {/* GOOGLE MAPS LINK */}
