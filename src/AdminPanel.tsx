@@ -76,7 +76,7 @@ export default function AdminPanel() {
           id,
           hotel_name,
           room_type,
-          total_price,
+          new_price,
           is_customer_chosen
         )
       `)
@@ -627,10 +627,10 @@ export default function AdminPanel() {
                       <span className="font-medium text-[#0F172A] ml-1">{chosen.room_type || 'Standard Room'}</span>
                     </div>
                     <div>
+                    <div>
                       <span className="text-[#64748B]">Price:</span>
-                      <span className="font-medium text-[#E11D48] ml-1">₱{chosen.total_price}/night</span>
+                      <span className="font-medium text-[#E11D48] ml-1">₱{chosen.new_price}/night</span>
                     </div>
-                  </div>
 
                   {/* 🟢 REDSELLER CONFIRMATION BUTTONS */}
                   <div className="flex flex-col gap-2 mt-3">
