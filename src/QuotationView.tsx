@@ -6,7 +6,8 @@ import toast from 'react-hot-toast';
 export default function QuotationView() {
   const [quotations, setQuotations] = useState<any[]>([]);
   const [inquiry, setInquiry] = useState<any>(null);
-  const [openFacilitiesId, setOpenFacilitiesId] = useState<string | null>(null);
+  // 🟢 CHANGED: We are now tracking a boolean, not a string ID
+  const [isFacilitiesOpen, setIsFacilitiesOpen] = useState(false);
   const [activeImages, setActiveImages] = useState<Record<string, string>>({});
   
   const [selectedQuotationId, setSelectedQuotationId] = useState<string | null>(null);
@@ -267,7 +268,6 @@ export default function QuotationView() {
             const badge = getBadgeByPrice(q.total_price, allPrices, inquiry.purpose);
             const imageArray = q.image_url ? q.image_url.split(',').map((url: string) => url.trim()) : [];
             const currentActiveImage = activeImages[q.id] || (imageArray.length > 0 ? imageArray[0] : 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=600&q=80');
-            const isOpen = openFacilitiesId === q.id;
             const totalPrice = q.new_price * nights;
 
             const renderButton = () => {
@@ -461,22 +461,21 @@ export default function QuotationView() {
                   </div>
                 </div>
 
-                {/* 🟢 ROOM AMENITIES (RESPONSIVE DROPDOWN) */}
+                {/* 🟢 ROOM AMENITIES (UPDATED TOGGLE LOGIC) */}
                 <div className="mt-4">
                   <button 
-                    onClick={() => setOpenFacilitiesId(isOpen ? null : q.id)}
+                    onClick={() => setIsFacilitiesOpen(!isFacilitiesOpen)}
                     className="w-full flex items-center justify-between gap-2 px-4 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl hover:bg-[#F1F5F9] transition text-sm font-medium text-[#E11D48]"
                   >
-                    <span>{isOpen ? 'HIDE' : 'VIEW'} Facilities</span>
+                    <span>{isFacilitiesOpen ? 'HIDE' : 'VIEW'} Facilities</span>
                     <span className="flex-shrink-0 text-[#E11D48]">
-                      {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                      {isFacilitiesOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                     </span>
                   </button>
                   
-                  {/* 🟢 EXPANDABLE CONTENT */}
                   <div 
                     className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                      isOpen ? 'max-h-[600px] opacity-100 mt-3' : 'max-h-0 opacity-0'
+                      isFacilitiesOpen ? 'max-h-[600px] opacity-100 mt-3' : 'max-h-0 opacity-0'
                     }`}
                   >
                     <div className="bg-[#F8FAFC] rounded-xl p-4 border border-[#E2E8F0]">
@@ -537,7 +536,7 @@ export default function QuotationView() {
                   </div>
                 </div>
 
-                {/* 🟢 PROPERTY POLICIES (Always visible) */}
+                {/* 🟢 PROPERTY POLICIES */}
                 <div className="mt-2 text-sm text-[#475569] bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4">
                   <p className="text-xs font-bold uppercase tracking-wider text-[#64748B] mb-1">Property Policies</p>
                   <div className="space-y-1 text-xs">
@@ -586,7 +585,7 @@ export default function QuotationView() {
         </div>
       </div>
 
-      <div className="fixed inset-0 bg-black/0 flex items-center justify-center z-50 p-4">
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
         {selectedQuotationId && (
           <div className="bg-white max-w-md w-full rounded-2xl p-6 shadow-2xl relative">
             <button 
