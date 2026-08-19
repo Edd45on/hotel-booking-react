@@ -10,6 +10,17 @@ export default function AdminPanel() {
   
   const [hotelDatabase, setHotelDatabase] = useState<any[]>([]);
 
+  // 🟢 ADD PROPERTY MODAL STATE
+  const [isAddPropertyOpen, setIsAddPropertyOpen] = useState(false);
+  const [newProperty, setNewProperty] = useState({
+    name: '',
+    room_type: '',
+    price_per_night: '',
+    address: '',
+    facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi',
+    images: '',
+  });
+
   const [drafts, setDrafts] = useState([
     {
       hotelId: null,
@@ -23,23 +34,7 @@ export default function AdminPanel() {
       customNonRefundable: 'Non-refundable',
       customNoBreakfast: 'No breakfast',
       customBestFor: 'Couples / leisure',
-      facilities: 'Chairs, TV, AC, Bed, Towel, Swimming Pool, No Smoking, Car Parking, No Free Toiletries, Free Toiletries, Front Desk, Lift, Meeting room, Playground, Kitchen, 24/7 Security, CCTV, Free WiFi',
-      imageUrls: [] as string[],
-      showSuggestions: false,
-    },
-    {
-      hotelId: null,
-      hotelName: '',
-      roomType: '',
-      pricePerNight: '',
-      originalPrice: '',
-      address: '',
-      customRoomOnly: 'Room only',
-      customPayAtHotel: 'Pay at hotel',
-      customNonRefundable: 'Non-refundable',
-      customNoBreakfast: 'No breakfast',
-      customBestFor:'Couples / leisure',
-      facilities: 'Chairs, TV, AC, Bed, Towel,Swimming Pool, No Smoking, Car Parking, No Free Toiletries, Free Toiletries, Front Desk, Lift, Meeting room, Playground, Kitchen, 24/7 Security, CCTV, Free WiFi',
+      facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi',
       imageUrls: [] as string[],
       showSuggestions: false,
     },
@@ -55,23 +50,28 @@ export default function AdminPanel() {
       customNonRefundable: 'Non-refundable',
       customNoBreakfast: 'No breakfast',
       customBestFor: 'Couples / leisure',
-      facilities: 'Chairs, TV, AC, Bed, Towel,Swimming Pool, No Smoking, Car Parking, No Free Toiletries, Free Toiletries, Front Desk, Lift, Meeting room, Playground, Kitchen, 24/7 Security, CCTV, Free WiFi',
+      facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi',
+      imageUrls: [] as string[],
+      showSuggestions: false,
+    },
+    {
+      hotelId: null,
+      hotelName: '',
+      roomType: '',
+      pricePerNight: '',
+      originalPrice: '',
+      address: '',
+      customRoomOnly: 'Room only',
+      customPayAtHotel: 'Pay at hotel',
+      customNonRefundable: 'Non-refundable',
+      customNoBreakfast: 'No breakfast',
+      customBestFor: 'Couples / leisure',
+      facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi',
       imageUrls: [] as string[],
       showSuggestions: false,
     },
   ]);
   const [validUntil, setValidUntil] = useState('');
-  
-    // 🟢 ADD PROPERTY MODAL STATE
-  const [isAddPropertyOpen, setIsAddPropertyOpen] = useState(false);
-  const [newProperty, setNewProperty] = useState({
-    name: '',
-    room_type: '',
-    price_per_night: '',
-    address: '',
-    facilities: 'Chairs, TV, AC, Bed, Towel, Swimming Pool, No Smoking, Car Parking, No Free Toiletries, Free Toiletries, Front Desk, Lift, Meeting room, Playground, Kitchen, 24/7 Security, CCTV, Free WiFi',
-    images: '',
-  });
 
   useEffect(() => {
     fetchInquiries();
@@ -124,22 +124,19 @@ export default function AdminPanel() {
           customPayAtHotel: existingQuote.custom_pay_at_hotel || 'Pay at hotel',
           customNonRefundable: existingQuote.custom_non_refundable || 'Non-refundable',
           customNoBreakfast: existingQuote.custom_no_breakfast || 'No breakfast',
-          customNonRefundable: existingQuote.custom_non_refundable || 'Non-refundable',
-          customNoBreakfast: existingQuote.custom_no_breakfast || 'No breakfast',
-            // 🟢 FIXED: Added a fallback string after the ||
-            customBestFor: existingQuote.custom_best_for || 'Couples / leisure',
-            facilities: existingQuote.facilities || 'Chairs, TV, AC, Bed, Towel, Swimming Pool, No Smoking, Car Parking, No Free Toiletries, Free Toiletries, Front Desk, Lift, Meeting room, Playground, Kitchen, 24/7 Security, CCTV, Free WiFi',
-            imageUrls: existingQuote.image_url ? existingQuote.image_url.split(',').map((url: string) => url.trim()) : [],
+          customBestFor: existingQuote.custom_best_for || 'Couples / leisure',
+          facilities: existingQuote.facilities || 'Chairs, TV, AC, Bed, Towel, Free WiFi',
+          imageUrls: existingQuote.image_url ? existingQuote.image_url.split(',').map((url: string) => url.trim()) : [],
           showSuggestions: false,
         },
-        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Chairs, TV, AC, Bed, Towel, Swimming Pool, No Smoking, Car Parking, No Free Toiletries, Free Toiletries, Front Desk, Lift, Meeting room, Playground, Kitchen, 24/7 Security, CCTV, Free WiFi', imageUrls: [], showSuggestions: false },
-        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Chairs, TV, AC, Bed, Towel, Swimming Pool, No Smoking, Car Parking, No Free Toiletries, Free Toiletries, Front Desk, Lift, Meeting room, Playground, Kitchen, 24/7 Security, CCTV, Free WiFi', imageUrls: [], showSuggestions: false },
+        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi', imageUrls: [], showSuggestions: false },
+        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi', imageUrls: [], showSuggestions: false },
       ]);
     } else {
       setDrafts([
-        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Chairs, TV, AC, Bed, Towel, Swimming Pool, No Smoking, Car Parking, No Free Toiletries, Free Toiletries, Front Desk, Lift, Meeting room, Playground, Kitchen, 24/7 Security, CCTV, Free WiFi', imageUrls: [], showSuggestions: false },
-        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Chairs, TV, AC, Bed, Towel, Swimming Pool, No Smoking, Car Parking, No Free Toiletries, Free Toiletries, Front Desk, Lift, Meeting room, Playground, Kitchen, 24/7 Security, CCTV, Free WiFi', imageUrls: [], showSuggestions: false },
-        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Chairs, TV, AC, Bed, Towel, Swimming Pool, No Smoking, Car Parking, No Free Toiletries, Free Toiletries, Front Desk, Lift, Meeting room, Playground, Kitchen, 24/7 Security, CCTV, Free WiFi', imageUrls: [], showSuggestions: false },
+        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi', imageUrls: [], showSuggestions: false },
+        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi', imageUrls: [], showSuggestions: false },
+        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi', imageUrls: [], showSuggestions: false },
       ]);
     }
 
@@ -169,7 +166,7 @@ export default function AdminPanel() {
       address: hotel.address || '',
       imageUrls: hotel.images ? hotel.images.split(',').map((url: string) => url.trim()) : [],
       facilities: hotel.facilities || '',
-      customBestFor: hotel.best_for || Couples / leisure ,
+      customBestFor: hotel.best_for || 'Couples / leisure',
       showSuggestions: false,
     };
     setDrafts(newDrafts);
@@ -177,7 +174,7 @@ export default function AdminPanel() {
 
   const addHotelForm = () => {
     if (drafts.length >= 3) return;
-    setDrafts([...drafts, { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Chairs, TV, AC, Bed, Towel, Swimming Pool, No Smoking, Car Parking, No Free Toiletries, Free Toiletries, Front Desk, Lift, Meeting room, Playground, Kitchen, 24/7 Security, CCTV, Free WiFi', imageUrls: [], showSuggestions: false }]);
+    setDrafts([...drafts, { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi', imageUrls: [], showSuggestions: false }]);
   };
 
   const removeHotelForm = (index: number) => {
@@ -299,7 +296,7 @@ export default function AdminPanel() {
     <div className="min-h-screen bg-[#F8FAFC] p-8">
       <div className="max-w-6xl mx-auto">
         
-        {/* 🟢 SINGLE HEADER BLOCK */}
+        {/* SINGLE HEADER */}
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-[#0F172A]">🛠️ Admin Dashboard</h1>
           <div className="flex gap-3">
@@ -315,10 +312,8 @@ export default function AdminPanel() {
           </div>
         </div>
 
-        {/* INQUIRY LIST (Keep your existing loop exactly as it is) */}
         <div className="grid grid-cols-1 gap-4">
           {inquiries.map((inq) => {
-            // ... rest of your code ...
             const chosenQuotation = inq.quotations?.find((q: any) => q.is_customer_chosen === true);
             const hasQuotation = inq.quotations?.length > 0;
 
@@ -392,17 +387,234 @@ export default function AdminPanel() {
         </div>
       </div>
 
-      {/* DRAFT EDITOR MODAL WITH CHECKBOX FACILITIES */}
+      {/* ADD PROPERTY MODAL */}
+      {isAddPropertyOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-hidden">
+          <div className="bg-white max-w-lg w-full max-h-[90vh] rounded-2xl p-6 shadow-2xl relative flex flex-col">
+            <button 
+              onClick={() => setIsAddPropertyOpen(false)}
+              className="absolute top-4 right-4 text-[#475569] hover:text-[#0F172A] transition"
+            >
+              <X size={24} />
+            </button>
+
+            <h2 className="text-2xl font-bold text-[#0F172A] mb-1">Add New Property</h2>
+            <p className="text-sm text-[#64748B] mb-4">Add a new hotel to the database for future quotations.</p>
+
+            <div className="space-y-4 overflow-y-auto pr-2 flex-1">
+              <div>
+                <label className="block text-xs font-semibold text-[#64748B] mb-1">Hotel Name *</label>
+                <input 
+                  type="text" 
+                  value={newProperty.name}
+                  onChange={(e) => setNewProperty({ ...newProperty, name: e.target.value })}
+                  className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
+                  placeholder="e.g. RedDoorz @ Tagaytay"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-[#64748B] mb-1">Room Type</label>
+                  <input 
+                    type="text" 
+                    value={newProperty.room_type}
+                    onChange={(e) => setNewProperty({ ...newProperty, room_type: e.target.value })}
+                    className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
+                    placeholder="Standard Room"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-[#64748B] mb-1">Price / night *</label>
+                  <input 
+                    type="number" 
+                    step="0.01"
+                    value={newProperty.price_per_night}
+                    onChange={(e) => setNewProperty({ ...newProperty, price_per_night: e.target.value })}
+                    className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
+                    placeholder="1389.99"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-[#64748B] mb-1">Address</label>
+                <input 
+                  type="text" 
+                  value={newProperty.address}
+                  onChange={(e) => setNewProperty({ ...newProperty, address: e.target.value })}
+                  className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
+                  placeholder="Hotel Street, City"
+                />
+              </div>
+
+              <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4">
+                <label className="block text-xs font-bold text-[#64748B] mb-2">Facilities</label>
+                <div className="grid grid-cols-2 gap-2 text-xs text-[#475569]">
+                  {[
+                    'Chairs', 'Wardrobe', 'TV', 'AC', 'Iron', 'Bed', 'Mirror', 
+                    'Towel', 'Hot Shower', 'Hair Dryer', 'Phone', 'Free WiFi',
+                    'Swimming Pool', 'No Smoking', 'Car Parking', 'No Free Toiletries',
+                    'Free Toiletries', 'Front Desk', 'Lift', 'Meeting room', 
+                    'Playground', 'Kitchen', '24/7 Security', 'CCTV'
+                  ].map((item) => (
+                    <label key={item} className="flex items-center gap-2 cursor-pointer">
+                      <input 
+                        type="checkbox"
+                        className="w-4 h-4 rounded border-[#E2E8F0] text-[#E11D48] focus:ring-[#E11D48]"
+                        checked={newProperty.facilities.split(',').map(f => f.trim()).includes(item)}
+                        onChange={(e) => {
+                          const currentList = newProperty.facilities.split(',').map(f => f.trim()).filter(f => f !== '');
+                          let newList;
+                          if (e.target.checked) {
+                            newList = [...currentList, item];
+                          } else {
+                            newList = currentList.filter(f => f !== item);
+                          }
+                          setNewProperty({ ...newProperty, facilities: newList.join(',') });
+                        }}
+                      />
+                      {item}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-[#64748B] mb-1">Image Upload</label>
+                <div 
+                  className="w-full p-4 border-2 border-dashed border-[#E2E8F0] rounded-lg bg-[#F8FAFC] hover:bg-white hover:border-[#E11D48] transition cursor-pointer text-center text-xs text-[#64748B]"
+                  onClick={() => document.getElementById('add-property-file-input')?.click()}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={async (e) => {
+                    e.preventDefault();
+                    const files = Array.from(e.dataTransfer.files);
+                    if (!files.length) return;
+                    
+                    let newImages = newProperty.images ? newProperty.images.split(',').map(f => f.trim()) : [];
+                    for (const file of files) {
+                      const formData = new FormData();
+                      formData.append('file', file);
+
+                      try {
+                        const res = await fetch('/api/upload-image', {
+                          method: 'POST',
+                          body: formData,
+                        });
+                        const data = await res.json();
+                        if (data.url) {
+                          newImages.push(data.url);
+                        }
+                      } catch (err) {
+                        alert('Upload failed. Please try again.');
+                      }
+                    }
+                    setNewProperty({ ...newProperty, images: newImages.join(',') });
+                  }}
+                >
+                  <p>Drag & drop images here, or click to select</p>
+                  <p className="text-[10px] text-[#94a3b8] mt-1">PNG, JPG, WEBP supported</p>
+                  
+                  <input 
+                    type="file" 
+                    id="add-property-file-input" 
+                    className="hidden" 
+                    multiple
+                    accept="image/png,image/jpeg,image/webp"
+                    onChange={async (e) => {
+                      const files = Array.from(e.target.files || []);
+                      if (!files.length) return;
+
+                      let newImages = newProperty.images ? newProperty.images.split(',').map(f => f.trim()) : [];
+                      for (const file of files) {
+                        const formData = new FormData();
+                        formData.append('file', file);
+
+                        try {
+                          const res = await fetch('/api/upload-image', {
+                            method: 'POST',
+                            body: formData,
+                          });
+                          const data = await res.json();
+                          if (data.url) {
+                            newImages.push(data.url);
+                          }
+                        } catch (err) {
+                          alert('Upload failed. Please try again.');
+                        }
+                      }
+                      setNewProperty({ ...newProperty, images: newImages.join(',') });
+                    }}
+                  />
+                </div>
+
+                {newProperty.images && newProperty.images.trim() !== '' && (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {newProperty.images.split(',').map((url, i) => (
+                      <div key={i} className="relative w-16 h-16 rounded-lg overflow-hidden border border-[#E2E8F0] bg-slate-100 group">
+                        <img 
+                          src={url.trim()} 
+                          alt={`Uploaded ${i+1}`} 
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex gap-2 mt-4">
+                <button 
+                  onClick={() => setIsAddPropertyOpen(false)}
+                  className="flex-1 px-4 py-2 rounded-xl border border-[#E2E8F0] hover:bg-[#F8FAFC] transition"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={async () => {
+                    if (!newProperty.name || !newProperty.price_per_night) {
+                      alert('Please fill in the Hotel Name and Price.');
+                      return;
+                    }
+                    const { error } = await supabase.from('hotels').insert({
+                      name: newProperty.name,
+                      room_type: newProperty.room_type || 'Standard Room',
+                      price_per_night: parseFloat(newProperty.price_per_night) || 0,
+                      address: newProperty.address || '',
+                      facilities: newProperty.facilities,
+                      images: newProperty.images || '',
+                    });
+                    if (error) {
+                      alert('❌ Error adding property: ' + error.message);
+                    } else {
+                      alert('✅ Property added successfully! It will now appear in the Auto-Suggest dropdown.');
+                      setIsAddPropertyOpen(false);
+                      setNewProperty({ name: '', room_type: '', price_per_night: '', address: '', facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi', images: '' });
+                      fetchHotels();
+                    }
+                  }}
+                  className="flex-1 px-4 py-2 rounded-xl bg-[#E11D48] text-white font-bold hover:bg-[#BE123C] transition"
+                >
+                  Add Property
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* DRAFT EDITOR MODAL */}
       {selectedInquiry && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-white max-w-3xl w-full rounded-3xl shadow-2xl p-6 relative">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-hidden">
+          <div className="bg-white max-w-3xl w-full max-h-[90vh] rounded-3xl shadow-2xl p-6 relative flex flex-col">
             <button onClick={() => setSelectedInquiry(null)} className="absolute top-4 right-4 text-[#475569] hover:text-[#0F172A] transition"><X size={24} /></button>
             <div className="flex items-center gap-3 mb-6 border-b border-[#E2E8F0] pb-4">
               <button onClick={() => setSelectedInquiry(null)} className="flex items-center gap-1 text-[#64748B] hover:text-[#0F172A] transition text-sm font-medium"><ChevronLeft size={16} /> Back to Dashboard</button>
               <h2 className="text-2xl font-bold flex-1 text-center">Create Draft Quotation</h2>
             </div>
 
-            <div className="space-y-8 max-h-[60vh] overflow-y-auto pr-2">
+            <div className="space-y-8 overflow-y-auto pr-2 flex-1">
               {drafts.map((draft, index) => {
                 const filteredHotels = hotelDatabase ? hotelDatabase.filter(hotel => 
                   hotel.name.toLowerCase().startsWith(draft.hotelName.toLowerCase())
@@ -428,7 +640,6 @@ export default function AdminPanel() {
                           placeholder="e.g. RedDoorz @ Tagaytay"
                         />
                         
-                        {/* AUTO-SUGGEST DROPDOWN */}
                         {draft.showSuggestions && draft.hotelName.length > 0 && filteredHotels.length > 0 && (
                           <div className="absolute top-full left-0 w-full bg-white border border-[#E2E8F0] rounded-lg shadow-xl z-50 max-h-48 overflow-y-auto mt-1">
                             {filteredHotels.slice(0, 8).map((hotel) => (
@@ -575,13 +786,10 @@ export default function AdminPanel() {
                       </div>
                     </div>
 
-                    {/* 🟢 ADVANCED FACILITIES CHECKBOXES */}
+                    {/* 🟢 DRAFT EDITOR FACILITIES CHECKBOXES */}
                     <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4 mt-2">
                       <label className="block text-xs font-bold text-[#64748B] mb-2">Facilities</label>
                       
-                      {/* Room Facilities */}
-                      <div className="mb-4">
-                      {/* Room Facilities */}
                       <div className="mb-4">
                         <p className="text-xs font-semibold text-[#0F172A] mb-2">Room Facilities</p>
                         <div className="grid grid-cols-2 gap-2">
@@ -613,7 +821,6 @@ export default function AdminPanel() {
                         </div>
                       </div>
 
-                      {/* Bathroom Facilities */}
                       <div className="mb-4">
                         <p className="text-xs font-semibold text-[#0F172A] mb-2">Bathroom Facilities</p>
                         <div className="grid grid-cols-2 gap-2">
@@ -640,7 +847,6 @@ export default function AdminPanel() {
                         </div>
                       </div>
 
-                      {/* Others */}
                       <div>
                         <p className="text-xs font-semibold text-[#0F172A] mb-2">Others</p>
                         <div className="grid grid-cols-2 gap-2">
@@ -789,250 +995,10 @@ export default function AdminPanel() {
                     >
                       Confirm Booking & Notify Client
                     </button>
-
-                    {/* 🟢 NEW BUTTON: Finalize Booking */}
-                    <button 
-                      onClick={async () => {
-                        const { error } = await supabase
-                          .from('quotations')
-                          .update({ is_redseller_booked: true })
-                          .eq('id', chosen.id);
-
-                        if (error) {
-                          alert('❌ Error finalizing booking: ' + error.message);
-                        } else {
-                          alert('✅ Booking finalized! RedSeller email sent. The client will now see the final green "Thank you" state.');
-                          setDetailsInquiry(null);
-                          fetchInquiries();
-                        }
-                      }}
-                      className="w-full bg-[#0F172A] text-white py-2 rounded-xl font-bold hover:bg-[#1E293B] transition"
-                    >
-                      Finalize Booking (RedSeller App Done)
-                    </button>
                   </div>
                 </div>
               );
             })()}
-          </div>
-        </div>
-      )}
-	  
-	        {/* 🟢 ADD PROPERTY MODAL */}
-      {isAddPropertyOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-hidden">
-          <div className="bg-white max-w-lg w-full max-h-[90vh] rounded-2xl p-6 shadow-2xl relative flex flex-col">
-            <button 
-              onClick={() => setIsAddPropertyOpen(false)}
-              className="absolute top-4 right-4 text-[#475569] hover:text-[#0F172A] transition"
-            >
-              <X size={24} />
-            </button>
-
-            <h2 className="text-2xl font-bold text-[#0F172A] mb-1">Add New Property</h2>
-            <p className="text-sm text-[#64748B] mb-4">Add a new hotel to the database for future quotations.</p>
-
-            <div className="space-y-4 overflow-y-auto pr-2 flex-1">
-              <div>
-                <label className="block text-xs font-semibold text-[#64748B] mb-1">Hotel Name *</label>
-                <input 
-                  type="text" 
-                  value={newProperty.name}
-                  onChange={(e) => setNewProperty({ ...newProperty, name: e.target.value })}
-                  className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
-                  placeholder="e.g. RedDoorz @ Tagaytay"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-[#64748B] mb-1">Room Type</label>
-                  <input 
-                    type="text" 
-                    value={newProperty.room_type}
-                    onChange={(e) => setNewProperty({ ...newProperty, room_type: e.target.value })}
-                    className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
-                    placeholder="Standard Room"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-[#64748B] mb-1">Price / night *</label>
-                  <input 
-                    type="number" 
-                    step="0.01"
-                    value={newProperty.price_per_night}
-                    onChange={(e) => setNewProperty({ ...newProperty, price_per_night: e.target.value })}
-                    className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
-                    placeholder="1389.99"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-[#64748B] mb-1">Address</label>
-                <input 
-                  type="text" 
-                  value={newProperty.address}
-                  onChange={(e) => setNewProperty({ ...newProperty, address: e.target.value })}
-                  className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
-                  placeholder="Hotel Street, City"
-                />
-              </div>
-
-              {/* Facilities Checkboxes */}
-              <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4">
-                <label className="block text-xs font-bold text-[#64748B] mb-2">Facilities</label>
-                <div className="grid grid-cols-2 gap-2 text-xs text-[#475569]">
-                  {[
-                    'Chairs', 'Wardrobe', 'TV', 'AC', 'Iron', 'Bed', 'Mirror', 
-                    'Towel', 'Hot Shower', 'Hair Dryer', 'Phone', 'Free WiFi',
-                    'Swimming Pool', 'No Smoking', 'Car Parking', 'No Free Toiletries',
-                    'Free Toiletries', 'Front Desk', 'Lift', 'Meeting room', 
-                    'Playground', 'Kitchen', '24/7 Security', 'CCTV'
-                  ].map((item) => (
-                    <label key={item} className="flex items-center gap-2 cursor-pointer">
-                      <input 
-                        type="checkbox"
-                        className="w-4 h-4 rounded border-[#E2E8F0] text-[#E11D48] focus:ring-[#E11D48]"
-                        checked={newProperty.facilities.split(',').map(f => f.trim()).includes(item)}
-                        onChange={(e) => {
-                          const currentList = newProperty.facilities.split(',').map(f => f.trim()).filter(f => f !== '');
-                          let newList;
-                          if (e.target.checked) {
-                            newList = [...currentList, item];
-                          } else {
-                            newList = currentList.filter(f => f !== item);
-                          }
-                          setNewProperty({ ...newProperty, facilities: newList.join(',') });
-                        }}
-                      />
-                      {item}
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-[#64748B] mb-1">Image Upload</label>
-                <div 
-                  className="w-full p-4 border-2 border-dashed border-[#E2E8F0] rounded-lg bg-[#F8FAFC] hover:bg-white hover:border-[#E11D48] transition cursor-pointer text-center text-xs text-[#64748B]"
-                  onClick={() => document.getElementById('add-property-file-input')?.click()}
-                  onDragOver={(e) => e.preventDefault()}
-                  onDrop={async (e) => {
-                    e.preventDefault();
-                    const files = Array.from(e.dataTransfer.files);
-                    if (!files.length) return;
-                    
-                    let newImages = newProperty.images ? newProperty.images.split(',').map(f => f.trim()) : [];
-                    for (const file of files) {
-                      const formData = new FormData();
-                      formData.append('file', file);
-
-                      try {
-                        const res = await fetch('/api/upload-image', {
-                          method: 'POST',
-                          body: formData,
-                        });
-                        const data = await res.json();
-                        if (data.url) {
-                          newImages.push(data.url);
-                        }
-                      } catch (err) {
-                        alert('Upload failed. Please try again.');
-                      }
-                    }
-                    setNewProperty({ ...newProperty, images: newImages.join(',') });
-                  }}
-                >
-                  <p>Drag & drop images here, or click to select</p>
-                  <p className="text-[10px] text-[#94a3b8] mt-1">PNG, JPG, WEBP supported</p>
-                  
-                  <input 
-                    type="file" 
-                    id="add-property-file-input" 
-                    className="hidden" 
-                    multiple
-                    accept="image/png,image/jpeg,image/webp"
-                    onChange={async (e) => {
-                      const files = Array.from(e.target.files || []);
-                      if (!files.length) return;
-
-                      let newImages = newProperty.images ? newProperty.images.split(',').map(f => f.trim()) : [];
-                      for (const file of files) {
-                        const formData = new FormData();
-                        formData.append('file', file);
-
-                        try {
-                          const res = await fetch('/api/upload-image', {
-                            method: 'POST',
-                            body: formData,
-                          });
-                          const data = await res.json();
-                          if (data.url) {
-                            newImages.push(data.url);
-                          }
-                        } catch (err) {
-                          alert('Upload failed. Please try again.');
-                        }
-                      }
-                      setNewProperty({ ...newProperty, images: newImages.join(',') });
-                    }}
-                  />
-                </div>
-
-                {/* 🟢 IMAGE PREVIEW */}
-                {newProperty.images && newProperty.images.trim() !== '' && (
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {newProperty.images.split(',').map((url, i) => (
-                      <div key={i} className="relative w-16 h-16 rounded-lg overflow-hidden border border-[#E2E8F0] bg-slate-100 group">
-                        <img 
-                          src={url.trim()} 
-                          alt={`Uploaded ${i+1}`} 
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.currentTarget.style.display = 'none';
-                          }}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="flex gap-2 mt-4">
-                <button 
-                  onClick={() => setIsAddPropertyOpen(false)}
-                  className="flex-1 px-4 py-2 rounded-xl border border-[#E2E8F0] hover:bg-[#F8FAFC] transition"
-                >
-                  Cancel
-                </button>
-                <button 
-                  onClick={async () => {
-                    if (!newProperty.name || !newProperty.price_per_night) {
-                      alert('Please fill in the Hotel Name and Price.');
-                      return;
-                    }
-                    const { error } = await supabase.from('hotels').insert({
-                      name: newProperty.name,
-                      room_type: newProperty.room_type || 'Standard Room',
-                      price_per_night: parseFloat(newProperty.price_per_night) || 0,
-                      address: newProperty.address || '',
-                      facilities: newProperty.facilities,
-                      images: newProperty.images || '',
-                    });
-                    if (error) {
-                      alert('❌ Error adding property: ' + error.message);
-                    } else {
-                      alert('✅ Property added successfully! It will now appear in the Auto-Suggest dropdown.');
-                      setIsAddPropertyOpen(false);
-                      setNewProperty({ name: '', room_type: '', price_per_night: '', address: '', facilities: 'Chairs, TV, AC, Bed, Towel, Swimming Pool, No Smoking, Car Parking, No Free Toiletries, Free Toiletries, Front Desk, Lift, Meeting room, Playground, Kitchen, 24/7 Security, CCTV, Free WiFi', images: '' });
-                      fetchHotels();
-                    }
-                  }}
-                  className="flex-1 px-4 py-2 rounded-xl bg-[#E11D48] text-white font-bold hover:bg-[#BE123C] transition"
-                >
-                  Add Property
-                </button>
-              </div>
-            </div>
           </div>
         </div>
       )}
