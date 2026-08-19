@@ -976,6 +976,7 @@ export default function AdminPanel() {
                       Copy to Clipboard for RedSeller
                     </button>
 
+                    {/* 🟢 Step 2: Admin confirms availability & price */}
                     <button 
                       onClick={async () => {
                         const { error } = await supabase
@@ -995,8 +996,8 @@ export default function AdminPanel() {
                     >
                       Confirm Booking & Notify Client
                     </button>
-					
-					{/* 🟢 Step 3: Admin finalizes booking (RedSeller App Done) */}
+
+                    {/* 🟢 Step 3: Admin finalizes booking (RedSeller App Done) */}
                     <button 
                       onClick={async () => {
                         const { error } = await supabase
@@ -1016,7 +1017,6 @@ export default function AdminPanel() {
                     >
                       Finalize Booking (RedSeller App Done)
                     </button>
-                  </div>
                   </div>
                 </div>
               );
