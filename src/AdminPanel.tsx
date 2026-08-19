@@ -813,8 +813,8 @@ export default function AdminPanel() {
 	  
 	        {/* 🟢 ADD PROPERTY MODAL */}
       {isAddPropertyOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white max-w-lg w-full rounded-2xl p-6 shadow-2xl relative">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-hidden">
+          <div className="bg-white max-w-lg w-full max-h-[90vh] rounded-2xl p-6 shadow-2xl relative flex flex-col">
             <button 
               onClick={() => setIsAddPropertyOpen(false)}
               className="absolute top-4 right-4 text-[#475569] hover:text-[#0F172A] transition"
@@ -825,7 +825,7 @@ export default function AdminPanel() {
             <h2 className="text-2xl font-bold text-[#0F172A] mb-1">Add New Property</h2>
             <p className="text-sm text-[#64748B] mb-4">Add a new hotel to the database for future quotations.</p>
 
-            <div className="space-y-4">
+            <div className="space-y-4 overflow-y-auto pr-2 flex-1">
               <div>
                 <label className="block text-xs font-semibold text-[#64748B] mb-1">Hotel Name *</label>
                 <input 
