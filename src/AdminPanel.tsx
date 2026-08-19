@@ -22,8 +22,8 @@ export default function AdminPanel() {
       customPayAtHotel: 'Pay at hotel',
       customNonRefundable: 'Non-refundable',
       customNoBreakfast: 'No breakfast',
-      customBestFor: 'Couples / leisure',
-      facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi',
+      customBestFor: ,
+      facilities: 'Chairs, TV, AC, Bed, Towel, Swimming Pool, No Smoking, Car Parking, No Free Toiletries, Free Toiletries, Front Desk, Lift, Meeting room, Playground, Kitchen, 24/7 Security, CCTV,  Free WiFi',
       imageUrls: [] as string[],
       showSuggestions: false,
     },
@@ -38,8 +38,8 @@ export default function AdminPanel() {
       customPayAtHotel: 'Pay at hotel',
       customNonRefundable: 'Non-refundable',
       customNoBreakfast: 'No breakfast',
-      customBestFor: 'Couples / leisure',
-      facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi',
+      customBestFor: ,
+      facilities: 'Chairs, TV, AC, Bed, Towel,Swimming Pool, No Smoking, Car Parking, No Free Toiletries, Free Toiletries, Front Desk, Lift, Meeting room, Playground, Kitchen, 24/7 Security, CCTV, Free WiFi',
       imageUrls: [] as string[],
       showSuggestions: false,
     },
@@ -54,8 +54,8 @@ export default function AdminPanel() {
       customPayAtHotel: 'Pay at hotel',
       customNonRefundable: 'Non-refundable',
       customNoBreakfast: 'No breakfast',
-      customBestFor: 'Couples / leisure',
-      facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi',
+      customBestFor: ,
+      facilities: 'Chairs, TV, AC, Bed, Towel,Swimming Pool, No Smoking, Car Parking, No Free Toiletries, Free Toiletries, Front Desk, Lift, Meeting room, Playground, Kitchen, 24/7 Security, CCTV, Free WiFi',
       imageUrls: [] as string[],
       showSuggestions: false,
     },
@@ -69,7 +69,7 @@ export default function AdminPanel() {
     room_type: '',
     price_per_night: '',
     address: '',
-    facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi',
+    facilities: 'Chairs, TV, AC, Bed, Towel, Swimming Pool, No Smoking, Car Parking, No Free Toiletries, Free Toiletries, Front Desk, Lift, Meeting room, Playground, Kitchen, 24/7 Security, CCTV, Free WiFi',
     images: '',
   });
 
@@ -124,19 +124,19 @@ export default function AdminPanel() {
           customPayAtHotel: existingQuote.custom_pay_at_hotel || 'Pay at hotel',
           customNonRefundable: existingQuote.custom_non_refundable || 'Non-refundable',
           customNoBreakfast: existingQuote.custom_no_breakfast || 'No breakfast',
-          customBestFor: existingQuote.custom_best_for || 'Couples / leisure',
-          facilities: existingQuote.facilities || 'Chairs, TV, AC, Bed, Towel, Free WiFi',
+          customBestFor: existingQuote.custom_best_for || ,
+          facilities: existingQuote.facilities || 'Chairs, TV, AC, Bed, Towel, Swimming Pool, No Smoking, Car Parking, No Free Toiletries, Free Toiletries, Front Desk, Lift, Meeting room, Playground, Kitchen, 24/7 Security, CCTV, Free WiFi',
           imageUrls: existingQuote.image_url ? existingQuote.image_url.split(',').map((url: string) => url.trim()) : [],
           showSuggestions: false,
         },
-        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi', imageUrls: [], showSuggestions: false },
-        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi', imageUrls: [], showSuggestions: false },
+        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: , facilities: 'Chairs, TV, AC, Bed, Towel, Swimming Pool, No Smoking, Car Parking, No Free Toiletries, Free Toiletries, Front Desk, Lift, Meeting room, Playground, Kitchen, 24/7 Security, CCTV, Free WiFi', imageUrls: [], showSuggestions: false },
+        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: , facilities: 'Chairs, TV, AC, Bed, Towel, Swimming Pool, No Smoking, Car Parking, No Free Toiletries, Free Toiletries, Front Desk, Lift, Meeting room, Playground, Kitchen, 24/7 Security, CCTV, Free WiFi', imageUrls: [], showSuggestions: false },
       ]);
     } else {
       setDrafts([
-        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi', imageUrls: [], showSuggestions: false },
-        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi', imageUrls: [], showSuggestions: false },
-        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi', imageUrls: [], showSuggestions: false },
+        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: , facilities: 'Chairs, TV, AC, Bed, Towel, Swimming Pool, No Smoking, Car Parking, No Free Toiletries, Free Toiletries, Front Desk, Lift, Meeting room, Playground, Kitchen, 24/7 Security, CCTV, Free WiFi', imageUrls: [], showSuggestions: false },
+        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: , facilities: 'Chairs, TV, AC, Bed, Towel, Swimming Pool, No Smoking, Car Parking, No Free Toiletries, Free Toiletries, Front Desk, Lift, Meeting room, Playground, Kitchen, 24/7 Security, CCTV, Free WiFi', imageUrls: [], showSuggestions: false },
+        { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: , facilities: 'Chairs, TV, AC, Bed, Towel, Swimming Pool, No Smoking, Car Parking, No Free Toiletries, Free Toiletries, Front Desk, Lift, Meeting room, Playground, Kitchen, 24/7 Security, CCTV, Free WiFi', imageUrls: [], showSuggestions: false },
       ]);
     }
 
@@ -166,7 +166,7 @@ export default function AdminPanel() {
       address: hotel.address || '',
       imageUrls: hotel.images ? hotel.images.split(',').map((url: string) => url.trim()) : [],
       facilities: hotel.facilities || '',
-      customBestFor: hotel.best_for || 'Couples / leisure',
+      customBestFor: hotel.best_for || ,
       showSuggestions: false,
     };
     setDrafts(newDrafts);
@@ -174,7 +174,7 @@ export default function AdminPanel() {
 
   const addHotelForm = () => {
     if (drafts.length >= 3) return;
-    setDrafts([...drafts, { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: 'Couples / leisure', facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi', imageUrls: [], showSuggestions: false }]);
+    setDrafts([...drafts, { hotelId: null, hotelName: '', roomType: '', pricePerNight: '', originalPrice: '', address: '', customRoomOnly: 'Room only', customPayAtHotel: 'Pay at hotel', customNonRefundable: 'Non-refundable', customNoBreakfast: 'No breakfast', customBestFor: , facilities: 'Chairs, TV, AC, Bed, Towel, Swimming Pool, No Smoking, Car Parking, No Free Toiletries, Free Toiletries, Front Desk, Lift, Meeting room, Playground, Kitchen, 24/7 Security, CCTV, Free WiFi', imageUrls: [], showSuggestions: false }]);
   };
 
   const removeHotelForm = (index: number) => {
@@ -1007,7 +1007,7 @@ export default function AdminPanel() {
                     } else {
                       alert('✅ Property added successfully! It will now appear in the Auto-Suggest dropdown.');
                       setIsAddPropertyOpen(false);
-                      setNewProperty({ name: '', room_type: '', price_per_night: '', address: '', facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi', images: '' });
+                      setNewProperty({ name: '', room_type: '', price_per_night: '', address: '', facilities: 'Chairs, TV, AC, Bed, Towel, Swimming Pool, No Smoking, Car Parking, No Free Toiletries, Free Toiletries, Front Desk, Lift, Meeting room, Playground, Kitchen, 24/7 Security, CCTV,  Free WiFi', images: '' });
                       fetchHotels();
                     }
                   }}
