@@ -874,7 +874,13 @@ export default function AdminPanel() {
               <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4">
                 <label className="block text-xs font-bold text-[#64748B] mb-2">Facilities</label>
                 <div className="grid grid-cols-2 gap-2 text-xs text-[#475569]">
-                  {['Chairs', 'Wardrobe', 'TV', 'AC', 'Iron', 'Bed', 'Mirror', 'Towel', 'Hot Shower', 'Hair Dryer', 'Phone', 'Free WiFi'].map((item) => (
+                  {[
+                    'Chairs', 'Wardrobe', 'TV', 'AC', 'Iron', 'Bed', 'Mirror', 
+                    'Towel', 'Hot Shower', 'Hair Dryer', 'Phone', 'Free WiFi',
+                    'Swimming Pool', 'No Smoking', 'Car Parking', 'No Free Toiletries',
+                    'Free Toiletries', 'Front Desk', 'Lift', 'Meeting room', 
+                    'Playground', 'Kitchen', '24/7 Security', 'CCTV'
+                  ].map((item) => (
                     <label key={item} className="flex items-center gap-2 cursor-pointer">
                       <input 
                         type="checkbox"
