@@ -607,14 +607,14 @@ export default function AdminPanel() {
       {/* DRAFT EDITOR MODAL */}
       {selectedInquiry && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-hidden">
-          <div className="bg-white max-w-3xl w-full max-h-[90vh] rounded-3xl shadow-2xl p-6 relative flex flex-col">
+          <div className="bg-white max-w-3xl w-full max-h-[85vh] rounded-3xl shadow-2xl p-6 relative flex flex-col">
             <button onClick={() => setSelectedInquiry(null)} className="absolute top-4 right-4 text-[#475569] hover:text-[#0F172A] transition"><X size={24} /></button>
             <div className="flex items-center gap-3 mb-6 border-b border-[#E2E8F0] pb-4">
               <button onClick={() => setSelectedInquiry(null)} className="flex items-center gap-1 text-[#64748B] hover:text-[#0F172A] transition text-sm font-medium"><ChevronLeft size={16} /> Back to Dashboard</button>
-              <h2 className="text-2xl font-bold flex-1 text-center">Create Draft Quotation</h2>
+              <h2 className="text-xl md:text-2xl font-bold flex-1 text-center">Create Draft Quotation</h2>
             </div>
 
-            <div className="space-y-8 overflow-y-auto pr-2 flex-1">
+            <div className="space-y-8 overflow-y-auto pr-2 flex-1 pb-24">
               {drafts.map((draft, index) => {
                 const filteredHotels = hotelDatabase ? hotelDatabase.filter(hotel => 
                   hotel.name.toLowerCase().startsWith(draft.hotelName.toLowerCase())
