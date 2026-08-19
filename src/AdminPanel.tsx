@@ -61,6 +61,17 @@ export default function AdminPanel() {
     },
   ]);
   const [validUntil, setValidUntil] = useState('');
+  
+    // 🟢 ADD PROPERTY MODAL STATE
+  const [isAddPropertyOpen, setIsAddPropertyOpen] = useState(false);
+  const [newProperty, setNewProperty] = useState({
+    name: '',
+    room_type: '',
+    price_per_night: '',
+    address: '',
+    facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi',
+    images: '',
+  });
 
   useEffect(() => {
     fetchInquiries();
@@ -289,6 +300,20 @@ export default function AdminPanel() {
           <button onClick={() => window.location.href = '/'} className="text-[#E11D48] hover:underline">
             ← Back to Site
           </button>
+        </div>
+		 <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-[#0F172A]">🛠️ Admin Dashboard</h1>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setIsAddPropertyOpen(true)}
+              className="bg-[#0F172A] text-white px-4 py-2 rounded-xl font-semibold hover:bg-[#1E293B] transition"
+            >
+              + Add Property
+            </button>
+            <button onClick={() => window.location.href = '/'} className="text-[#E11D48] hover:underline">
+              ← Back to Site
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 gap-4">
@@ -781,6 +806,143 @@ export default function AdminPanel() {
                 </div>
               );
             })()}
+          </div>
+        </div>
+      )}
+	  
+	        {/* 🟢 ADD PROPERTY MODAL */}
+      {isAddPropertyOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white max-w-lg w-full rounded-2xl p-6 shadow-2xl relative">
+            <button 
+              onClick={() => setIsAddPropertyOpen(false)}
+              className="absolute top-4 right-4 text-[#475569] hover:text-[#0F172A] transition"
+            >
+              <X size={24} />
+            </button>
+
+            <h2 className="text-2xl font-bold text-[#0F172A] mb-1">Add New Property</h2>
+            <p className="text-sm text-[#64748B] mb-4">Add a new hotel to the database for future quotations.</p>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-[#64748B] mb-1">Hotel Name *</label>
+                <input 
+                  type="text" 
+                  value={newProperty.name}
+                  onChange={(e) => setNewProperty({ ...newProperty, name: e.target.value })}
+                  className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
+                  placeholder="e.g. RedDoorz @ Tagaytay"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-[#64748B] mb-1">Room Type</label>
+                  <input 
+                    type="text" 
+                    value={newProperty.room_type}
+                    onChange={(e) => setNewProperty({ ...newProperty, room_type: e.target.value })}
+                    className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
+                    placeholder="Standard Room"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-[#64748B] mb-1">Price / night *</label>
+                  <input 
+                    type="number" 
+                    step="0.01"
+                    value={newProperty.price_per_night}
+                    onChange={(e) => setNewProperty({ ...newProperty, price_per_night: e.target.value })}
+                    className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
+                    placeholder="1389.99"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-[#64748B] mb-1">Address</label>
+                <input 
+                  type="text" 
+                  value={newProperty.address}
+                  onChange={(e) => setNewProperty({ ...newProperty, address: e.target.value })}
+                  className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
+                  placeholder="Hotel Street, City"
+                />
+              </div>
+
+              {/* Facilities Checkboxes */}
+              <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4">
+                <label className="block text-xs font-bold text-[#64748B] mb-2">Facilities</label>
+                <div className="grid grid-cols-2 gap-2 text-xs text-[#475569]">
+                  {['Chairs', 'Wardrobe', 'TV', 'AC', 'Iron', 'Bed', 'Mirror', 'Towel', 'Hot Shower', 'Hair Dryer', 'Phone', 'Free WiFi'].map((item) => (
+                    <label key={item} className="flex items-center gap-2 cursor-pointer">
+                      <input 
+                        type="checkbox"
+                        className="w-4 h-4 rounded border-[#E2E8F0] text-[#E11D48] focus:ring-[#E11D48]"
+                        checked={newProperty.facilities.split(',').map(f => f.trim()).includes(item)}
+                        onChange={(e) => {
+                          const currentList = newProperty.facilities.split(',').map(f => f.trim()).filter(f => f !== '');
+                          let newList;
+                          if (e.target.checked) {
+                            newList = [...currentList, item];
+                          } else {
+                            newList = currentList.filter(f => f !== item);
+                          }
+                          setNewProperty({ ...newProperty, facilities: newList.join(',') });
+                        }}
+                      />
+                      {item}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-[#64748B] mb-1">Image URLs (Comma separated)</label>
+                <input 
+                  type="text" 
+                  value={newProperty.images}
+                  onChange={(e) => setNewProperty({ ...newProperty, images: e.target.value })}
+                  className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
+                  placeholder="https://url1.jpg, https://url2.jpg"
+                />
+              </div>
+
+              <div className="flex gap-2 mt-4">
+                <button 
+                  onClick={() => setIsAddPropertyOpen(false)}
+                  className="flex-1 px-4 py-2 rounded-xl border border-[#E2E8F0] hover:bg-[#F8FAFC] transition"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={async () => {
+                    if (!newProperty.name || !newProperty.price_per_night) {
+                      alert('Please fill in the Hotel Name and Price.');
+                      return;
+                    }
+                    const { error } = await supabase.from('hotels').insert({
+                      name: newProperty.name,
+                      room_type: newProperty.room_type || 'Standard Room',
+                      price_per_night: parseFloat(newProperty.price_per_night) || 0,
+                      address: newProperty.address || '',
+                      facilities: newProperty.facilities,
+                      images: newProperty.images || '',
+                    });
+                    if (error) {
+                      alert('❌ Error adding property: ' + error.message);
+                    } else {
+                      alert('✅ Property added successfully! It will now appear in the Auto-Suggest dropdown.');
+                      setIsAddPropertyOpen(false);
+                      setNewProperty({ name: '', room_type: '', price_per_night: '', address: '', facilities: 'Chairs, TV, AC, Bed, Towel, Free WiFi', images: '' });
+                      fetchHotels();
+                    }
+                  }}
+                  className="flex-1 px-4 py-2 rounded-xl bg-[#E11D48] text-white font-bold hover:bg-[#BE123C] transition"
+                >
+                  Add Property
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
