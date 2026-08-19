@@ -182,7 +182,7 @@ export default function App() {
           {/* LEFT COLUMN: BRANDING */}
           <div className="flex flex-col gap-5">
             {/* Logo */}
-            <div className="w-48">
+            <div className="w-48 mx-auto md:mx-0">
               <img src="/reddoorzuki-logo.png" alt="RedDoorzuki PH Logo" className="w-full h-auto object-contain" />
             </div>
 
