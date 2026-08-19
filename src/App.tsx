@@ -278,9 +278,9 @@ export default function App() {
       <section className="py-8 bg-white border-b border-[#E2E8F0]">
         <div className="max-w-6xl mx-auto px-4">
           <h3 className="text-sm font-bold text-[#64748B] uppercase tracking-wider text-center mb-6">Featured Hotels</h3>
-          <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 max-w-xl md:max-w-4xl mx-auto">
             {['reddoorz-logo', 'sans-hotel', 'urbanview-hotel', 'sunerra-hotels', 'koolkost'].map((logo, i) => (
-              <div key={i} className="bg-[#F8FAFC] px-4 py-3 md:px-6 rounded-xl border border-[#E2E8F0] hover:border-[#E11D48] transition">
+              <div key={i} className="bg-[#F8FAFC] px-4 py-4 md:px-6 rounded-xl border border-[#E2E8F0] hover:border-[#E11D48] transition flex items-center justify-center">
                 <img src={`https://pub-520fe91b713446edb95e193ae19ef26f.r2.dev/images/${logo}.png`} alt={logo} className="h-6 md:h-8 object-contain" />
               </div>
             ))}
