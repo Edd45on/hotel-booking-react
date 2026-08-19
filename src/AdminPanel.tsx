@@ -23,7 +23,7 @@ export default function AdminPanel() {
       customNonRefundable: 'Non-refundable',
       customNoBreakfast: 'No breakfast',
       customBestFor: ,
-      facilities: 'Chairs, TV, AC, Bed, Towel, Swimming Pool, No Smoking, Car Parking, No Free Toiletries, Free Toiletries, Front Desk, Lift, Meeting room, Playground, Kitchen, 24/7 Security, CCTV,  Free WiFi',
+      facilities: 'Chairs, TV, AC, Bed, Towel, Swimming Pool, No Smoking, Car Parking, No Free Toiletries, Free Toiletries, Front Desk, Lift, Meeting room, Playground, Kitchen, 24/7 Security, CCTV, Free WiFi',
       imageUrls: [] as string[],
       showSuggestions: false,
     },
@@ -1007,7 +1007,7 @@ export default function AdminPanel() {
                     } else {
                       alert('✅ Property added successfully! It will now appear in the Auto-Suggest dropdown.');
                       setIsAddPropertyOpen(false);
-                      setNewProperty({ name: '', room_type: '', price_per_night: '', address: '', facilities: 'Chairs, TV, AC, Bed, Towel, Swimming Pool, No Smoking, Car Parking, No Free Toiletries, Free Toiletries, Front Desk, Lift, Meeting room, Playground, Kitchen, 24/7 Security, CCTV,  Free WiFi', images: '' });
+                      setNewProperty({ name: '', room_type: '', price_per_night: '', address: '', facilities: 'Chairs, TV, AC, Bed, Towel, Swimming Pool, No Smoking, Car Parking, No Free Toiletries, Free Toiletries, Front Desk, Lift, Meeting room, Playground, Kitchen, 24/7 Security, CCTV, Free WiFi', images: '' });
                       fetchHotels();
                     }
                   }}
