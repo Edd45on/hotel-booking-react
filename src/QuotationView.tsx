@@ -6,8 +6,8 @@ import toast from 'react-hot-toast';
 export default function QuotationView() {
   const [quotations, setQuotations] = useState<any[]>([]);
   const [inquiry, setInquiry] = useState<any>(null);
-  // 🟢 CHANGED: We are now tracking a boolean, not a string ID
-  const [isFacilitiesOpen, setIsFacilitiesOpen] = useState(false);
+  // 🟢 FIX: Use a Record to track open/closed state per card ID
+  const [openFacilities, setOpenFacilities] = useState<Record<string, boolean>>({});
   const [activeImages, setActiveImages] = useState<Record<string, string>>({});
   
   const [selectedQuotationId, setSelectedQuotationId] = useState<string | null>(null);
@@ -269,6 +269,8 @@ export default function QuotationView() {
             const imageArray = q.image_url ? q.image_url.split(',').map((url: string) => url.trim()) : [];
             const currentActiveImage = activeImages[q.id] || (imageArray.length > 0 ? imageArray[0] : 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=600&q=80');
             const totalPrice = q.new_price * nights;
+            // 🟢 FIX: Check if THIS specific card is open
+            const isFacilitiesOpen = openFacilities[q.id] || false;
 
             const renderButton = () => {
               const isAnyCardChosen = quotations.some(item => item.is_customer_chosen === true);
@@ -461,10 +463,10 @@ export default function QuotationView() {
                   </div>
                 </div>
 
-                {/* 🟢 ROOM AMENITIES (UPDATED TOGGLE LOGIC) */}
+                {/* 🟢 FIXED: Toggle using card-specific state */}
                 <div className="mt-4">
                   <button 
-                    onClick={() => setIsFacilitiesOpen(!isFacilitiesOpen)}
+                    onClick={() => setOpenFacilities(prev => ({ ...prev, [q.id]: !prev[q.id] }))}
                     className="w-full flex items-center justify-between gap-2 px-4 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl hover:bg-[#F1F5F9] transition text-sm font-medium text-[#E11D48]"
                   >
                     <span>{isFacilitiesOpen ? 'HIDE' : 'VIEW'} Facilities</span>
@@ -585,7 +587,7 @@ export default function QuotationView() {
         </div>
       </div>
 
-      <div className="fixed inset-0 bg-black/25 flex items-center justify-center z-50 p-4">
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
         {selectedQuotationId && (
           <div className="bg-white max-w-md w-full rounded-2xl p-6 shadow-2xl relative">
             <button 
