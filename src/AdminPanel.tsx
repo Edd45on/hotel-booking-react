@@ -917,7 +917,7 @@ export default function AdminPanel() {
       {/* DETAILS MODAL */}
       {detailsInquiry && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white max-w-3xl w-full max-h-[95vh] md:max-h-[90vh] rounded-3xl shadow-2xl p-6 relative flex flex-col overscroll-contain">
+          <div className="bg-white max-w-3xl w-full max-h-[95dvh] md:max-h-[90vh] rounded-3xl shadow-2xl p-6 relative flex flex-col overscroll-contain">
             <button onClick={() => setDetailsInquiry(null)} className="absolute top-4 right-4 text-[#475569] hover:text-[#0F172A] transition"><X size={24} /></button>
             <h2 className="text-2xl font-bold text-[#0F172A] mb-1">Booking Details</h2>
             <p className="text-sm text-[#64748B] mb-4">Review the customer's request.</p>
