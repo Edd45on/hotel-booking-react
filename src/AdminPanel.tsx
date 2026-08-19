@@ -895,14 +895,90 @@ export default function AdminPanel() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#64748B] mb-1">Image URLs (Comma separated)</label>
-                <input 
-                  type="text" 
-                  value={newProperty.images}
-                  onChange={(e) => setNewProperty({ ...newProperty, images: e.target.value })}
-                  className="w-full p-2 border border-[#E2E8F0] rounded-lg bg-white text-sm focus:outline-none focus:border-[#E11D48]"
-                  placeholder="https://url1.jpg, https://url2.jpg"
-                />
+                <label className="block text-xs font-semibold text-[#64748B] mb-1">Image Upload</label>
+                <div 
+                  className="w-full p-4 border-2 border-dashed border-[#E2E8F0] rounded-lg bg-[#F8FAFC] hover:bg-white hover:border-[#E11D48] transition cursor-pointer text-center text-xs text-[#64748B]"
+                  onClick={() => document.getElementById('add-property-file-input')?.click()}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={async (e) => {
+                    e.preventDefault();
+                    const files = Array.from(e.dataTransfer.files);
+                    if (!files.length) return;
+                    
+                    let newImages = newProperty.images ? newProperty.images.split(',').map(f => f.trim()) : [];
+                    for (const file of files) {
+                      const formData = new FormData();
+                      formData.append('file', file);
+
+                      try {
+                        const res = await fetch('/api/upload-image', {
+                          method: 'POST',
+                          body: formData,
+                        });
+                        const data = await res.json();
+                        if (data.url) {
+                          newImages.push(data.url);
+                        }
+                      } catch (err) {
+                        alert('Upload failed. Please try again.');
+                      }
+                    }
+                    setNewProperty({ ...newProperty, images: newImages.join(',') });
+                  }}
+                >
+                  <p>Drag & drop images here, or click to select</p>
+                  <p className="text-[10px] text-[#94a3b8] mt-1">PNG, JPG, WEBP supported</p>
+                  
+                  <input 
+                    type="file" 
+                    id="add-property-file-input" 
+                    className="hidden" 
+                    multiple
+                    accept="image/png,image/jpeg,image/webp"
+                    onChange={async (e) => {
+                      const files = Array.from(e.target.files || []);
+                      if (!files.length) return;
+
+                      let newImages = newProperty.images ? newProperty.images.split(',').map(f => f.trim()) : [];
+                      for (const file of files) {
+                        const formData = new FormData();
+                        formData.append('file', file);
+
+                        try {
+                          const res = await fetch('/api/upload-image', {
+                            method: 'POST',
+                            body: formData,
+                          });
+                          const data = await res.json();
+                          if (data.url) {
+                            newImages.push(data.url);
+                          }
+                        } catch (err) {
+                          alert('Upload failed. Please try again.');
+                        }
+                      }
+                      setNewProperty({ ...newProperty, images: newImages.join(',') });
+                    }}
+                  />
+                </div>
+
+                {/* 🟢 IMAGE PREVIEW */}
+                {newProperty.images && newProperty.images.trim() !== '' && (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {newProperty.images.split(',').map((url, i) => (
+                      <div key={i} className="relative w-16 h-16 rounded-lg overflow-hidden border border-[#E2E8F0] bg-slate-100 group">
+                        <img 
+                          src={url.trim()} 
+                          alt={`Uploaded ${i+1}`} 
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="flex gap-2 mt-4">
