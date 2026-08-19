@@ -275,7 +275,20 @@ export default function QuotationView() {
             const renderButton = () => {
               const isAnyCardChosen = quotations.some(item => item.is_customer_chosen === true);
               
-              if (q.is_admin_confirmed) {
+              // 🟢 FINAL STATE: RedSeller confirmed, email sent
+              if (q.is_redseller_booked) {
+                return (
+                  <div className="w-full bg-green-100 border border-green-300 text-green-700 py-3 rounded-xl text-center mt-2 flex flex-col items-center justify-center gap-2">
+                    <span className="font-bold text-lg">✅ BOOKING CONFIRMED</span>
+                    <span className="text-xs text-green-600 font-medium">
+                      Confirmation details have been sent to your email.
+                    </span>
+                  </div>
+                );
+              } 
+              
+              // 🟡 Admin confirmed availability, waiting for RedSeller booking
+              else if (q.is_admin_confirmed && !q.is_redseller_booked) {
                 return (
                   <div className="w-full bg-yellow-50 border border-yellow-200 text-yellow-800 py-3 rounded-xl text-center mt-2 flex flex-col items-center justify-center gap-2">
                     <span className="font-bold text-lg">⏳ OPTION SELECTED</span>
@@ -288,6 +301,8 @@ export default function QuotationView() {
                   </div>
                 );
               } 
+              
+              // ✅ Customer chosen, waiting for Admin
               else if (q.is_customer_chosen && !q.is_admin_confirmed) {
                 return (
                   <div className="w-full bg-yellow-50 border border-yellow-200 text-yellow-800 py-3 rounded-xl text-center mt-2 flex flex-col items-center justify-center gap-2">
@@ -338,6 +353,7 @@ export default function QuotationView() {
                   </div>
                 );
               } 
+              
               else if (isAnyCardChosen && !q.is_customer_chosen) {
                 return (
                   <div className="w-full bg-[#E2E8F0] text-[#94a3b8] py-3 rounded-xl font-bold text-center mt-2 cursor-not-allowed">

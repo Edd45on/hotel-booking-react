@@ -756,6 +756,27 @@ export default function AdminPanel() {
                     >
                       Confirm Booking & Notify Client
                     </button>
+
+                    {/* 🟢 NEW BUTTON: Finalize Booking */}
+                    <button 
+                      onClick={async () => {
+                        const { error } = await supabase
+                          .from('quotations')
+                          .update({ is_redseller_booked: true })
+                          .eq('id', chosen.id);
+
+                        if (error) {
+                          alert('❌ Error finalizing booking: ' + error.message);
+                        } else {
+                          alert('✅ Booking finalized! RedSeller email sent. The client will now see the final green "Thank you" state.');
+                          setDetailsInquiry(null);
+                          fetchInquiries();
+                        }
+                      }}
+                      className="w-full bg-[#0F172A] text-white py-2 rounded-xl font-bold hover:bg-[#1E293B] transition"
+                    >
+                      Finalize Booking (RedSeller App Done)
+                    </button>
                   </div>
                 </div>
               );
