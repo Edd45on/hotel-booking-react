@@ -461,17 +461,24 @@ export default function QuotationView() {
                   </div>
                 </div>
 
-                {/* ROOM AMENITIES */}
+                {/* 🟢 ROOM AMENITIES (RESPONSIVE DROPDOWN) */}
                 <div className="mt-4">
                   <button 
                     onClick={() => setOpenFacilitiesId(isOpen ? null : q.id)}
-                    className="flex items-center gap-1 text-sm font-medium text-[#E11D48] hover:underline transition mb-2"
+                    className="w-full flex items-center justify-between gap-2 px-4 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl hover:bg-[#F1F5F9] transition text-sm font-medium text-[#E11D48]"
                   >
-                    {isOpen ? 'HIDE' : 'VIEW'} Facilities
-                    {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    <span>{isOpen ? 'HIDE' : 'VIEW'} Facilities</span>
+                    <span className="flex-shrink-0 text-[#E11D48]">
+                      {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    </span>
                   </button>
                   
-                  {isOpen && (
+                  {/* 🟢 EXPANDABLE CONTENT */}
+                  <div 
+                    className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                      isOpen ? 'max-h-[600px] opacity-100 mt-3' : 'max-h-0 opacity-0'
+                    }`}
+                  >
                     <div className="bg-[#F8FAFC] rounded-xl p-4 border border-[#E2E8F0]">
                       <p className="text-xs font-bold uppercase tracking-wider text-[#64748B] mb-3">Room Amenities</p>
                       {(() => {
@@ -527,10 +534,10 @@ export default function QuotationView() {
                         );
                       })()}
                     </div>
-                  )}
+                  </div>
                 </div>
 
-                {/* PROPERTY POLICIES */}
+                {/* 🟢 PROPERTY POLICIES (Always visible) */}
                 <div className="mt-2 text-sm text-[#475569] bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4">
                   <p className="text-xs font-bold uppercase tracking-wider text-[#64748B] mb-1">Property Policies</p>
                   <div className="space-y-1 text-xs">
