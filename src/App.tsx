@@ -9,7 +9,15 @@ import {
   Sun,
   Calendar,
   MoreHorizontal,
-  Home
+  Home,
+  Tag,
+  Bed,
+  UserCircle,
+  MessageCircle,
+  ShieldCheck,
+  MapPin,
+  ThumbsUp,
+  Plane as PlaneIcon,
 } from 'lucide-react';
 
 import HowItWorks from './HowItWorks';
@@ -144,32 +152,132 @@ export default function App() {
     }
   };
 
+  // 🟢 SVG SOCIAL ICONS (No dependency needed)
+  const FacebookSvg = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+    </svg>
+  );
+  const InstagramSvg = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+    </svg>
+  );
+  const YoutubeSvg = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2.5 12a1.5 1.5 0 0 1 1.5-1.5h16a1.5 1.5 0 0 1 1.5 1.5v6a1.5 1.5 0 0 1-1.5 1.5H4a1.5 1.5 0 0 1-1.5-1.5v-6z" />
+      <path d="M10 7l6 3-6 3V7z" />
+    </svg>
+  );
+
   return (
     <main className="min-h-screen bg-[#F8FAFC] font-sans">
 
-      {/* HERO */}
-      <section className="bg-[#E11D48] text-white py-12 md:py-24 px-4">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-          <div>
-            <h1 
-              className="text-4xl md:text-6xl font-black leading-tight mb-6 cursor-pointer select-none"
-              onClick={handleSecretTap}
-            >
-              Find Hotels That Fit Your Trip
-            </h1>
-            <p className="text-lg md:text-xl text-white/80 mb-8 max-w-lg">Tell us where you're going, when you're traveling, your budget, and what matters to you. We'll find suitable hotel accros the Philippines</p>
-            <a href="#search" className="inline-block bg-white text-[#E11D48] px-8 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition w-full md:w-auto text-center">FIND MY HOTEL</a>
+      {/* 🟢 CLEAN & SIMPLE HERO */}
+      <section className="bg-white text-[#0F172A] py-12 md:py-20 px-4 border-b border-[#E2E8F0]">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          
+          {/* LEFT COLUMN: BRANDING */}
+          <div className="flex flex-col gap-5">
+            {/* Logo */}
+            <div className="w-48">
+              <img src="/reddoorzuki-logo.png" alt="RedDoorzuki PH Logo" className="w-full h-auto object-contain" />
+            </div>
+
+            {/* Headlines */}
+            <div className="space-y-1">
+              <h2 className="text-xl md:text-2xl font-semibold text-[#64748B] uppercase tracking-wider">
+                Hotel Booking Made Easy
+              </h2>
+              <p className="text-4xl md:text-6xl font-black text-[#0F172A] leading-tight">
+                ACROSS THE<br />
+                PHILIPPINES
+              </p>
+            </div>
+
+            {/* Benefit Icons Strip (White with Red Icons) */}
+            <div className="flex flex-wrap gap-6 md:gap-10 mt-2">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-red-50 rounded-full">
+                  <Tag size={24} className="text-[#E11D48]" />
+                </div>
+                <div>
+                  <p className="font-bold text-sm text-[#0F172A]">SMART RATES</p>
+                  <p className="text-[10px] text-[#64748B]">Best value for every trip</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-red-50 rounded-full">
+                  <Bed size={24} className="text-[#E11D48]" />
+                </div>
+                <div>
+                  <p className="font-bold text-sm text-[#0F172A]">GREAT STAYS</p>
+                  <p className="text-[10px] text-[#64748B]">Quality hotels you can trust</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-red-50 rounded-full">
+                  <UserCircle size={24} className="text-[#E11D48]" />
+                </div>
+                <div>
+                  <p className="font-bold text-sm text-[#0F172A]">PERSONAL ASSISTANCE</p>
+                  <p className="text-[10px] text-[#64748B]">We're here to help you</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Red CTA Bar */}
+            <div className="mt-2 bg-[#E11D48] text-white p-5 md:p-6 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4 shadow-lg">
+              <div className="flex items-center gap-3">
+                <div className="bg-white/20 p-2 rounded-full">
+                  <MessageCircle size={24} className="text-white" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Tell us your destination & dates</p>
+                  <p className="text-xs font-bold uppercase tracking-wider">We'll find your best options!</p>
+                </div>
+              </div>
+              <a 
+                href="#search" 
+                className="bg-white text-[#E11D48] px-8 py-2.5 rounded-full font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 whitespace-nowrap"
+              >
+                Find My Hotel →
+              </a>
+            </div>
           </div>
-          <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/20 mt-4 lg:mt-0">
-            <img src="https://pub-520fe91b713446edb95e193ae19ef26f.r2.dev/images/hotel-booking-assistant-philippines.png" alt="Hotel" className="w-full h-64 md:h-96 object-cover" />
+
+          {/* RIGHT COLUMN: IMAGE + BADGE */}
+          <div className="relative flex justify-center lg:justify-end mt-8 md:mt-0">
+            {/* Room Image */}
+            <div className="w-full max-w-xl rounded-2xl overflow-hidden shadow-xl border border-[#E2E8F0]">
+              <img 
+                src="/hero-room.png" 
+                alt="Hotel Room Preview" 
+                className="w-full h-auto object-cover aspect-[4/3]"
+              />
+            </div>
+
+            {/* Floating Trusted Partner Badge */}
+            <div className="absolute -right-2 md:-right-6 top-1/2 -translate-y-1/2 bg-white border-2 border-[#E11D48] rounded-full w-28 h-28 md:w-32 md:h-32 flex flex-col items-center justify-center shadow-xl text-center p-2 z-10">
+              <div className="flex flex-col items-center">
+                <div className="flex gap-1 text-[#E11D48] text-[10px]"><span>★</span><span>★</span><span>★</span></div>
+                <p className="text-[10px] font-bold text-[#0F172A] leading-tight mt-1">TRUSTED</p>
+                <p className="text-[10px] font-bold text-[#E11D48] leading-tight">REDDOORZ</p>
+                <p className="text-[10px] font-bold text-[#0F172A] leading-tight">PARTNER</p>
+                <div className="flex gap-1 text-[#E11D48] text-[10px] mt-1"><span>★</span><span>★</span><span>★</span></div>
+              </div>
+            </div>
           </div>
+
         </div>
       </section>
 
       {/* PARTNER HOTELS */}
       <section className="py-8 bg-white border-b border-[#E2E8F0]">
         <div className="max-w-6xl mx-auto px-4">
-          <h3 className="text-sm font-bold text-[#64748B] uppercase tracking-wider text-center mb-6">HOTEL PARTNERS</h3>
+          <h3 className="text-sm font-bold text-[#64748B] uppercase tracking-wider text-center mb-6">Featured Hotels</h3>
           <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6">
             {['reddoorz-logo', 'sans-hotel', 'urbanview-hotel', 'sunerra-hotels', 'koolkost'].map((logo, i) => (
               <div key={i} className="bg-[#F8FAFC] px-4 py-3 md:px-6 rounded-xl border border-[#E2E8F0] hover:border-[#E11D48] transition">
@@ -185,8 +293,8 @@ export default function App() {
       {/* POPULAR DESTINATIONS */}
       <section className="py-20 bg-[#F8FAFC]">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-4xl font-bold text-[#0F172A] text-center mb-4">Where are you going?</h2>
-          <p className="text-center text-[#475569] mb-12">Choose a destination or tell us where you need to stay.</p>
+          <h2 className="text-4xl font-bold text-[#0F172A] text-center mb-4">Where to next?</h2>
+          <p className="text-center text-[#475569] mb-12">Pick a destination to get started</p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {destinationsR2.map((city) => (
               <a
@@ -234,13 +342,13 @@ export default function App() {
         </div>
       </section>
 
-      {/* 🟢 TAILWIND-FIRST FORM (No inline CSS styles) */}
+      {/* DATE PICKER FORM */}
       <section id="search" className="py-12 md:py-20 bg-[#F8FAFC] px-4">
         <div className="max-w-2xl mx-auto">
           <div className="bg-white p-6 md:p-8 rounded-3xl shadow-lg border border-[#E2E8F0]">
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold text-[#0F172A]">Find your perfect stay</h2>
-              <p className="text-[#475569] mt-2">Tell us your trip details and preferences. We'll find suitable options for you.</p>
+              <p className="text-[#475569] mt-2">Fill in the details to get started</p>
             </div>
 
             <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
@@ -369,7 +477,7 @@ export default function App() {
       {/* FINAL CTA */}
       <section className="bg-[#0F172A] text-white py-20 px-4">
         <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-4xl font-bold mb-4">Ready to Find the Right Hotel?</h2>
+          <h2 className="text-4xl font-bold mb-4">Ready to find your hotel?</h2>
           <p className="text-[#94a3b8] mb-8">Tell us your destination, dates and budget.</p>
           <a href="#search" className="inline-block bg-[#E11D48] text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:bg-[#BE123C] transition">
             FIND MY HOTEL
@@ -384,7 +492,43 @@ export default function App() {
           </a>
         </div>
       </section>
-
+            {/* 🟢 SOCIAL MEDIA FOOTER */}
+      <section className="bg-[#F8FAFC] border-t border-[#E2E8F0] py-6 px-4">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-[#64748B]">
+            © {new Date().getFullYear()} RedDoorzuki PH. All rights reserved.
+          </p>
+          <div className="flex items-center gap-4">
+                        <a 
+              href="https://www.facebook.com/profile.php?id=61593648383338" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="w-10 h-10 rounded-full bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-center hover:bg-[#E11D48] hover:border-[#E11D48] transition group"
+              aria-label="Facebook"
+            >
+              <FacebookSvg className="w-5 h-5 text-[#64748B] group-hover:text-white transition" />
+            </a>
+            <a 
+              href="https://instagram.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="w-10 h-10 rounded-full bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-center hover:bg-[#E11D48] hover:border-[#E11D48] transition group"
+              aria-label="Instagram"
+            >
+              <InstagramSvg className="w-5 h-5 text-[#64748B] group-hover:text-white transition" />
+            </a>
+            <a 
+              href="https://youtube.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="w-10 h-10 rounded-full bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-center hover:bg-[#E11D48] hover:border-[#E11D48] transition group"
+              aria-label="YouTube"
+            >
+              <YoutubeSvg className="w-5 h-5 text-[#64748B] group-hover:text-white transition" />
+            </a>
+          </div>
+        </div>
+      </section>
     </main>
   );
 }
