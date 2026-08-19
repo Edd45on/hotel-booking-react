@@ -182,7 +182,7 @@ export default function App() {
           {/* LEFT COLUMN: BRANDING */}
           <div className="flex flex-col gap-5">
             {/* Logo */}
-            <div className="w-48 mx-auto md:mx-0">
+            <div className="w-48 mx-auto md:mx-0 mb-2">
               <img src="/reddoorzuki-logo.png" alt="RedDoorzuki PH Logo" className="w-full h-auto object-contain" />
             </div>
 
@@ -191,7 +191,7 @@ export default function App() {
               <h2 className="text-xl md:text-2xl font-semibold text-[#64748B] uppercase tracking-wider">
                 Hotel Booking Made Easy
               </h2>
-              <p className="text-4xl md:text-6xl font-black text-[#0F172A] leading-tight">
+              <p className="text-4xl md:text-6xl font-black text-[#0F172A] leading-[1.1] md:leading-tight">
                 ACROSS THE<br />
                 PHILIPPINES
               </p>
@@ -200,7 +200,7 @@ export default function App() {
             {/* Benefit Icons Strip (White with Red Icons) */}
             <div className="flex flex-wrap gap-6 md:gap-10 mt-2">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-red-50 rounded-full">
+                <div className="p-2 bg-red-50 rounded-full shadow-sm">
                   <Tag size={24} className="text-[#E11D48]" />
                 </div>
                 <div>
@@ -241,7 +241,7 @@ export default function App() {
               </div>
               <a 
                 href="#search" 
-                className="bg-white text-[#E11D48] px-8 py-2.5 rounded-full font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 whitespace-nowrap"
+                className="bg-white text-[#E11D48] px-8 py-3 rounded-full font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 whitespace-nowrap"
               >
                 Find My Hotel →
               </a>
