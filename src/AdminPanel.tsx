@@ -581,9 +581,16 @@ export default function AdminPanel() {
                       
                       {/* Room Facilities */}
                       <div className="mb-4">
+                      {/* Room Facilities */}
+                      <div className="mb-4">
                         <p className="text-xs font-semibold text-[#0F172A] mb-2">Room Facilities</p>
                         <div className="grid grid-cols-2 gap-2">
-                          {['Chairs', 'Wardrobe', 'TV', 'AC', 'Iron', 'Bed', 'Mirror'].map((item) => (
+                          {[
+                            'Chairs', 'Wardrobe', 'TV', 'AC', 'Iron', 'Bed', 'Mirror',
+                            'Swimming Pool', 'No Smoking', 'Car Parking', 'No Free Toiletries',
+                            'Free Toiletries', 'Front Desk', 'Lift', 'Meeting room', 
+                            'Playground', 'Kitchen', '24/7 Security', 'CCTV'
+                          ].map((item) => (
                             <label key={item} className="flex items-center gap-2 text-xs text-[#475569] cursor-pointer">
                               <input 
                                 type="checkbox"
@@ -637,7 +644,7 @@ export default function AdminPanel() {
                       <div>
                         <p className="text-xs font-semibold text-[#0F172A] mb-2">Others</p>
                         <div className="grid grid-cols-2 gap-2">
-                          {['Phone', 'Free WiFi'].map((item) => (
+                          {['Phone', 'Free WiFi', 'No Smoking', 'Car Parking', 'No Free Toiletries', 'Free Toiletries'].map((item) => (
                             <label key={item} className="flex items-center gap-2 text-xs text-[#475569] cursor-pointer">
                               <input 
                                 type="checkbox"
