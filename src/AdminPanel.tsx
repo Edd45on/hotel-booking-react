@@ -999,28 +999,28 @@ export default function AdminPanel() {
       Confirm Booking & Notify Client
     </button>
     
-    {/* 🟢 Step 3: Admin finalizes booking (RedSeller App Done) */}
-    <button 
-      onClick={async () => {
-        const { error } = await supabase
-          .from('quotations')
-          .update({ is_redseller_booked: true })
-          .eq('id', chosen.id);
+				{/* 🟢 Step 3: Admin finalizes booking (RedSeller App Done) */}
+                    <button 
+                      onClick={async () => {
+                        const { error } = await supabase
+                          .from('quotations')
+                          .update({ is_redseller_booked: true })
+                          .eq('id', chosen.id);
 
-        if (error) {
-          alert('❌ Error finalizing booking: ' + error.message);
-        } else {
-          alert('✅ Booking finalized! The client will now see the full Green "Booking Confirmed" state.');
-          setDetailsInquiry(null);
-          fetchInquiries();
-        }
-      }}
-      className="w-full bg-[#0F172A] text-white py-2 rounded-xl font-bold hover:bg-[#1E293B] transition"
-    >
-      Finalize Booking (RedSeller App Done)
-    </button>
-  </div>
-</div>
+                        if (error) {
+                          alert('❌ Error finalizing booking: ' + error.message);
+                        } else {
+                          alert('✅ Booking finalized! The client will now see the full Green "Booking Confirmed" state.');
+                          setDetailsInquiry(null);
+                          fetchInquiries();
+                        }
+                      }}
+                      className="w-full bg-[#0F172A] text-white py-2 rounded-xl font-bold hover:bg-[#1E293B] transition"
+                    >
+                      Finalize Booking (RedSeller App Done)
+                    </button>
+                  </div>
+                </div>
               );
             })()}
           </div>
