@@ -956,49 +956,45 @@ export default function AdminPanel() {
                     </div>
                   </div>
 
-<div className="flex flex-col gap-3 mt-3">
-  {/* 🟢 COPY BUTTON (Smaller and centered) */}
-  <button 
-    onClick={() => {
-      navigator.clipboard.writeText(
-        `Customer: ${detailsInquiry.first_name || 'N/A'} ${detailsInquiry.last_name || 'N/A'}\n` +
-        `Email: ${detailsInquiry.email || 'N/A'}\n` +
-        `Phone: ${detailsInquiry.phone || 'N/A'}\n` +
-        `Destination: ${detailsInquiry.destination}\n` +
-        `Rooms: ${detailsInquiry.rooms}\n` +
-        `Hotel: ${chosen.hotel_name}\n` +
-        `Room Type: ${chosen.room_type || 'Standard Room'}\n` +
-        `Price: ₱${chosen.new_price}/night`
-      );
-      alert('📋 Full booking details copied to clipboard!');
-    }}
-    className="w-full md:w-auto bg-white border border-green-200 text-green-700 px-4 py-2 rounded-xl font-medium hover:bg-green-50 transition text-sm mx-auto"
-  >
-    📋 Copy to Clipboard for RedSeller
-  </button>
+                 <div className="flex flex-col gap-2 mt-3">
+                    <button 
+                      onClick={() => {
+                        navigator.clipboard.writeText(
+                          `Customer: ${detailsInquiry.first_name || 'N/A'} ${detailsInquiry.last_name || 'N/A'}\n` +
+                          `Email: ${detailsInquiry.email || 'N/A'}\n` +
+                          `Phone: ${detailsInquiry.phone || 'N/A'}\n` +
+                          `Destination: ${detailsInquiry.destination}\n` +
+                          `Rooms: ${detailsInquiry.rooms}\n` +
+                          `Hotel: ${chosen.hotel_name}\n` +
+                          `Room Type: ${chosen.room_type || 'Standard Room'}\n` +
+                          `Price: ₱${chosen.new_price}/night`
+                        );
+                        alert('📋 Full booking details copied to clipboard!');
+                      }}
+                      className="w-full bg-white border border-green-200 text-green-700 py-2 rounded-xl font-semibold hover:bg-green-50 transition"
+                    >
+                      Copy to Clipboard for RedSeller
+                    </button>
 
-  {/* 🟢 ACTION BUTTONS (Side-by-side on desktop) */}
-  <div className="flex flex-col md:flex-row gap-2 w-full">
-    <button 
-      onClick={async () => {
-        const { error } = await supabase
-          .from('quotations')
-          .update({ is_admin_confirmed: true })
-          .eq('id', chosen.id);
+                    <button 
+                      onClick={async () => {
+                        const { error } = await supabase
+                          .from('quotations')
+                          .update({ is_admin_confirmed: true })
+                          .eq('id', chosen.id);
 
-        if (error) {
-          alert('❌ Error confirming booking: ' + error.message);
-        } else {
-          alert('✅ Booking marked as confirmed! The client will now see the Green confirmation state.');
-          setDetailsInquiry(null);
-          fetchInquiries();
-        }
-      }}
-      className="flex-1 bg-[#E11D48] text-white py-2.5 rounded-xl font-bold hover:bg-[#BE123C] transition"
-    >
-      Confirm Booking & Notify Client
-    </button>
-    
+                        if (error) {
+                          alert('❌ Error confirming booking: ' + error.message);
+                        } else {
+                          alert('✅ Booking marked as confirmed! The client will now see the Green confirmation state.');
+                          setDetailsInquiry(null);
+                          fetchInquiries();
+                        }
+                      }}
+                      className="w-full bg-[#E11D48] text-white py-2 rounded-xl font-bold hover:bg-[#BE123C] transition"
+                    >
+                      Confirm Booking & Notify Client
+                    </button>
 				{/* 🟢 Step 3: Admin finalizes booking (RedSeller App Done) */}
                     <button 
                       onClick={async () => {
