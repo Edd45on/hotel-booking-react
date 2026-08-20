@@ -197,11 +197,13 @@ export default function QuotationView() {
   return (
     <main className="min-h-screen bg-[#F8FAFC] py-12 px-4 md:py-20">
       <div className="max-w-4xl mx-auto">
-	      <img 
+	    <div className="flex justify-center mb-4">
+    <img 
       src="/reddoorzuki-logo.png" 
       alt="Company Logo" 
       className="h-16 w-auto object-contain"
     />
+  </div>
         
         {/* HEADER */}
         <div className="text-center mb-12 border-b border-[#E2E8F0] pb-10">
