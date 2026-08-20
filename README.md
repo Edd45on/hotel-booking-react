@@ -1,32 +1,38 @@
-# React + TypeScript + Vite
+# RedDoorzuki PH - Hotel Booking Assistant
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A full-stack booking platform built with React, Vite, and Supabase. 
+Designed to connect customers with suitable hotels in the Philippines through a personalized assistant experience.
 
-Currently, two official plugins are available:
+## 🚀 Live Demo
+Visit the live application: [reddoorzuki-ph.vercel.app]([https://reddoorzuki-ph.vercel.app](https://reddoorzuki-ph-edd-mo.vercel.app/))
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## ✨ Features
 
-## React Compiler
+- **Customer Form:** Users submit their destination, dates, and budget to request hotel options.
+- **Admin Dashboard:** Protected dashboard to manage inquiries, create custom quotations, and track bookings.
+- **Draft Editor:** Easily generate 3 distinct hotel options with dynamic pricing, multi-image uploads, and customizable amenities.
+- **Customer Quotation Page:** A beautifully designed mobile-responsive page where customers compare up to 3 hotels, select an option, and receive a real-time booking status.
+- **RedSeller Workflow:** Admin handoff tools including clipboard copying, availability checking, and booking finalization.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🛠️ Tech Stack
+- **Frontend:** React + Vite + Tailwind CSS
+- **Backend:** Vercel Serverless API
+- **Database:** Supabase (PostgreSQL)
+- **Storage:** Cloudflare R2 (Image uploads)
 
-## Expanding the Oxlint configuration
+## 📁 Project Structure
+hotel-booking-react/
+├── api/ # Vercel serverless functions
+├── src/
+│ ├── components/ # Reusable React components (Hero, AdminPanel, etc.)
+│ ├── layouts/ # App layout
+│ ├── pages/ # Main entry points
+│ └── utils/ # Supabase client
+├── public/ # Static assets
+└── ...
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
-
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## 📦 Installation & Setup
+1. Clone the repository
+2. Run `npm install` to install dependencies
+3. Set up your `.env` file with Supabase keys
+4. Run `npm run dev` to start the local server
