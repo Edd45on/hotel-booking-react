@@ -1021,7 +1021,7 @@ export default function AdminPanel() {
                     </div>
                   </div>
           </div>
-        </div>
+
       )}
     </div>
   );
