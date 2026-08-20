@@ -956,8 +956,7 @@ export default function AdminPanel() {
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-3 mt-3">
-                    {/* 🟢 COPY BUTTON (Smaller and centered) */}
+                  <div className="flex flex-col gap-2 mt-3">
                     <button 
                       onClick={() => {
                         navigator.clipboard.writeText(
@@ -972,56 +971,58 @@ export default function AdminPanel() {
                         );
                         alert('📋 Full booking details copied to clipboard!');
                       }}
-                      className="w-full md:w-auto bg-white border border-green-200 text-green-700 px-4 py-2 rounded-xl font-medium hover:bg-green-50 transition text-sm mx-auto"
+                      className="w-full bg-white border border-green-200 text-green-700 py-2 rounded-xl font-semibold hover:bg-green-50 transition"
                     >
-                      📋 Copy to Clipboard for RedSeller
+                      Copy to Clipboard for RedSeller
                     </button>
 
-                    {/* 🟢 ACTION BUTTONS (Side-by-side on desktop) */}
-                    <div className="flex flex-col md:flex-row gap-2 w-full">
-                      <button 
-                        onClick={async () => {
-                          const { error } = await supabase
-                            .from('quotations')
-                            .update({ is_admin_confirmed: true })
-                            .eq('id', chosen.id);
+                    {/* 🟢 Step 2: Admin confirms availability & price */}
+                    <button 
+                      onClick={async () => {
+                        const { error } = await supabase
+                          .from('quotations')
+                          .update({ is_admin_confirmed: true })
+                          .eq('id', chosen.id);
 
-                          if (error) {
-                            alert('❌ Error confirming booking: ' + error.message);
-                          } else {
-                            alert('✅ Booking marked as confirmed! The client will now see the Green confirmation state.');
-                            setDetailsInquiry(null);
-                            fetchInquiries();
-                          }
-                        }}
-                        className="flex-1 bg-[#E11D48] text-white py-2.5 rounded-xl font-bold hover:bg-[#BE123C] transition"
-                      >
-                        Confirm Booking & Notify Client
-                      </button>
+                        if (error) {
+                          alert('❌ Error confirming booking: ' + error.message);
+                        } else {
+                          alert('✅ Booking marked as confirmed! The client will now see the Green confirmation state.');
+                          setDetailsInquiry(null);
+                          fetchInquiries();
+                        }
+                      }}
+                      className="w-full bg-[#E11D48] text-white py-2 rounded-xl font-bold hover:bg-[#BE123C] transition"
+                    >
+                      Confirm Booking & Notify Client
+                    </button>
 
-                      <button 
-                        onClick={async () => {
-                          const { error } = await supabase
-                            .from('quotations')
-                            .update({ is_redseller_booked: true })
-                            .eq('id', chosen.id);
+				{/* 🟢 Step 3: Admin finalizes booking (RedSeller App Done) */}
+                    <button 
+                      onClick={async () => {
+                        const { error } = await supabase
+                          .from('quotations')
+                          .update({ is_redseller_booked: true })
+                          .eq('id', chosen.id);
 
-                          if (error) {
-                            alert('❌ Error finalizing booking: ' + error.message);
-                          } else {
-                            alert('✅ Booking finalized! The client will now see the full Green "Booking Confirmed" state.');
-                            setDetailsInquiry(null);
-                            fetchInquiries();
-                          }
-                        }}
-                        className="flex-1 bg-[#0F172A] text-white py-2.5 rounded-xl font-bold hover:bg-[#1E293B] transition"
-                      >
-                        Finalize Booking
-                      </button>
-                    </div>
+                        if (error) {
+                          alert('❌ Error finalizing booking: ' + error.message);
+                        } else {
+                          alert('✅ Booking finalized! The client will now see the full Green "Booking Confirmed" state.');
+                          setDetailsInquiry(null);
+                          fetchInquiries();
+                        }
+                      }}
+                      className="w-full bg-[#0F172A] text-white py-2 rounded-xl font-bold hover:bg-[#1E293B] transition"
+                    >
+                      Finalize Booking (RedSeller App Done)
+                    </button>
                   </div>
+                </div>
+              );
+            })()}
           </div>
-
+        </div>
       )}
     </div>
   );
