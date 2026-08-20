@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from './utils/supabase';
 import { ChevronDown, ChevronUp, Star, X, MessageCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
+import logo from './assets/logo.png';
 
 export default function QuotationView() {
   const [quotations, setQuotations] = useState<any[]>([]);
@@ -196,6 +197,11 @@ export default function QuotationView() {
   return (
     <main className="min-h-screen bg-[#F8FAFC] py-12 px-4 md:py-20">
       <div className="max-w-4xl mx-auto">
+	      <img 
+      src="/reddoorzuki-logo.png" 
+      alt="Company Logo" 
+      className="h-16 w-auto object-contain"
+    />
         
         {/* HEADER */}
         <div className="text-center mb-12 border-b border-[#E2E8F0] pb-10">
