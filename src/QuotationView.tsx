@@ -170,52 +170,58 @@ export default function QuotationView() {
     }
   };
 
-  const getBadgeByPrice = (price: number, allPrices: number[], purpose: string) => {
-    const sorted = [...allPrices].sort((a, b) => a - b);
-    const lowestPrice = sorted[0];
-    const highestPrice = sorted[sorted.length - 1];
-    const midPrice = sorted.length > 2 ? sorted[1] : lowestPrice;
-    const priceRange = highestPrice - lowestPrice;
+const getBadgeByPrice = (rawPrice: number | string, rawAllPrices: (number | string)[], purpose: string) => {
+  // 1. Ensure all values are parsed as Numbers
+  const price = Number(rawPrice) || 0;
+  const allPrices = rawAllPrices.map(p => Number(p) || 0);
 
-    if (price === highestPrice && priceRange > 500) {
+  const sorted = [...allPrices].sort((a, b) => a - b);
+  const lowestPrice = sorted[0];
+  const highestPrice = sorted[sorted.length - 1];
+  const priceRange = highestPrice - lowestPrice;
+
+  // 2. Purpose-based checks first (if present)
+  const purposeLower = purpose?.toLowerCase() || '';
+
+  if (purposeLower.includes('airport') || purposeLower.includes('flight')) {
+    return {
+      label: 'NEAR DESTINATION',
+      color: 'bg-sky-500 text-white',
+      icon: '✈️',
+      description: 'Conveniently located near the area you requested, so you can spend less time traveling.',
+      bestFor: 'Travelers who prioritize location.'
+    };
+  }
+
+  if (purposeLower.includes('family')) {
+    return {
+      label: 'FAMILY PICK',
+      color: 'bg-emerald-500 text-white',
+      icon: '👨‍👩‍👧‍👦',
+      description: 'A practical choice designed around a more comfortable family stay.',
+      bestFor: 'Families traveling together.'
+    };
+  }
+
+  if (purposeLower.includes('business')) {
+    return {
+      label: 'BUSINESS PICK',
+      color: 'bg-indigo-500 text-white',
+      icon: '💼',
+      description: 'A convenient choice for work trips where location and a hassle-free stay matter.',
+      bestFor: 'Business travelers.'
+    };
+  }
+
+  // 3. Fallback to Relative Price Badges when prices differ
+  if (priceRange > 0) {
+    if (price === highestPrice && priceRange >= 300) {
       return {
         label: 'PREMIUM OPTION',
         color: 'bg-purple-500 text-white',
         icon: '💎',
         description: 'A more elevated stay with added comfort and convenience.',
         bestFor: 'Travelers who prefer a more comfortable experience.'
-      };
-    }
-
-    const purposeLower = purpose?.toLowerCase() || '';
-
-    if (purposeLower.includes('airport') || purposeLower.includes('flight')) {
-      return {
-        label: 'NEAR DESTINATION',
-        color: 'bg-sky-500 text-white',
-        icon: '✈️',
-        description: 'Conveniently located near the area you requested, so you can spend less time traveling.',
-        bestFor: 'Travelers who prioritize location.'
-      };
-    }
-
-    if (purposeLower.includes('family')) {
-      return {
-        label: 'FAMILY PICK',
-        color: 'bg-emerald-500 text-white',
-        icon: '👨‍👩‍👧‍👦',
-        description: 'A practical choice designed around a more comfortable family stay.',
-        bestFor: 'Families traveling together.'
-      };
-    }
-
-    if (purposeLower.includes('business')) {
-      return {
-        label: 'BUSINESS PICK',
-        color: 'bg-indigo-500 text-white',
-        icon: '💼',
-        description: 'A convenient choice for work trips where location and a hassle-free stay matter.',
-        bestFor: 'Business travelers.'
       };
     }
 
@@ -229,7 +235,8 @@ export default function QuotationView() {
       };
     }
 
-    if (price === midPrice && sorted.length > 2) {
+    // Best Value for middle options (works for 3+ choices)
+    if (sorted.length >= 3 && price !== lowestPrice && price !== highestPrice) {
       return {
         label: 'BEST VALUE',
         color: 'bg-yellow-400 text-[#0F172A]',
@@ -238,15 +245,17 @@ export default function QuotationView() {
         bestFor: 'Travelers looking for great value.'
       };
     }
+  }
 
-    return {
-      label: 'POPULAR CHOICE',
-      color: 'bg-rose-500 text-white',
-      icon: '🔥',
-      description: 'A well-liked option with a dependable mix of comfort, location, and value.',
-      bestFor: 'Travelers who prefer a popular choice.'
-    };
+  // 4. Default Fallback Badge if all prices are equal or 2 items without specific purpose
+  return {
+    label: 'POPULAR CHOICE',
+    color: 'bg-rose-500 text-white',
+    icon: '🔥',
+    description: 'A well-liked option with a dependable mix of comfort, location, and value.',
+    bestFor: 'Travelers who prefer a popular choice.'
   };
+};
 
   const groupFacilities = (facilities: string) => {
     const items = facilities ? facilities.split(',').map((f: string) => f.trim()) : [];
