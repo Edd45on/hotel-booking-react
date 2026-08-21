@@ -645,18 +645,16 @@ export default function QuotationView() {
         <div className="mt-16 text-center max-w-2xl mx-auto">
           <div className="mb-8">
             <p className="text-[#0F172A] font-medium text-lg mb-3">Need help choosing?</p>
-<button 
-  onClick={() => {
-    // Replace 'your-page-id' with your actual Facebook page ID or username
-    const pageId = '61593648383338'; // e.g., 'RedDoorz' or actual page ID number
-    const messengerUrl = `https://m.me/${pageId}`;
-    window.open(messengerUrl, '_blank');
-  }}
-  className="inline-flex items-center gap-2 bg-[#F8FAFC] border border-[#E2E8F0] text-[#0F172A] px-6 py-3 rounded-full font-semibold hover:bg-white hover:shadow-md transition"
->
-  <MessageCircle className="text-[#E11D48]" size={20} />
-  Chat with us
-</button>
+			<button 
+				onClick={() => {
+				const pageUrl = 'https://www.facebook.com/RedDoorzukiPH';
+				window.open(pageUrl, '_blank');
+				}}
+			className="inline-flex items-center gap-2 bg-[#F8FAFC] border border-[#E2E8F0] text-[#0F172A] px-6 py-3 rounded-full font-semibold hover:bg-white hover:shadow-md transition"
+			>
+			<MessageCircle className="text-[#E11D48]" size={20} />
+				Chat with us
+			</button>
           </div>
 
           <div className="pt-8 border-t border-[#E2E8F0] text-sm text-[#64748B]">
