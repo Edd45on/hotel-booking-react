@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react';
 import { supabase } from './utils/supabase';
-import { ChevronDown, ChevronUp, Star, X, MessageCircle } from 'lucide-react';
+import { ChevronDown, ChevronUp, X, MessageCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
-import logo from './assets/logo.png';
 
 export default function QuotationView() {
   const [quotations, setQuotations] = useState<any[]>([]);
   const [inquiry, setInquiry] = useState<any>(null);
-  // 🟢 FIX: Use a Record to track open/closed state per card ID
   const [openFacilities, setOpenFacilities] = useState<Record<string, boolean>>({});
   const [activeImages, setActiveImages] = useState<Record<string, string>>({});
   
@@ -77,7 +75,7 @@ export default function QuotationView() {
     setQuotations(qData ? qData.slice(0, 3) : []);
   };
 
-  // 🟢 LIVE COUNTDOWN TIMER
+  // LIVE COUNTDOWN TIMER
   useEffect(() => {
     if (!quotations || quotations.length === 0) return;
 
@@ -96,7 +94,7 @@ export default function QuotationView() {
             const hours = Math.floor(diff / (1000 * 60 * 60));
             const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-            newTimeLeft[q.id] = hours + 'h ' + minutes + 'm ' + seconds + 's';
+            newTimeLeft[q.id] = `${hours}h ${minutes}m ${seconds}s`;
           }
         }
       });
@@ -162,48 +160,122 @@ export default function QuotationView() {
     }
   };
 
+  // FIXED: Improved badge logic with clear precedence
+  const getBadgeByPrice = (price: number, allPrices: number[], purpose: string) => {
+    // Sort prices to find lowest, highest, and median
+    const sorted = [...allPrices].sort((a, b) => a - b);
+    const lowestPrice = sorted[0];
+    const highestPrice = sorted[sorted.length - 1];
+    const midPrice = sorted.length > 2 ? sorted[1] : lowestPrice;
+    const priceRange = highestPrice - lowestPrice;
+
+    // First check: Premium option (highest price with significant gap)
+    if (price === highestPrice && priceRange > 500) {
+      return {
+        label: 'PREMIUM OPTION',
+        color: 'bg-purple-500 text-white',
+        icon: '💎',
+        description: 'A more elevated stay with added comfort and convenience.',
+        bestFor: 'Travelers who prefer a more comfortable experience.'
+      };
+    }
+
+    // Second check: Purpose-based badges (these take precedence over price-based)
+    const purposeLower = purpose?.toLowerCase() || '';
+    
+    if (purposeLower.includes('airport') || purposeLower.includes('flight')) {
+      return {
+        label: 'NEAR DESTINATION',
+        color: 'bg-sky-500 text-white',
+        icon: '✈️',
+        description: 'Conveniently located near the area you requested, so you can spend less time traveling.',
+        bestFor: 'Travelers who prioritize location.'
+      };
+    }
+    
+    if (purposeLower.includes('family')) {
+      return {
+        label: 'FAMILY PICK',
+        color: 'bg-emerald-500 text-white',
+        icon: '👨‍👩‍👧‍👦',
+        description: 'A practical choice designed around a more comfortable family stay.',
+        bestFor: 'Families traveling together.'
+      };
+    }
+    
+    if (purposeLower.includes('business')) {
+      return {
+        label: 'BUSINESS PICK',
+        color: 'bg-indigo-500 text-white',
+        icon: '💼',
+        description: 'A convenient choice for work trips where location and a hassle-free stay matter.',
+        bestFor: 'Business travelers.'
+      };
+    }
+
+    // Third check: Price-based badges (only if no purpose badge was applied)
+    if (price === lowestPrice) {
+      return {
+        label: 'BUDGET OPTION',
+        color: 'bg-blue-500 text-white',
+        icon: '💰',
+        description: 'One of the most affordable suitable options within your budget.',
+        bestFor: 'Budget-conscious travelers.'
+      };
+    }
+    
+    if (price === midPrice && sorted.length > 2) {
+      return {
+        label: 'BEST VALUE',
+        color: 'bg-yellow-400 text-[#0F172A]',
+        icon: '⭐',
+        description: 'A smart balance of price, location, and comfort.',
+        bestFor: 'Travelers looking for great value.'
+      };
+    }
+
+    // Default: Popular choice
+    return {
+      label: 'POPULAR CHOICE',
+      color: 'bg-rose-500 text-white',
+      icon: '🔥',
+      description: 'A well-liked option with a dependable mix of comfort, location, and value.',
+      bestFor: 'Travelers who prefer a popular choice.'
+    };
+  };
+
+  // Group facilities by category
+  const groupFacilities = (facilities: string) => {
+    const items = facilities ? facilities.split(',').map((f: string) => f.trim()) : [];
+    
+    const roomItems = items.filter(i => 
+      ['Chairs', 'Wardrobe', 'TV', 'AC', 'Iron', 'Bed', 'Mirror'].includes(i)
+    );
+    const bathItems = items.filter(i => 
+      ['Towel', 'Hot Shower', 'Hair Dryer'].includes(i)
+    );
+    const otherItems = items.filter(i => 
+      ![...roomItems, ...bathItems].includes(i)
+    );
+
+    return { roomItems, bathItems, otherItems };
+  };
+
   if (!inquiry) return <div className="text-center py-20">Loading your quotation...</div>;
 
   const nights = getNights(inquiry.check_in, inquiry.check_out);
   const referenceId = `#STY-${String(inquiry.id).slice(-6).toUpperCase()}`;
 
-  const getBadgeByPrice = (price: number, allPrices: number[], purpose: string) => {
-    const sorted = [...allPrices].sort((a, b) => a - b);
-    const lowestPrice = sorted[0];
-    const highestPrice = sorted[sorted.length - 1];
-    const midPrice = sorted.length > 2 ? sorted[1] : lowestPrice;
-
-    if (price >= highestPrice && (highestPrice - midPrice) > 500) {
-      return { label: 'PREMIUM OPTION', color: 'bg-purple-500 text-white', icon: '💎', description: 'A more elevated stay with added comfort and convenience.', bestFor: 'Travelers who prefer a more comfortable experience.' };
-    }
-    if (purpose?.toLowerCase().includes('airport') || purpose?.toLowerCase().includes('flight')) {
-      return { label: 'NEAR DESTINATION', color: 'bg-sky-500 text-white', icon: '✈️', description: 'Conveniently located near the area you requested, so you can spend less time traveling.', bestFor: 'Travelers who prioritize location.' };
-    }
-    if (purpose?.toLowerCase().includes('family')) {
-      return { label: 'FAMILY PICK', color: 'bg-emerald-500 text-white', icon: '👨‍👩‍👧‍👦', description: 'A practical choice designed around a more comfortable family stay.', bestFor: 'Families traveling together.' };
-    }
-    if (purpose?.toLowerCase().includes('business')) {
-      return { label: 'BUSINESS PICK', color: 'bg-indigo-500 text-white', icon: '💼', description: 'A convenient choice for work trips where location and a hassle-free stay matter.', bestFor: 'Business travelers.' };
-    }
-    if (price === lowestPrice) {
-      return { label: 'BUDGET OPTION', color: 'bg-blue-500 text-white', icon: '💰', description: 'One of the most affordable suitable options within your budget.', bestFor: 'Budget-conscious travelers.' };
-    }
-    if (price === midPrice) {
-      return { label: 'BEST VALUE', color: 'bg-yellow-400 text-[#0F172A]', icon: '⭐', description: 'A smart balance of price, location, and comfort.', bestFor: 'Travelers looking for great value.' };
-    }
-    return { label: 'POPULAR CHOICE', color: 'bg-rose-500 text-white', icon: '🔥', description: 'A well-liked option with a dependable mix of comfort, location, and value.', bestFor: 'Travelers who prefer a popular choice.' };
-  };
-
   return (
     <main className="min-h-screen bg-[#F8FAFC] py-12 px-4 md:py-20">
       <div className="max-w-4xl mx-auto">
-	    <div className="flex justify-center mb-4">
-    <img 
-      src="/reddoorzuki-logo.png" 
-      alt="Company Logo" 
-      className="h-16 w-auto object-contain"
-    />
-  </div>
+        <div className="flex justify-center mb-4">
+          <img 
+            src="/reddoorzuki-logo.png" 
+            alt="Company Logo" 
+            className="h-16 w-auto object-contain"
+          />
+        </div>
         
         {/* HEADER */}
         <div className="text-center mb-12 border-b border-[#E2E8F0] pb-10">
@@ -220,6 +292,7 @@ export default function QuotationView() {
           <p className="text-xs font-mono text-[#94a3b8] mt-4 tracking-widest">{referenceId}</p>
         </div>
 
+        {/* PROGRESS STEPS */}
         <div className="max-w-2xl mx-auto mb-8">
           <div className="flex justify-between items-center w-full px-2">
             <div className="flex flex-col items-center flex-1">
@@ -277,13 +350,13 @@ export default function QuotationView() {
             const imageArray = q.image_url ? q.image_url.split(',').map((url: string) => url.trim()) : [];
             const currentActiveImage = activeImages[q.id] || (imageArray.length > 0 ? imageArray[0] : 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=600&q=80');
             const totalPrice = q.new_price * nights;
-            // 🟢 FIX: Check if THIS specific card is open
             const isFacilitiesOpen = openFacilities[q.id] || false;
+            const { roomItems, bathItems, otherItems } = groupFacilities(q.facilities);
 
             const renderButton = () => {
               const isAnyCardChosen = quotations.some(item => item.is_customer_chosen === true);
               
-              // 🟢 FINAL STATE: RedSeller confirmed, email sent
+              // FINAL STATE: RedSeller confirmed, email sent
               if (q.is_redseller_booked) {
                 return (
                   <div className="w-full bg-green-100 border border-green-300 text-green-700 py-3 rounded-xl text-center mt-2 flex flex-col items-center justify-center gap-2">
@@ -295,8 +368,8 @@ export default function QuotationView() {
                 );
               } 
               
-              // 🟡 Admin confirmed availability, waiting for RedSeller booking
-              else if (q.is_admin_confirmed && !q.is_redseller_booked) {
+              // Admin confirmed availability, waiting for RedSeller booking
+              if (q.is_admin_confirmed && !q.is_redseller_booked) {
                 return (
                   <div className="w-full bg-yellow-50 border border-yellow-200 text-yellow-800 py-3 rounded-xl text-center mt-2 flex flex-col items-center justify-center gap-2">
                     <span className="font-bold text-lg">⏳ OPTION SELECTED</span>
@@ -310,8 +383,8 @@ export default function QuotationView() {
                 );
               } 
               
-              // ✅ Customer chosen, waiting for Admin
-              else if (q.is_customer_chosen && !q.is_admin_confirmed) {
+              // Customer chosen, waiting for Admin
+              if (q.is_customer_chosen && !q.is_admin_confirmed) {
                 return (
                   <div className="w-full bg-yellow-50 border border-yellow-200 text-yellow-800 py-3 rounded-xl text-center mt-2 flex flex-col items-center justify-center gap-2">
                     <span className="font-bold text-lg">⏳ OPTION SELECTED</span>
@@ -362,23 +435,24 @@ export default function QuotationView() {
                 );
               } 
               
-              else if (isAnyCardChosen && !q.is_customer_chosen) {
+              // Another card is already chosen
+              if (isAnyCardChosen && !q.is_customer_chosen) {
                 return (
                   <div className="w-full bg-[#E2E8F0] text-[#94a3b8] py-3 rounded-xl font-bold text-center mt-2 cursor-not-allowed">
                     Option Unavailable
                   </div>
                 );
               } 
-              else {
-                return (
-                  <button 
-                    onClick={() => openBookingModal(q.id)}
-                    className="w-full bg-[#E11D48] text-white py-3 rounded-xl font-bold hover:bg-[#BE123C] transition shadow-md hover:shadow-lg mt-2"
-                  >
-                    SELECT THIS OPTION
-                  </button>
-                );
-              }
+              
+              // Default state: Show select button
+              return (
+                <button 
+                  onClick={() => openBookingModal(q.id)}
+                  className="w-full bg-[#E11D48] text-white py-3 rounded-xl font-bold hover:bg-[#BE123C] transition shadow-md hover:shadow-lg mt-2"
+                >
+                  SELECT THIS OPTION
+                </button>
+              );
             };
 
             return (
@@ -447,26 +521,26 @@ export default function QuotationView() {
                 <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-[#475569] mt-1">
                   <div className="flex items-center gap-2">
                     <span className="text-[#E11D48] text-xs font-bold">✓</span> 
-                    <span className="text-sm">{q.custom_room_only && q.custom_room_only.trim() !== '' ? q.custom_room_only : 'Room only'}</span>
+                    <span className="text-sm">{q.custom_room_only || 'Room only'}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-[#E11D48] text-xs font-bold">✓</span> 
-                    <span className="text-sm">{q.custom_pay_at_hotel && q.custom_pay_at_hotel.trim() !== '' ? q.custom_pay_at_hotel : 'Pay at hotel'}</span>
+                    <span className="text-sm">{q.custom_pay_at_hotel || 'Pay at hotel'}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-[#E11D48] text-xs font-bold">✓</span> 
-                    <span className="text-sm">{q.custom_non_refundable && q.custom_non_refundable.trim() !== '' ? q.custom_non_refundable : 'Non-refundable'}</span>
+                    <span className="text-sm">{q.custom_non_refundable || 'Non-refundable'}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-[#E11D48] text-xs font-bold">✓</span> 
-                    <span className="text-sm">{q.custom_no_breakfast && q.custom_no_breakfast.trim() !== '' ? q.custom_no_breakfast : 'No breakfast'}</span>
+                    <span className="text-sm">{q.custom_no_breakfast || 'No breakfast'}</span>
                   </div>
                 </div>
 
                 <div className="bg-[#F8FAFC] rounded-xl p-4 md:p-5 border border-[#E2E8F0] mt-1 space-y-3">
                   <p className="text-xs font-bold uppercase tracking-wider text-[#64748B] mb-1">Why we picked it</p>
                   <p className="text-[#0F172A] leading-relaxed">
-                    {q.custom_description && q.custom_description.trim() !== '' ? q.custom_description : badge.description}
+                    {q.custom_description || badge.description}
                   </p>
                   <p className="text-xs text-[#64748B] mt-2">
                     Best for: {badge.bestFor}
@@ -487,7 +561,7 @@ export default function QuotationView() {
                   </div>
                 </div>
 
-                {/* 🟢 FIXED: Toggle using card-specific state */}
+                {/* Facilities toggle */}
                 <div className="mt-4">
                   <button 
                     onClick={() => setOpenFacilities(prev => ({ ...prev, [q.id]: !prev[q.id] }))}
@@ -506,63 +580,54 @@ export default function QuotationView() {
                   >
                     <div className="bg-[#F8FAFC] rounded-xl p-4 border border-[#E2E8F0]">
                       <p className="text-xs font-bold uppercase tracking-wider text-[#64748B] mb-3">Room Amenities</p>
-                      {(() => {
-                        const items = q.facilities ? q.facilities.split(',').map((f: string) => f.trim()) : [];
-                        const roomItems = items.filter(i => ['Chairs', 'Wardrobe', 'TV', 'AC', 'Iron', 'Bed', 'Mirror'].includes(i));
-                        const bathItems = items.filter(i => ['Towel', 'Hot Shower', 'Hair Dryer'].includes(i));
-                        const otherItems = items.filter(i => ![...roomItems, ...bathItems].includes(i));
-
-                        return (
-                          <div className="space-y-3">
-                            {roomItems.length > 0 && (
-                              <div>
-                                <p className="text-xs font-semibold text-[#0F172A] mb-1">Room Facilities</p>
-                                <div className="grid grid-cols-2 gap-y-1 gap-x-4">
-                                  {roomItems.map((item, i) => (
-                                    <div key={i} className="flex items-center gap-2 text-xs text-[#475569]">
-                                      <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
-                                      {item}
-                                    </div>
-                                  ))}
+                      <div className="space-y-3">
+                        {roomItems.length > 0 && (
+                          <div>
+                            <p className="text-xs font-semibold text-[#0F172A] mb-1">Room Facilities</p>
+                            <div className="grid grid-cols-2 gap-y-1 gap-x-4">
+                              {roomItems.map((item, i) => (
+                                <div key={i} className="flex items-center gap-2 text-xs text-[#475569]">
+                                  <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
+                                  {item}
                                 </div>
-                              </div>
-                            )}
-                            
-                            {bathItems.length > 0 && (
-                              <div>
-                                <p className="text-xs font-semibold text-[#0F172A] mb-1">Bathroom Facilities</p>
-                                <div className="grid grid-cols-2 gap-y-1 gap-x-4">
-                                  {bathItems.map((item, i) => (
-                                    <div key={i} className="flex items-center gap-2 text-xs text-[#475569]">
-                                      <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
-                                      {item}
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-                            
-                            {otherItems.length > 0 && (
-                              <div>
-                                <p className="text-xs font-semibold text-[#0F172A] mb-1">Others</p>
-                                <div className="grid grid-cols-2 gap-y-1 gap-x-4">
-                                  {otherItems.map((item, i) => (
-                                    <div key={i} className="flex items-center gap-2 text-xs text-[#475569]">
-                                      <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
-                                      {item}
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
+                              ))}
+                            </div>
                           </div>
-                        );
-                      })()}
+                        )}
+                        
+                        {bathItems.length > 0 && (
+                          <div>
+                            <p className="text-xs font-semibold text-[#0F172A] mb-1">Bathroom Facilities</p>
+                            <div className="grid grid-cols-2 gap-y-1 gap-x-4">
+                              {bathItems.map((item, i) => (
+                                <div key={i} className="flex items-center gap-2 text-xs text-[#475569]">
+                                  <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
+                                  {item}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {otherItems.length > 0 && (
+                          <div>
+                            <p className="text-xs font-semibold text-[#0F172A] mb-1">Others</p>
+                            <div className="grid grid-cols-2 gap-y-1 gap-x-4">
+                              {otherItems.map((item, i) => (
+                                <div key={i} className="flex items-center gap-2 text-xs text-[#475569]">
+                                  <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
+                                  {item}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                {/* 🟢 PROPERTY POLICIES */}
+                {/* Property Policies */}
                 <div className="mt-2 text-sm text-[#475569] bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4">
                   <p className="text-xs font-bold uppercase tracking-wider text-[#64748B] mb-1">Property Policies</p>
                   <div className="space-y-1 text-xs">
@@ -611,9 +676,10 @@ export default function QuotationView() {
         </div>
       </div>
 
-      <div className="fixed inset-0 bg-black/0 flex items-center justify-center z-50 p-4 pointer-events-none">
+      {/* Booking Modal */}
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
         {selectedQuotationId && (
-          <div className="bg-white max-w-md w-full rounded-2xl p-6 shadow-2xl relative pointer-events-auto">
+          <div className="bg-white max-w-md w-full rounded-2xl p-6 shadow-2xl relative">
             <button 
               onClick={closeBookingModal}
               className="absolute top-4 right-4 text-[#475569] hover:text-[#0F172A] transition"
