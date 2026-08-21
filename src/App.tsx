@@ -115,8 +115,8 @@ export default function App() {
 
     const data = {
       destination: finalDestination,
-      checkIn: checkInDate.toISOString().split('T')[0],
-      checkOut: checkOutDate.toISOString().split('T')[0],
+      checkIn: checkInDate.toISOString('en-CA'),
+      checkOut: checkOutDate.toISOString('en-CA'),
       adults: formData.get('adults')?.toString() || '2',
       children: formData.get('children')?.toString() || '0',
       rooms: formData.get('rooms')?.toString() || '1',
