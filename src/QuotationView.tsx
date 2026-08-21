@@ -677,7 +677,9 @@ export default function QuotationView() {
       </div>
 
       {/* Booking Modal */}
-
+      <div className="fixed inset-0 bg-black/0 flex items-center justify-center z-50 p-4 pointer-events-none">
+        {selectedQuotationId && (
+          <div className="bg-white max-w-md w-full rounded-2xl p-6 shadow-2xl relative pointer-events-auto">
             <button 
               onClick={closeBookingModal}
               className="absolute top-4 right-4 text-[#475569] hover:text-[#0F172A] transition"
@@ -739,7 +741,9 @@ export default function QuotationView() {
                 Confirm Booking
               </button>
             </div>
-
+          </div>
+        )}
+      </div>
     </main>
   );
 }
