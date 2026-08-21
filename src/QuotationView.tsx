@@ -739,9 +739,7 @@ export default function QuotationView() {
                 Confirm Booking
               </button>
             </div>
-          </div>
-        )}
-      </div>
+
     </main>
   );
 }
