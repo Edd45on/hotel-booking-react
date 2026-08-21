@@ -113,18 +113,26 @@ export default function App() {
       }
     }
 
-    const data = {
-      destination: finalDestination,
-      checkIn: checkInDate.toISOString('en-CA'),
-      checkOut: checkOutDate.toISOString('en-CA'),
-      adults: formData.get('adults')?.toString() || '2',
-      children: formData.get('children')?.toString() || '0',
-      rooms: formData.get('rooms')?.toString() || '1',
-      purpose: selectedPurpose || 'Not specified',
-      priority: selectedPriority || 'Not specified',
-      budget: formData.get('budget')?.toString() || '',
-      specialRequest: formData.get('special-request')?.toString() || ''
-    };
+const data = {
+  destination: finalDestination,
+  checkIn: formatLocalDate(checkInDate),
+  checkOut: formatLocalDate(checkOutDate),
+  adults: formData.get('adults')?.toString() || '2',
+  children: formData.get('children')?.toString() || '0',
+  rooms: formData.get('rooms')?.toString() || '1',
+  purpose: selectedPurpose || 'Not specified',
+  priority: selectedPriority || 'Not specified',
+  budget: formData.get('budget')?.toString() || '',
+  specialRequest: formData.get('special-request')?.toString() || ''
+};
+
+// Helper function to format date without timezone issues
+function formatLocalDate(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
 
     try {
       const response = await fetch('/api/submit-booking', {
